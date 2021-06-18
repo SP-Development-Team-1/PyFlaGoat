@@ -1,1 +1,1 @@
-# WebGoat---Flask
+# WebGoat-Flask
