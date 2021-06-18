@@ -8,6 +8,10 @@ app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///posts.db'
 db = SQLAlchemy(app)
 
+#################
+# SQL INJECTION #
+#################
+
 class BlogPost(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     title = db.Column(db.String(255), nullable=False)
@@ -17,15 +21,6 @@ class BlogPost(db.Model):
     
     def __repr__(self):
         return 'Blog Post ' + str(self.id)
-
-class BlogAuth(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
-    username = db.Column(db.String(50), nullable=False)
-    password = db.Column(db.String(20), nullable=False)
-    
-    def __repr__(self):
-        return 'Account Number ' + str(self.id)
-
 
 @app.route('/')
 def index():
@@ -72,8 +67,20 @@ def new_post():
         return redirect('/posts')
     else:
         return render_template("new_post.html")
+
+#########################
+# BROKEN AUTHENTICATION #
+#########################
+
+class BlogAuth(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    username = db.Column(db.String(50), nullable=False)
+    password = db.Column(db.String(20), nullable=False)
     
-@app.route('/posts/auth', methods=['GET', 'POST'])
+    def __repr__(self):
+        return 'Account Number ' + str(self.id)
+
+@app.route('/auth', methods=['GET', 'POST'])
 def broken_auth():
     if request.method == 'POST':
         acc_username = request.form['username']
@@ -83,7 +90,10 @@ def broken_auth():
         db.session.commit()
         return redirect('/posts/auth')
     else:
-        return render_template("broken_auth.html")
-
+        return render_template("broken_auth.html")    
+           
+#############
+# DEBUGGING #
+#############
 if __name__ == "__main__":
 	app.run(debug=True)
