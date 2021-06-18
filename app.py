@@ -77,9 +77,12 @@ class BlogAuth(db.Model):
     username = db.Column(db.String(50), nullable=False)
     password = db.Column(db.String(20), nullable=False)
     
+<<<<<<< HEAD
     def __repr__(self):
         return 'Account Number ' + str(self.id)
 
+=======
+>>>>>>> f8fcf3177a50a1ca16be0537030b0bd7097d6136
 @app.route('/auth', methods=['GET', 'POST'])
 def broken_auth():
     if request.method == 'POST':
@@ -88,7 +91,7 @@ def broken_auth():
         new_acc = BlogAuth(username=acc_username, password=acc_password)
         db.session.add(new_acc)
         db.session.commit()
-        return redirect('/posts/auth')
+        return redirect('/auth')
     else:
         return render_template("broken_auth.html")    
            
