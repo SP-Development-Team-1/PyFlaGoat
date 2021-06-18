@@ -73,7 +73,7 @@ def new_post():
     else:
         return render_template("new_post.html")
     
-@app.route('/posts/auth', methods=['GET', 'POST'])
+@app.route('/auth', methods=['GET', 'POST'])
 def broken_auth():
     if request.method == 'POST':
         acc_username = request.form['username']
@@ -81,7 +81,7 @@ def broken_auth():
         new_acc = BlogAuth(username=acc_username, password=acc_password)
         db.session.add(new_acc)
         db.session.commit()
-        return redirect('/posts/auth')
+        return redirect('/auth')
     else:
         return render_template("broken_auth.html")
 
