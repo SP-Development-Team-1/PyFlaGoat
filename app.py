@@ -1,11 +1,13 @@
 from operator import attrgetter
-from flask import Flask, render_template, request, redirect
+from flask import Flask, render_template, request, redirect, flash
 from flask_sqlalchemy import SQLAlchemy 
 from datetime import datetime
 from sqlalchemy.sql import text
+import tkinter as tk
 
 app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///posts.db'
+app.config['SECRET_KEY'] = "Fasoo"
 db = SQLAlchemy(app)
 
 #################
@@ -76,9 +78,43 @@ class BlogAuth(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     username = db.Column(db.String(50), nullable=False)
     password = db.Column(db.String(20), nullable=False)
-    
+
+def popupmsg(msg, title):
+    """Generate a pop-up window for special messages."""
+    root = tk.Tk()
+    root.title(title)
+    label = tk.Label(root, text=msg)
+    label.pack(side="top", fill="x", pady=10)
+    B1 = tk.Button(root, text="Okay", command = root.destroy)
+    B1.pack()
+    #popupmsg.mainloop()
+        
 @app.route('/auth', methods=['GET', 'POST'])
 def broken_auth():
+    flag = 0
+    if request.method == 'POST':
+        acc_username = request.form['username']
+        acc_password = request.form['password']
+        username = BlogAuth.query.filter_by(username=acc_username).first()
+        password = BlogAuth.query.filter_by(password=acc_password).first()
+        
+        if username and password:
+            flash("Login Success!")
+            return render_template("flash.html")
+        elif username and not password:
+            flash("Login Failed, Please enter a valid password!")
+            return render_template("flash.html")
+        elif not username and password:
+            flash("Login Failed!, Please register before logging in!")
+            return render_template("flash.html")
+        else:
+            flash("Login Failed!, Please register before logging in!")
+            return render_template("flash.html")
+    else:
+        return render_template("broken_auth/broken_auth.html")    
+
+@app.route('/auth/register', methods=['GET', 'POST'])
+def register():
     if request.method == 'POST':
         acc_username = request.form['username']
         acc_password = request.form['password']
@@ -87,16 +123,8 @@ def broken_auth():
         db.session.commit()
         return redirect('/auth')
     else:
-        return render_template("broken_auth/broken_auth.html") 
-
-#########################
-# BROKEN ACCESS CONTROL #
-#########################
-
-@app.route('/broken_access', methods=['GET', 'POST'])
-def broken_access():
-    return "Hello World!"
-
+        return render_template("broken_auth/register.html")
+        
 #############
 # DEBUGGING #
 #############
