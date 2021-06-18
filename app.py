@@ -121,7 +121,7 @@ def register():
         new_acc = BlogAuth(username=acc_username, password=acc_password)
         db.session.add(new_acc)
         db.session.commit()
-        return redirect('broken_auth/broken_auth.html')
+        return redirect('/auth')
     else:
         return render_template("broken_auth/register.html")
         
