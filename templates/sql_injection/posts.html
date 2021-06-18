@@ -8,10 +8,10 @@
 <br>
 <div>
 	<h1 style="display:inline">Sensitive Information Cloud</h1>
-	<a style="display:inline" class="btn btn-success float-right" href="/posts/new">New Post</a>
+	<a style="display:inline" class="btn btn-success float-right" href="/sql_injection/new">New Post</a>
 </div>
 	<hr> 
-	<form class="form-inline my-2 my-md-0 float-right" action="\posts" method="POST">
+	<form class="form-inline my-2 my-md-0 float-right" action="\sql_injection" method="POST">
 		<input class="form-control" type="text" name="auth_TAN" id='auth_TAN' placeholder="Input TAN ..." aria-label="filter">
 	</form>
 
@@ -28,8 +28,8 @@
 		<br>
 
 		<p style="white-space:pre-wrap">{{ post.content }}</p>
-		<a class="btn btn-danger" href="/posts/delete/{{post.id}}">Delete</a>
-		<a class="btn btn-primary" href="/posts/edit/{{post.id}}">Edit</a>
+		<a class="btn btn-danger" href="/sql_injection/delete/{{post.id}}">Delete</a>
+		<a class="btn btn-primary" href="/sql_injection/edit/{{post.id}}">Edit</a>
 		<br>
 		<hr>
 	{% endfor %}

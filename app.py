@@ -26,24 +26,24 @@ class BlogPost(db.Model):
 def index():
         return render_template('index.html')
 
-@app.route('/posts', methods=['GET', 'POST'])
+@app.route('/sql_injection', methods=['GET', 'POST'])
 def posts():
         if request.method == 'POST':
             post_filter_by = request.form['auth_TAN']
             all_posts = BlogPost.query.filter(text("auth_TAN={}".format("\'"+ post_filter_by +"\'"))).all()
-            return render_template('posts.html', posts=all_posts)
+            return render_template('sql_injection/posts.html', posts=all_posts)
         else:
             all_posts = BlogPost.query.order_by(BlogPost.date_posted).all()
-            return render_template('posts.html', posts=all_posts)
+            return render_template('sql_injection/posts.html', posts=all_posts)
 
-@app.route('/posts/delete/<int:id>')
+@app.route('/sql_injection/delete/<int:id>')
 def delete(id):
     post = BlogPost.query.get_or_404(id)
     db.session.delete(post)
     db.session.commit()
-    return redirect('/posts')
+    return redirect('/sql_injection')
 
-@app.route('/posts/edit/<int:id>', methods=['GET', 'POST'])
+@app.route('/sql_injection/edit/<int:id>', methods=['GET', 'POST'])
 def edit(id):
     post = BlogPost.query.get_or_404(id)
     if request.method == 'POST':
@@ -51,11 +51,11 @@ def edit(id):
         post.auth_TAN = request.form['auth_TAN']
         post.content = request.form['content']
         db.session.commit()
-        return redirect('/posts')
+        return redirect('/sql_injection')
     else:
-        return render_template('edit.html', post=post)
+        return render_template('sql_injection/edit.html', post=post)
 
-@app.route('/posts/new', methods=['GET', 'POST'])
+@app.route('/sql_injection/new', methods=['GET', 'POST'])
 def new_post():
     if request.method =='POST':
         post_title = request.form['title']
@@ -64,9 +64,9 @@ def new_post():
         new_post = BlogPost(title=post_title, content=post_content, auth_TAN=post_auth_TAN)
         db.session.add(new_post)
         db.session.commit()
-        return redirect('/posts')
+        return redirect('/sql_injection')
     else:
-        return render_template("new_post.html")
+        return render_template("sql_injection/new_post.html")
 
 #########################
 # BROKEN AUTHENTICATION #
@@ -77,12 +77,6 @@ class BlogAuth(db.Model):
     username = db.Column(db.String(50), nullable=False)
     password = db.Column(db.String(20), nullable=False)
     
-<<<<<<< HEAD
-    def __repr__(self):
-        return 'Account Number ' + str(self.id)
-
-=======
->>>>>>> f8fcf3177a50a1ca16be0537030b0bd7097d6136
 @app.route('/auth', methods=['GET', 'POST'])
 def broken_auth():
     if request.method == 'POST':
@@ -93,8 +87,8 @@ def broken_auth():
         db.session.commit()
         return redirect('/auth')
     else:
-        return render_template("broken_auth.html")    
-           
+        return render_template("broken_auth/broken_auth.html")    
+
 #############
 # DEBUGGING #
 #############
