@@ -81,6 +81,7 @@ def broken_auth():
         new_acc = BlogAuth(username=acc_username, password=acc_password)
         db.session.add(new_acc)
         db.session.commit()
+        return redirect('/posts/auth')
     else:
         return render_template("broken_auth.html")
 
