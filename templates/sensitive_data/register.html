@@ -1,0 +1,33 @@
+{% extends 'base.html' %} {% block head %}
+<title>Broken Authentication</title>
+{% endblock %} {% block body %}
+<h1>Broken Authentication</h1>
+
+<hr />
+<h2>Register below:</h2>
+<form action="/sensitive_data/register" method="POST">
+  <label for="post">Username:</label>
+  <input
+    class="form-control"
+    type="text"
+    name="username"
+    id="username"
+    placeholder="Enter Username"
+    aria-label="Enter Username"
+  />
+  <br />
+  <label for="post">password:</label>
+  <input
+    class="form-control"
+    type="text"
+    name="password"
+    id="password"
+    placeholder="Enter Password"
+    aria-label="Enter Password"
+  />
+  <br />
+  <input type="submit" value="Register" />
+</form>
+<hr />
+
+{% endblock %}

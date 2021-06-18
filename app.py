@@ -124,6 +124,60 @@ def register():
         return redirect('/auth')
     else:
         return render_template("broken_auth/register.html")
+
+###########################
+# SENSITIVE DATA EXPOSURE #
+###########################
+class SensitiveUsers(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    username = db.Column(db.String(50), nullable=False)
+    password = db.Column(db.String(20), nullable=False)
+
+def sensitive_popupmsg(msg, title):
+    """Generate a pop-up window for special messages."""
+    root = tk.Tk()
+    root.title(title)
+    label = tk.Label(root, text=msg)
+    label.pack(side="top", fill="x", pady=10)
+    B1 = tk.Button(root, text="Okay", command = root.destroy)
+    B1.pack()
+    #popupmsg.mainloop()
+        
+@app.route('/sensitive_data', methods=['GET', 'POST'])
+def sensitive_data():
+    flag = 0
+    if request.method == 'POST':
+        acc_username = request.form['username']
+        acc_password = request.form['password']
+        username = SensitiveUsers.query.filter_by(username=acc_username).first()
+        password = SensitiveUsers.query.filter_by(password=acc_password).first()
+        
+        if username and password:
+            flash("Login Success!")
+            return render_template("flash.html")
+        elif username and not password:
+            flash("Login Failed, Please enter a valid password!")
+            return render_template("flash.html")
+        elif not username and password:
+            flash("Login Failed!, Please register before logging in!")
+            return render_template("flash.html")
+        else:
+            flash("Login Failed!, Please register before logging in!")
+            return render_template("flash.html")
+    else:
+        return render_template("sensitive_data/sensitive_data.html")    
+
+@app.route('/sensitive_data/register', methods=['GET', 'POST'])
+def sensitive_register():
+    if request.method == 'POST':
+        acc_username = request.form['username']
+        acc_password = request.form['password']
+        new_acc = SensitiveUsers(username=acc_username, password=acc_password)
+        db.session.add(new_acc)
+        db.session.commit()
+        return redirect('/sensitive_data')
+    else:
+        return render_template("sensitive_data/register.html")
         
 #############
 # DEBUGGING #

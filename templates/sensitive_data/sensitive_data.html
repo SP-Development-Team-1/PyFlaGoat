@@ -1,0 +1,38 @@
+{% extends 'base.html' %} {% block head %}
+<title>Sensitive Data Exposure</title>
+{% endblock %} {% block body %}
+<h1>Sensitive Data Exposure</h1>
+
+<hr />
+<h2>Insecure Login</h2>
+<form action="/sensitive_data" method="POST">
+  <label for="post">Username:</label>
+  <input
+    class="form-control"
+    type="text"
+    name="username"
+    id="username"
+    placeholder="Enter Username"
+    aria-label="Enter Username"
+  />
+  <br />
+  <label for="post">password:</label>
+  <input
+    class="form-control"
+    type="text"
+    name="password"
+    id="password"
+    placeholder="Enter Password"
+    aria-label="Enter Password"
+  />
+  <br />
+  <input type="submit" value="Login" />
+
+    <a style="display: inline" class="btn btn-success float-center" href="/sensitive_data/register"
+      >Register</a
+    >
+
+</form>
+<hr />
+
+{% endblock %}
