@@ -1,0 +1,25 @@
+{% extends 'base.html' %}
+
+{% block head %}
+<title>Home</title>
+{% endblock %}
+
+{% block body %}
+<br>
+<h1>Home Page</h1>
+<br>
+<main role="main">
+    <div class="jumbotron">
+        <div class="col-sm-8 mx-auto">
+            <h1>Welcome!</h1>
+            <p>This intentionally vulnerable site was created for pre-development research at Fasoo.
+                The skeleton repository for this site can be found <a href="https://github.com/woohyun7878/flask_blog_demo">here</a>.
+                <p>Go visit <a href="https://en.fasoo.com">Fasoo</a>, Korea's leading data security firm.</p>
+                <p>
+                    <a class="btn btn-primary" href="/posts" role="button">View Sensitive Posts
+                        &raquo;</a>
+                </p>
+        </div>
+    </div>
+</main>
+{% endblock %}
