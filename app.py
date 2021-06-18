@@ -10,8 +10,6 @@ db = SQLAlchemy(app)
 
 class BlogPost(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    username = db.Column(db.String(50), nullable=False)
-    password = db.Column(db.String(20), nullable=False)
     title = db.Column(db.String(255), nullable=False)
     content = db.Column(db.Text, nullable=False)
     auth_TAN = db.Column(db.String(20), nullable=False, default='N/A')
@@ -20,17 +18,14 @@ class BlogPost(db.Model):
     def __repr__(self):
         return 'Blog Post ' + str(self.id)
 
-all_posts = [
-	{
-		'title': 'Post 1',
-		'content': 'This is the content of post 1.',
-		'auth_TAN': 'Aaron'
- 	},
- 	{
-		'title': 'Post 2',
-		'content': 'This is the content of post 2.',
- 	}
- ]
+class BlogAuth(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    username = db.Column(db.String(50), nullable=False)
+    password = db.Column(db.String(20), nullable=False)
+    
+    def __repr__(self):
+        return 'Account Number ' + str(self.id)
+
 
 @app.route('/')
 def index():
@@ -77,6 +72,17 @@ def new_post():
         return redirect('/posts')
     else:
         return render_template("new_post.html")
+    
+@app.route('/posts/auth', methods=['GET', 'POST'])
+def broken_auth():
+    if request.method == 'POST':
+        acc_username = request.form['username']
+        acc_password = request.form['password']
+        new_acc = BlogAuth(username=acc_username, password=acc_password)
+        db.session.add(new_acc)
+        db.session.commit()
+    else:
+        return render_template("broken_auth.html")
 
 if __name__ == "__main__":
 	app.run(debug=True)
