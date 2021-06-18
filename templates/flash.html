@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <style>
+      .alert {
+        padding: 12px;
+        border-radius: 3px;
+        font-size: 1.2rem;
+        margin-bottom: 16px;
+        border-width: 2px;
+        border-style: solid;
+      }
+
+      .alert-error {
+        border-color: darkred;
+        background-color: red;
+        color: white;
+      }
+
+      .alert-info {
+        border-color: greenyellow;
+        background-color: greenyellow;
+        color: black;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>Login Status</h1>
+    {% for message in get_flashed_messages() %}
+      {% if "success" in message %}
+        <div class="alert-info">:Success: {{ message }}</div>
+      {% else %}
+      <div class="alert-error">:Error: {{ message }}</div>
+      {% endif %}
+    {% endfor %}
+  </body>
+</html>
