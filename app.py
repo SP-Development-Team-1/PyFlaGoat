@@ -87,7 +87,15 @@ def broken_auth():
         db.session.commit()
         return redirect('/auth')
     else:
-        return render_template("broken_auth/broken_auth.html")    
+        return render_template("broken_auth/broken_auth.html") 
+
+#########################
+# BROKEN ACCESS CONTROL #
+#########################
+
+@app.route('/broken_access', methods=['GET', 'POST'])
+def broken_access():
+    return "Hello World!"
 
 #############
 # DEBUGGING #
