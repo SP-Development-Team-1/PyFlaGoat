@@ -117,6 +117,10 @@ def broken_auth():
 def register():
     if request.method == 'POST':
         acc_username = request.form['username']
+        username_exists = len(BlogAuth.query.filter_by(username=acc_username).all())
+        if username_exists:
+            flash("Registration Failed! Username is already in use.")
+            return render_template("flash.html")
         acc_password = request.form['password']
         new_acc = BlogAuth(username=acc_username, password=acc_password)
         db.session.add(new_acc)
@@ -172,6 +176,10 @@ def sensitive_data():
 def sensitive_register():
     if request.method == 'POST':
         acc_username = request.form['username']
+        username_exists = len(SensitiveUsers.query.filter_by(username=acc_username).all())
+        if username_exists:
+            flash("Registration Failed! Username is already in use.")
+            return render_template("flash.html")
         acc_password = request.form['password']
         new_acc = SensitiveUsers(username=acc_username, password=acc_password)
         db.session.add(new_acc)
