@@ -27,10 +27,10 @@
   <body>
     <h1>Login Status</h1>
     {% for message in get_flashed_messages() %}
-      {% if "success" in message %}
+      {% if "Success" in message %}
         <div class="alert-info">:Success: {{ message }}</div>
       {% else %}
-      <div class="alert-error">:Error: {{ message }}</div>
+        <div class="alert-error">:Error: {{ message }}</div>
       {% endif %}
     {% endfor %}
   </body>
