@@ -3,11 +3,11 @@
   <head>
     <style>
       .alert {
-        padding: 12px;
-        border-radius: 3px;
+        padding: 17px;
+        border-radius: 6px;
         font-size: 1.2rem;
         margin-bottom: 16px;
-        border-width: 2px;
+        border-width: 4px;
         border-style: solid;
       }
 
@@ -28,9 +28,9 @@
     <h1>Login Status</h1>
     {% for message in get_flashed_messages() %}
       {% if "Success" in message %}
-        <div class="alert-info">:Success: {{ message }}</div>
+        <div class="alert-info">Success: {{ message }}</div>
       {% else %}
-        <div class="alert-error">:Error: {{ message }}</div>
+        <div class="alert-error">Error: {{ message }}</div>
       {% endif %}
     {% endfor %}
   </body>
