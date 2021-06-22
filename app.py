@@ -192,6 +192,32 @@ def sensitive_register():
         return redirect('/sensitive_data')
     else:
         return render_template("sensitive_data/register.html")
+
+###########################
+# XML External Entity Attack #
+###########################
+
+class XXE(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    author = db.Column(db.String(20), nullable=False, default='N/A')
+    comment = db.Column(db.String(255), nullable=False)
+    date_posted = db.Column(db.DateTime, nullable=False, default=datetime.utcnow)
+    
+    def __repr__(self):
+        return 'Comment ' + str(self.id)
+    
+@app.route('/xxe', methods=['GET', 'POST'])
+def xxe():
+    if request.method == 'POST':
+        user_name = request.form['author']
+        user_comment = request.form['comment']
+        new_comment = XXE(author=user_name, comment=user_comment)
+        db.session.add(new_comment)
+        db.session.commit()
+        return redirect('/xxe')
+    else:
+        all_comments = XXE.query.order_by(XXE.date_posted).all()
+        return render_template("xxe/xxe.html", comments=all_comments)
         
 #############
 # DEBUGGING #

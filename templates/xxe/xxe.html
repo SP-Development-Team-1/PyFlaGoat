@@ -7,9 +7,23 @@
 <h2>XML External Entity Attack:</h2>
 <br />
 <p><b>Youngjun</b> uploaded a photo.</p>
-<img src="{{url_for('static', filename='meme1.jpg')}}" width="40%" height="40%" />
+<img
+  src="{{url_for('static', filename='meme1.jpg')}}"
+  width="40%"
+  height="40%"
+/>
 <form action="/xxe" method="POST">
-<br>
+  <br />
+  <label for="post">Author::</label>
+  <input
+    class="form-control"
+    type="text"
+    name="author"
+    id="author"
+    placeholder="Enter Author Name"
+    aria-label="Enter Author Name"
+  />
+  <br />
   <label for="post">Comment:</label>
   <input
     class="form-control"
@@ -24,4 +38,9 @@
 </form>
 <hr />
 
-{% endblock %}
+{% for comment in comments %}
+<small> Author: {{ comment.author }} </small>
+<p> Comment: {{ comment.comment }} </p>
+<br />
+<hr />
+{% endfor %} {% endblock %}
