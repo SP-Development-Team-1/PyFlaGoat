@@ -39,8 +39,7 @@
 <hr />
 
 {% for comment in comments %}
-<small> Author: {{ comment.author }} </small>
-<p> Comment: {{ comment.comment }} </p>
-<br />
+<p><b>{{ comment.author }}:</b></p>
+<p>{{ comment.comment }}</p>
 <hr />
 {% endfor %} {% endblock %}

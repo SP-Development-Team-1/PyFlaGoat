@@ -193,9 +193,9 @@ def sensitive_register():
     else:
         return render_template("sensitive_data/register.html")
 
-###########################
-# XML External Entity Attack #
-###########################
+##############################
+# XML EXTERNAL ENTITY ATTACK #
+##############################
 
 class XXE(db.Model):
     id = db.Column(db.Integer, primary_key=True)
