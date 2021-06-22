@@ -1,5 +1,5 @@
 from operator import attrgetter
-from flask import Flask, render_template, request, redirect, flash
+from flask import Flask, render_template, request, redirect, flash, url_for
 from flask_sqlalchemy import SQLAlchemy 
 from datetime import datetime
 from sqlalchemy.sql import text
@@ -190,9 +190,31 @@ def sensitive_register():
         return redirect('/sensitive_data')
     else:
         return render_template("sensitive_data/register.html")
+
+###########################
+# XML External Entity Attack #
+###########################
+
+class XXE(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    comment = db.Column(db.String(255), nullable=False)
+    
+    def __repr__(self):
+        return 'Comment ' + str(self.id)
+    
+@app.route('/xxe', methods=['GET', 'POST'])
+def xxe():
+    if request.method == 'POST':
+        user_comment = request.form['comment']
+        new_comment = XXE(comment=user_comment)
+        db.session.add(new_comment)
+        db.session.commit()
+        return redirect('/xxe')
+    else:
+        return render_template("xxe/xxe.html")
         
 #############
 # DEBUGGING #
 #############
 if __name__ == "__main__":
-	app.run(debug=True)
+    app.run(debug=True)
