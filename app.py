@@ -6,8 +6,11 @@ from sqlalchemy.sql import text
 import tkinter as tk
 
 app = Flask(__name__)
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///posts.db'
-app.config['SECRET_KEY'] = "Fasoo"
+app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///database/default.db'
+SQLALCHEMY_BINDS = {
+    'injection': 'sqlite:///database/injection.db',
+    'broken_access': 'sqlite:///database/broken_access.db'
+}
 db = SQLAlchemy(app)
 
 #################
