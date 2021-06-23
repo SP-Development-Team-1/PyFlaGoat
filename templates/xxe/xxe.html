@@ -42,5 +42,6 @@
 <small>{{ comment.date_posted }}</small>
 <h5><b>{{ comment.author }}:</b></h5>
 <p>{{ comment.comment }}</p>
+<a class="btn btn-danger" href="/xxe/delete/{{ comment.id }}">Delete</a>
 <hr />
 {% endfor %} {% endblock %}
