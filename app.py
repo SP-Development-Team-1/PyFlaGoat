@@ -14,6 +14,8 @@ app.config['SQLALCHEMY_BINDS'] = {
 }
 app.config['SECRET_KEY'] = 'FASOO'
 db = SQLAlchemy(app)
+db.create_all()
+db.session.commit()
 
 ########
 # HOME #
@@ -247,6 +249,49 @@ def frontend():
     else:
         return render_template("client_side/frontend.html")
         
+#########################
+# BROKEN ACCESS CONTROL #
+#########################
+class DirectObj(db.Model):
+    __bind_key__ = 'broken_access'
+    id = db.Column(db.Integer, primary_key=True, nullable=False)
+    username = db.Column(db.String(50), nullable=False)
+    password = db.Column(db.String(20), nullable=False)
+
+@app.route('/broken_access', methods=['GET', 'POST'])
+def broken_access():
+    if not len(DirectObj.query.filter_by(id=0).all()):
+        sentinel = DirectObj(id=0, username="WebGoat", password="password")
+        db.session.add(sentinel)
+        db.session.commit()
+    else:
+        sentinel = DirectObj.query.get(0)
+    return render_template("broken_access/broken_access.html", user = sentinel)
+
+@app.route('/broken_access/profile/<int:id>', methods=['GET', 'POST'])
+def profile_pattern(id):
+    return render_template("broken_access/broken_access.html")
+
+@app.route('/broken_access/new', methods=['GET', 'POST'])
+def create_user():
+    if request.method == 'POST':
+        acc_username = request.form['username']
+        username_exists = len(DirectObj.query.filter_by(username=acc_username).all())
+        if username_exists:
+            flash("Creation Failed! Username is already in use.")
+            return render_template("flash.html")
+        acc_password = request.form['password']
+        acc_id = random.randint(1)
+        id_exists =  len(DirectObj.query.filter_by(id=acc_id).all())
+        while id_exists:
+            acc_id = random.randint(1)
+        new_acc = DirectObj(id=acc_id, username=acc_username, password=acc_password)
+        db.session.add(new_acc)
+        db.session.commit()
+        return redirect('/broken_access')
+    else:
+        return render_template("broken_access/new.html")
+
 #############
 # DEBUGGING #
 #############
