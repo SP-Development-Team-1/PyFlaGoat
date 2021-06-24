@@ -233,6 +233,23 @@ def delete_comment(id):
     db.session.commit()
     return redirect('/xxe')
 
+<<<<<<< HEAD
+##############################
+      # CLIENT SIDE #
+##############################
+
+@app.route('/client/front-end/', methods=['GET', 'POST'])
+def frontend():
+    if request.method == 'POST':
+        select_field = request.form['select']
+        radio_button = request.form['radio']
+        checkbox = request.form['checkbox']
+        input_5 = request.form['input_5']
+        random_input = request.form['random_input']
+    else:
+        return render_template("client_side/frontend.html")
+        
+=======
 #########################
 # BROKEN ACCESS CONTROL #
 #########################
@@ -276,6 +293,7 @@ def create_user():
     else:
         return render_template("broken_access/new.html")
 
+>>>>>>> 8b0e6a606da60fc06b3969645eb7f94bf44b1810
 #############
 # DEBUGGING #
 #############
