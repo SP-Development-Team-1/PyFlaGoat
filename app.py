@@ -14,6 +14,14 @@ app.config['SQLALCHEMY_BINDS'] = {
 app.config['SECRET_KEY'] = 'FASOO'
 db = SQLAlchemy(app)
 
+########
+# HOME #
+########
+
+@app.route('/')
+def index():
+        return render_template('index.html')
+
 #################
 # SQL INJECTION #
 #################
@@ -28,10 +36,6 @@ class BlogPost(db.Model):
     
     def __repr__(self):
         return 'Blog Post ' + str(self.id)
-
-@app.route('/')
-def index():
-        return render_template('index.html')
 
 @app.route('/sql_injection', methods=['GET', 'POST'])
 def posts():
@@ -218,9 +222,29 @@ def xxe():
     else:
         all_comments = XXE.query.order_by(XXE.date_posted).all()
         return render_template("xxe/xxe.html", comments=all_comments)
-        
+
+#########################
+# BROKEN ACCESS CONTROL #
+#########################
+class DirectObj(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    username = db.Column(db.String(50), nullable=False)
+    password = db.Column(db.String(20), nullable=False)
+
+
+@app.route('/broken_access', methods=['GET', 'POST'])
+def broken_access():
+    return render_template("broken_access/broken_access.html")
+
+@app.route('/broken_access/profile/<int:id>', methods=['GET', 'POST'])
+def profile_pattern(id):
+    return render_template("broken_access/broken_access.html")
+
+
+
 #############
 # DEBUGGING #
 #############
 if __name__ == "__main__":
 	app.run(debug=True)
+
