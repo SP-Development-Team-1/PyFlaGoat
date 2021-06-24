@@ -1,0 +1,49 @@
+{% extends 'base.html' %} {% block head %}
+<title>Client Side</title>
+{% endblock %} {% block body %}
+<h1>Client Side</h1>
+
+<hr />
+<h2>Bypass front-end restrictions:</h2>
+<br />
+
+<form action="/client/front-end" method="POST">
+  <br />
+  <label for="cars"><b>Select a company:</b></label>
+  <br />
+  <select name="company" id="company">
+    <option value="Facebook">Facebook</option>
+    <option value="Google">Google</option>
+    <option value="Airbnb">Airbnb</option>
+    <option value="Amazon">Amazon</option>
+  </select>
+<p><br><b>Select a maintenance drone:</b></p>
+
+<div>
+  <input type="radio" id="huey" name="drone" value="huey"
+         checked>
+  <label for="huey">Huey</label>
+</div>
+
+<div>
+  <input type="radio" id="dewey" name="drone" value="dewey">
+  <label for="dewey">Dewey</label>
+</div>
+
+<div>
+  <input type="radio" id="louie" name="drone" value="louie">
+  <label for="louie">Louie</label>
+</div>
+  <p><br><b>Choose your role:</b></p>
+
+  <div>
+    <input type="checkbox" id="scales" name="scales" checked />
+    <label for="scales">Frontend</label>
+  </div>
+
+  <div>
+    <input type="checkbox" id="horns" name="horns" />
+    <label for="horns">Backend</label>
+  </div>
+  {% endblock %}
+</form>

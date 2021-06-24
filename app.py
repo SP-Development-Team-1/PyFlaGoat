@@ -225,6 +225,21 @@ def delete_comment(id):
     db.session.delete(comment)
     db.session.commit()
     return redirect('/xxe')
+
+##############################
+      # CLIENT SIDE #
+##############################
+
+@app.route('/client/front-end/', methods=['GET', 'POST'])
+def frontend():
+    if request.method == 'POST':
+        select_field = request.form['select']
+        radio_button = request.form['radio']
+        checkbox = request.form['checkbox']
+        input_5 = request.form['input_5']
+        random_input = request.form['random_input']
+    else:
+        return render_template("client_side/frontend.html")
         
 #############
 # DEBUGGING #
