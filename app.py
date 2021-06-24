@@ -231,7 +231,6 @@ def delete_comment(id):
     db.session.commit()
     return redirect('/xxe')
 
-<<<<<<< HEAD
 ##############################
       # CLIENT SIDE #
 ##############################
@@ -239,53 +238,15 @@ def delete_comment(id):
 @app.route('/client/front-end/', methods=['GET', 'POST'])
 def frontend():
     if request.method == 'POST':
-        select_field = request.form['select']
-        radio_button = request.form['radio']
-        checkbox = request.form['checkbox']
-        input_5 = request.form['input_5']
-        random_input = request.form['random_input']
+        select_field = request.form['company']
+        radio_button = request.form['drone']
+        checkbox = request.form['check']
+        input_5 = request.form['comment']
+        random_input = request.form['readonly']
+        return redirect('/client/front-end')
     else:
         return render_template("client_side/frontend.html")
         
-=======
-#########################
-# BROKEN ACCESS CONTROL #
-#########################
-class DirectObj(db.Model):
-    __bind_key__ = 'injection'
-    id = db.Column(db.Integer, primary_key=True, nullable=False)
-    username = db.Column(db.String(50), nullable=False)
-    password = db.Column(db.String(20), nullable=False)
-
-@app.route('/broken_access', methods=['GET', 'POST'])
-def broken_access():
-    return render_template("broken_access/broken_access.html")
-
-@app.route('/broken_access/profile/<int:id>', methods=['GET', 'POST'])
-def profile_pattern(id):
-    return render_template("broken_access/broken_access.html")
-
-@app.route('/broken_access/create_user', methods=['GET', 'POST'])
-def create_user():
-    if request.method == 'POST':
-        acc_username = request.form['username']
-        username_exists = len(DirectObj.query.filter_by(username=acc_username).all())
-        if username_exists:
-            flash("Registration Failed! Username is already in use.")
-            return render_template("flash.html")
-        acc_password = request.form['password']
-        acc_id = random.randint(0)
-        id_exists =  len(DirectObj.query.filter_by(id=acc_id).all())
-        while id_exists:
-            acc_id = random.randint(0)
-        new_acc = DirectObj(id=acc_id, username=acc_username, password=acc_password)
-        db.session.add(new_acc)
-        db.session.commit()
-        return redirect('/broken_access')
-    else:
-        return render_template("broken_access/broken_access.html")
-
->>>>>>> 8b0e6a606da60fc06b3969645eb7f94bf44b1810
 #############
 # DEBUGGING #
 #############

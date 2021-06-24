@@ -16,34 +16,62 @@
     <option value="Google">Google</option>
     <option value="Airbnb">Airbnb</option>
     <option value="Amazon">Amazon</option>
+    <option value="Lyft">Lyft</option>
+    <option value="Uber">Uber</option>
+    <option value="Citadel">Citadel</option>
+    <option value="Two Sigma">Two Sigma</option>
   </select>
-<p><br><b>Select a maintenance drone:</b></p>
-
-<div>
-  <input type="radio" id="huey" name="drone" value="huey"
-         checked>
-  <label for="huey">Huey</label>
-</div>
-
-<div>
-  <input type="radio" id="dewey" name="drone" value="dewey">
-  <label for="dewey">Dewey</label>
-</div>
-
-<div>
-  <input type="radio" id="louie" name="drone" value="louie">
-  <label for="louie">Louie</label>
-</div>
-  <p><br><b>Choose your role:</b></p>
+  <p><br /><b>Select your profession:</b></p>
 
   <div>
-    <input type="checkbox" id="scales" name="scales" checked />
+    <input type="radio" id="huey" name="drone" value="huey" checked />
+    <label for="huey">Software Engineer</label>
+  </div>
+
+  <div>
+    <input type="radio" id="dewey" name="drone" value="dewey" />
+    <label for="dewey">Data Scientist</label>
+  </div>
+
+  <div>
+    <input type="radio" id="louie" name="drone" value="louie" />
+    <label for="louie">Product Owner</label>
+  </div>
+  <p><br /><b>Choose your role:</b></p>
+
+  <div>
+    <input type="checkbox" id="check" name="check" checked />
     <label for="scales">Frontend</label>
   </div>
 
   <div>
-    <input type="checkbox" id="horns" name="horns" />
+    <input type="checkbox" id="check" name="check" />
     <label for="horns">Backend</label>
   </div>
+<br />
+  <label for="post"><b>Input restricted to max 5 characters:</b></label>
+  <input
+    class="form-control"
+    type="text"
+    maxlength="5"
+    name="comment"
+    id="comment"
+    placeholder="Add a comment"
+    aria-label="Add a comment"
+  />
+  <br />
+  <br />
+  <label for="post"><b>Readonly input field</b></label>
+  <input
+    class="form-control"
+    type="text"
+    maxlength="5"
+    name="readonly"
+    id="readonly"
+    value="FAANG"
+    Readonly
+  />
+  <br />
+  <br />
   {% endblock %}
 </form>
