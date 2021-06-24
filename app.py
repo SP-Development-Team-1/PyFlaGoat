@@ -223,6 +223,13 @@ def xxe():
         all_comments = XXE.query.order_by(XXE.date_posted).all()
         return render_template("xxe/xxe.html", comments=all_comments)
 
+@app.route('/xxe/delete/<int:id>')
+def delete_comment(id):
+    comment = XXE.query.get_or_404(id)
+    db.session.delete(comment)
+    db.session.commit()
+    return redirect('/xxe')
+
 #########################
 # BROKEN ACCESS CONTROL #
 #########################
@@ -239,8 +246,6 @@ def broken_access():
 @app.route('/broken_access/profile/<int:id>', methods=['GET', 'POST'])
 def profile_pattern(id):
     return render_template("broken_access/broken_access.html")
-
-
 
 #############
 # DEBUGGING #

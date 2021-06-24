@@ -14,7 +14,7 @@
 />
 <form action="/xxe" method="POST">
   <br />
-  <label for="post">Author::</label>
+  <label for="post">Author:</label>
   <input
     class="form-control"
     type="text"
@@ -39,7 +39,9 @@
 <hr />
 
 {% for comment in comments %}
-<p><b>{{ comment.author }}:</b></p>
+<small>{{ comment.date_posted }}</small>
+<h5><b>{{ comment.author }}:</b></h5>
 <p>{{ comment.comment }}</p>
+<a class="btn btn-danger" href="/xxe/delete/{{ comment.id }}">Delete</a>
 <hr />
 {% endfor %} {% endblock %}
