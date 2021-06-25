@@ -257,20 +257,33 @@ class DirectObj(db.Model):
     id = db.Column(db.Integer, primary_key=True, nullable=False)
     username = db.Column(db.String(50), nullable=False)
     password = db.Column(db.String(20), nullable=False)
+    name = db.Column(db.String(50), nullable=False)
+    occupation = db.Column(db.String(50), nullable=False)
 
 @app.route('/broken_access', methods=['GET', 'POST'])
 def broken_access():
-    if not len(DirectObj.query.filter_by(id=0).all()):
-        sentinel = DirectObj(id=0, username="WebGoat", password="password")
-        db.session.add(sentinel)
-        db.session.commit()
-    else:
-        sentinel = DirectObj.query.get(0)
-    return render_template("broken_access/broken_access.html", user = sentinel)
+    return redirect('/broken_access/profile/0')
 
 @app.route('/broken_access/profile/<int:id>', methods=['GET', 'POST'])
-def profile_pattern(id):
-    return render_template("broken_access/broken_access.html")
+def profile_view(id):
+    if id == 0 and not len(DirectObj.query.filter_by(id=0).all()):
+        sentinel = DirectObj(id=0, username="WebGoat", password="password", name = "Chief WebGoat", occupation = "Administrator of WebGoat")
+        db.session.add(sentinel)
+        db.session.commit()
+    return render_template("broken_access/broken_access.html", user = DirectObj.query.get(id))
+
+@app.route('/broken_access/profile/<int:id>/edit', methods=['GET', 'POST'])
+def profile_edit(id):
+    to_edit = DirectObj.query.get_or_404(id)
+    if request.method == 'POST':
+        to_edit.username = request.form['username']
+        to_edit.name = request.form['name']
+        to_edit.occupation = request.form['occupation']
+        to_edit.password = request.form['password']
+        db.session.commit()
+        return redirect('/broken_access/profile/' + str(id))
+    else:
+        return render_template('broken_access/edit.html', profile=to_edit)
 
 @app.route('/broken_access/new', methods=['GET', 'POST'])
 def create_user():
@@ -281,14 +294,15 @@ def create_user():
             flash("Creation Failed! Username is already in use.")
             return render_template("flash.html")
         acc_password = request.form['password']
-        acc_id = random.randint(1)
-        id_exists =  len(DirectObj.query.filter_by(id=acc_id).all())
-        while id_exists:
-            acc_id = random.randint(1)
-        new_acc = DirectObj(id=acc_id, username=acc_username, password=acc_password)
+        acc_id = random.randint(1, 9999999999)
+        while len(DirectObj.query.filter_by(id=acc_id).all()):
+            acc_id = random.randint(1, 9999999999)
+        acc_name = request.form['name']
+        acc_occupation = request.form['occupation']
+        new_acc = DirectObj(id=acc_id, username=acc_username, password=acc_password, name=acc_name, occupation=acc_occupation)
         db.session.add(new_acc)
         db.session.commit()
-        return redirect('/broken_access')
+        return redirect('/broken_access/profile/' + str(acc_id))
     else:
         return render_template("broken_access/new.html")
 
