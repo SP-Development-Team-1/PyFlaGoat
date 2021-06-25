@@ -237,6 +237,14 @@ def delete_comment(id):
       # CLIENT SIDE #
 ##############################
 
+class DirectObj(db.Model):
+    id = db.Column(db.Integer, primary_key=True, nullable=False)
+    company = db.Column(db.String(10), nullable=False)
+    profession = db.Column(db.String(20), nullable=False)
+    role = db.Column(db.String(10), nullable=False)
+    inputMax = db.Column(db.String(10), nullable=False)
+    readonly = db.Column(db.String(10), nullable=False)
+
 @app.route('/client/front-end/', methods=['GET', 'POST'])
 def frontend():
     if request.method == 'POST':
@@ -245,6 +253,9 @@ def frontend():
         checkbox = request.form['check']
         input_5 = request.form['comment']
         random_input = request.form['readonly']
+        new_input = frontend(company=select_field, profession=radio_button, role=checkbox, inputMax=input_5, readonly=random_input)
+        db.session.add(new_input)
+        db.session.commit()
         return redirect('/client/front-end')
     else:
         return render_template("client_side/frontend.html")
@@ -252,6 +263,7 @@ def frontend():
 #########################
 # BROKEN ACCESS CONTROL #
 #########################
+
 class DirectObj(db.Model):
     __bind_key__ = 'broken_access'
     id = db.Column(db.Integer, primary_key=True, nullable=False)
