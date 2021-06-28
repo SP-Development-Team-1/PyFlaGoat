@@ -3,7 +3,6 @@ from flask import Flask, render_template, request, redirect, flash
 from flask_sqlalchemy import SQLAlchemy
 from datetime import datetime
 from sqlalchemy.sql import text
-import tkinter as tk
 import random
 
 app = Flask(__name__)
@@ -90,16 +89,6 @@ class BlogAuth(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     username = db.Column(db.String(50), nullable=False)
     password = db.Column(db.String(20), nullable=False)
-
-def popupmsg(msg, title):
-    """Generate a pop-up window for special messages."""
-    root = tk.Tk()
-    root.title(title)
-    label = tk.Label(root, text=msg)
-    label.pack(side="top", fill="x", pady=10)
-    B1 = tk.Button(root, text="Okay", command = root.destroy)
-    B1.pack()
-    #popupmsg.mainloop()
         
 @app.route('/auth', methods=['GET', 'POST'])
 def broken_auth():
@@ -149,16 +138,6 @@ class SensitiveUsers(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     username = db.Column(db.String(50), nullable=False)
     password = db.Column(db.String(20), nullable=False)
-
-def sensitive_popupmsg(msg, title):
-    """Generate a pop-up window for special messages."""
-    root = tk.Tk()
-    root.title(title)
-    label = tk.Label(root, text=msg)
-    label.pack(side="top", fill="x", pady=10)
-    B1 = tk.Button(root, text="Okay", command = root.destroy)
-    B1.pack()
-    #popupmsg.mainloop()
         
 @app.route('/sensitive_data', methods=['GET', 'POST'])
 def sensitive_data():
