@@ -16,9 +16,9 @@ db = SQLAlchemy(app)
 db.create_all()
 db.session.commit()
 
-########
-# HOME #
-########
+#########
+# HOMIE # 
+#########
 
 @app.route('/')
 def index():
