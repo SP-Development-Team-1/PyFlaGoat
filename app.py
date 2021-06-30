@@ -212,9 +212,9 @@ def delete_comment(id):
     db.session.commit()
     return redirect('/xxe')
 
-##############################
-      # CLIENT SIDE #
-##############################
+##############################################
+# CLIENT SIDE - BYPASS FRONTEND RESTRICTIONS #
+##############################################
 
 class Frontend(db.Model):
     id = db.Column(db.Integer, primary_key=True, nullable=False)
@@ -238,6 +238,42 @@ def frontend():
         return redirect('/client/front-end')
     else:
         return render_template("client_side/frontend.html")
+
+#######################################
+# CLIENT SIDE - CLIENT SIDE FILTERING #
+#######################################
+
+class Filtering(db.Model):
+    user_id = db.Column(db.Integer, primary_key=True, nullable=False)
+    firstName = db.Column(db.String(10), nullable=False)
+    lastName = db.Column(db.String(20), nullable=False)
+    SSN = db.Column(db.String(10), nullable=False)
+    salary = db.Column(db.Integer, nullable=False)
+
+@app.route('/client/client-filtering/new', methods=['GET', 'POST'])
+def filtering():
+    if request.method == 'POST':
+        post_userid = request.form['userid']
+        post_firstName = request.form['firstName']
+        post_lastName = request.form['lastName']
+        post_ssn = request.form['ssn']
+        post_salary = request.form['salary']
+        new_post = Filtering(user_id=post_userid, firstName=post_firstName, lastName=post_lastName, SSN=post_ssn, salary=post_salary)
+        db.session.add(new_post)
+        db.session.commit()
+        return redirect('/client/client-filtering')
+    else:
+        return render_template("client_side/new.html")
+        
+@app.route('/client/client-filtering', methods=['GET', 'POST'])
+def profile():
+        if request.method == 'POST':
+            post_filter_by = request.form['firstName']
+            all_posts = BlogPost.query.filter(text("firstName={}".format("\'"+ post_filter_by +"\'"))).all()
+            return render_template('sql_injection/posts.html', posts=all_posts)
+        else:
+            all_posts = BlogPost.query.order_by(BlogPost.date_posted).all()
+            return render_template('client_side/client_filtering.html', posts=all_posts)
         
 #########################
 # BROKEN ACCESS CONTROL #

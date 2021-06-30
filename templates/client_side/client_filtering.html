@@ -1,31 +1,43 @@
 {% extends 'base.html' %} {% block head %}
-<title>Posts</title>
+<title>Client Side</title>
 {% endblock %} {% block body %}
 <br />
-<div>
-  <h1 style="display: inline">Sensitive Information Cloud</h1>
-  <a
-    style="display: inline"
-    class="btn btn-success float-right"
-    href="/sql_injection/new"
-    >New Post</a
-  >
-</div>
+<h1>Client Side</h1>
+
 <hr />
+<h2>Client-side Filtering:</h2>
+<br />
+
 <form
   class="form-inline my-2 my-md-0 float-right"
-  action="\sql_injection"
+  action="\client_side"
   method="POST"
 >
   <input
     class="form-control"
     type="text"
-    name="auth_TAN"
-    id="auth_TAN"
+    name="firstName"
+    id="firstName"
     placeholder="Input TAN ..."
     aria-label="filter"
   />
 </form>
+
+<br />
+<br />
+<br />
+<br />
+<br />
+<br />
+
+<center>
+  <a
+    style="display: inline"
+    class="btn btn-success float-center"
+    href="/client/client-filtering/new"
+    >New Profile</a
+  >
+</center>
 
 {% for post in posts %}
 <h2>{{ post.title }}</h2>
