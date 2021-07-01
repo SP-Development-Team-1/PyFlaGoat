@@ -39,21 +39,4 @@
   >
 </center>
 
-{% for post in posts %}
-<h2>{{ post.firstName }} {{ post.lastName }}</h2>
-
-{% if post.user_id %}
-<small> User ID: {{ post.user_id }} </small>
-{% else %}
-<small> User ID: {{ NULL }} </small>
-{% endif %}
-
-<br />
-<br />
-
-<p style="white-space: pre-wrap">{{ post.content }}</p>
-<a class="btn btn-danger" href="/sql_injection/delete/{{ post.id }}">Delete</a>
-<a class="btn btn-primary" href="/sql_injection/edit/{{ post.id }}">Edit</a>
-<br />
-<hr />
-{% endfor %} {% endblock %}
+ {% endblock %}
