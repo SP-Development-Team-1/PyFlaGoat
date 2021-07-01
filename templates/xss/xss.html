@@ -1,0 +1,22 @@
+{% extends 'base.html' %}
+
+{% block head %} 
+<title>Landing Page</title>
+{% endblock %}
+
+{% block body %}
+    <br>
+	
+    <h1>Cross-Site Scripting Landing Page</h1>
+	
+    <hr> 
+
+	<form class="form-inline my-2 my-md-0 float-right" action="\xss" method="POST">
+		<input class="form-control" type="text" name="user_input" id='user_input' placeholder="Input Name ..." aria-label="postform">
+	</form>
+
+	{% if my_name %}
+		<h2>Welcome {{ my_name }}! this is your landing page.</h2>
+    {% endif %}
+
+{% endblock %}

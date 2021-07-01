@@ -1,5 +1,5 @@
 from operator import attrgetter
-from flask import Flask, render_template, request, redirect, flash
+from flask import Flask, Markup, render_template, request, redirect, flash
 from flask_sqlalchemy import SQLAlchemy
 from datetime import datetime
 from sqlalchemy.sql import text
@@ -261,7 +261,7 @@ def profile_view(id):
         sentinel = DirectObj(id=0, username="WebGoat", password="password", name = "Chief WebGoat", occupation = "Administrator of WebGoat")
         db.session.add(sentinel)
         db.session.commit()
-    return render_template("broken_access/broken_access.html", user = DirectObj.query.get(id))
+    return render_template("broken_access/broken_access.html", user = DirectObj.query.get_or_404(id))
 
 @app.route('/broken_access/profile/<int:id>/edit', methods=['GET', 'POST'])
 def profile_edit(id):
@@ -296,6 +296,19 @@ def create_user():
         return redirect('/broken_access/profile/' + str(acc_id))
     else:
         return render_template("broken_access/new.html")
+
+#######
+# XSS #
+#######
+
+@app.route('/xss', methods=['GET', 'POST'])
+def xss():
+        if request.method == 'POST':
+            user_input = Markup(request.form['user_input'])
+            return render_template('xss/xss.html', my_name=user_input)
+        else:
+            user_input = ""
+            return render_template('xss/xss.html', my_name=user_input)
 
 #############
 # DEBUGGING #
