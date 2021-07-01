@@ -286,6 +286,13 @@ def filtered():
             return render_template('client_side/client_filtering.html', posts=all_posts)
         '''
         return render_template('client_side/filtered.html')
+
+@app.route('/client/client-filtering/delete/<int:user_id>')
+def delete_client(user_id):
+    profile = Filtering.query.get_or_404(user_id)
+    db.session.delete(profile)
+    db.session.commit()
+    return redirect('/client/client-filtering')
     
 #########################
 # BROKEN ACCESS CONTROL #
