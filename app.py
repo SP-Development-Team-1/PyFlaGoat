@@ -269,10 +269,10 @@ def filtering():
 def profile():
         if request.method == 'POST':
             post_filter_by = request.form['firstName']
-            all_posts = BlogPost.query.filter(text("firstName={}".format("\'"+ post_filter_by +"\'"))).all()
-            return render_template('sql_injection/posts.html', posts=all_posts)
+            all_posts = Filtering.query.filter(text("firstName={}".format("\'"+ post_filter_by +"\'"))).all()
+            return render_template('client_side/client_filtering.html', posts=all_posts)
         else:
-            all_posts = BlogPost.query.order_by(BlogPost.date_posted).all()
+            all_posts = Filtering.query.order_by(BlogPost.date_posted).all()
             return render_template('client_side/client_filtering.html', posts=all_posts)
         
 #########################
