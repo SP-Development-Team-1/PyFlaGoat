@@ -1,0 +1,70 @@
+{% extends 'base.html' %} {% block head %}
+<title>Client Side</title>
+{% endblock %} {% block body %}
+<br />
+<h1>Client Side</h1>
+
+<hr />
+<h2>Enter Profile Information:</h2>
+<br />
+
+<hr />
+<form action="/client/client-filtering/new" method="POST">
+  <label for="post">User ID:</label>
+  <input
+    class="form-control"
+    type="number"
+    name="userid"
+    id="userid"
+    placeholder="Enter User ID"
+    aria-label="Enter User ID"
+  />
+  <br />
+  <label for="post">First Name:</label>
+  <input
+    class="form-control"
+    type="text"
+    name="firstName"
+    id="firstName"
+    placeholder="Enter First Name"
+    aria-label="Enter First Name"
+  />
+  <br />
+  <label for="post">Last Name:</label>
+  <input
+    class="form-control"
+    type="text"
+    name="lastName"
+    id="lastName"
+    placeholder="Enter Last Name"
+    aria-label="Enter Last Name"
+  />
+  <br />
+  <label for="post">SSN:</label>
+  <input
+    class="form-control"
+    type="tel"
+    name="ssn"
+    id="ssn"
+    placeholder="Enter SSN"
+    aria-label="Enter SSN"
+    pattern="[0-9]{3}-[0-9]{2}-[0-9]{4}"
+  />
+  <br />
+  <label for="post">Salary:</label>
+  <input
+    class="form-control"
+    type="number"
+    name="salary"
+    id="salary"
+    placeholder="Enter Salary"
+    aria-label="Enter Salary"
+  />
+  <br />
+  <input type="submit" class="btn btn-primary" value="Post" />
+</form>
+<br />
+<hr />
+<br />
+<br />
+{% endblock %}

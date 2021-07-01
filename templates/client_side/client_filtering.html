@@ -1,0 +1,42 @@
+{% extends 'base.html' %} {% block head %}
+<title>Client Side</title>
+{% endblock %} {% block body %}
+<br />
+<h1>Client Side</h1>
+
+<hr />
+<h2>Client-side Filtering:</h2>
+<br />
+
+<form
+  class="form-inline my-2 my-md-0 float-right"
+  action="/client/client-filtering"
+  method="POST"
+>
+  <input
+    class="form-control"
+    type="text"
+    name="firstName"
+    id="firstName"
+    placeholder="Input First Name"
+    aria-label="filter"
+  />
+</form>
+
+<br />
+<br />
+<br />
+<br />
+<br />
+<br />
+
+<center>
+  <a
+    style="display: inline"
+    class="btn btn-success float-center"
+    href="/client/client-filtering/new"
+    >New Profile</a
+  >
+</center>
+
+ {% endblock %}

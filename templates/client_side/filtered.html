@@ -1,0 +1,30 @@
+{% extends 'base.html' %} {% block head %}
+<title>Client Side</title>
+{% endblock %} {% block body %}
+<br>
+<div>
+  <h1 style="display: inline">Filtered Client Information:</h1>
+</div>
+<hr />
+
+{% for post in posts %}
+<h2>{{ post.firstName }} {{ post.lastName }}</h2>
+
+{% if post.firstName %}
+<small> <b>User ID:</b> {{ post.user_id }} </small>
+<br>
+<small> <b>SSN:</b> {{ post.SSN }} </small>
+{% else %}
+<small> User ID: {{ NULL }} </small>
+{% endif %}
+
+<br />
+<br />
+
+<p style="white-space: pre-wrap"><b>Salary:</b> ${{ post.salary }}</p>
+<a class="btn btn-danger" href="/sql_injection/delete/{{post.id}}">Delete</a>
+<a class="btn btn-primary" href="/sql_injection/edit/{{post.id}}">Edit</a>
+<br />
+<hr />
+  {% endfor %} {% endblock %}
+</form>
