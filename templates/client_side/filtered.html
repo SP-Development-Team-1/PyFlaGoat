@@ -11,19 +11,15 @@
 <h2>{{ post.firstName }} {{ post.lastName }}</h2>
 
 {% if post.firstName %}
-<small> <b>User ID:</b> {{ post.user_id }} </small>
-<br>
-<small> <b>SSN:</b> {{ post.SSN }} </small>
+<p> <b>User ID:</b> {{ post.user_id }} </p>
+<p> <b>SSN:</b> {{ post.SSN }} </p>
 {% else %}
-<small> User ID: {{ NULL }} </small>
+<p> User ID: {{ NULL }} </p>
 {% endif %}
-
-<br />
-<br />
 
 <p style="white-space: pre-wrap"><b>Salary:</b> ${{ post.salary }}</p>
 <a class="btn btn-danger" href="/client/client-filtering/delete/{{post.user_id}}">Delete</a>
-<a class="btn btn-primary" href="/sql_injection/edit/{{post.id}}">Edit</a>
+
 <br />
 <hr />
   {% endfor %} {% endblock %}
