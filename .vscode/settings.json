@@ -1,3 +1,6 @@
 {
-    "python.pythonPath": "C:\\Users\\woohyunjo\\AppData\\Local\\Microsoft\\WindowsApps\\python3.9.exe"
+    "python.pythonPath": "C:\\Users\\woohyunjo\\AppData\\Local\\Microsoft\\WindowsApps\\python3.9.exe",
+    "cSpell.ignoreWords": [
+        "kyugon"
+    ]
 }

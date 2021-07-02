@@ -29,6 +29,8 @@
     {% for message in get_flashed_messages() %}
       {% if "Success" in message %}
         <div class="alert-info">Success: {{ message }}</div>
+      {% elif "Correct" in message %}
+        <div class="alert-info">Correct: {{ message }}</div>
       {% else %}
         <div class="alert-error">Error: {{ message }}</div>
       {% endif %}

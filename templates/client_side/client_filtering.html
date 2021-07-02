@@ -26,10 +26,11 @@
   class="form-horizontal my-2 my-md-4 float-right"
   action="/client/client-filtering"
   method="POST"
+  name="name-form"
 >
 <label for="post"><h5>Enter Client's first name: </h5></label>
 <br />
-  <input
+  <!--input
     class="form-control"
     type="text"
     name="firstName"
@@ -37,8 +38,18 @@
     placeholder="Input First Name"
     aria-label="filter"
   />
-  <br />
-  <input type="submit" class="btn btn-primary" value="Submit" />
+  -->
+  <select name="firstName" id="firstName">
+    <option value="Rachel">Rachel</option>
+    <option value="Michael">Michael</option>
+    <option value="Jisoo">Jisoo</option>
+    <option value="Shelly">Shelly</option>
+    <option value="Youngjun">Youngjun</option>
+    <option value="Soli">Soli</option>
+    <option value="Junhyeok">Junhyeok</option>
+  </select>
+  <div class="br-special"><br></div>
+  <input type="submit" name="action" class="btn btn-primary" value="Submit-Name" />
 </form>
 
 <br />
@@ -60,19 +71,19 @@
 <br />
 <br />
 
-<form action="/client/client-filtering" method="POST">
+<form action="/client/client-filtering" method="POST" name="salary-form"> 
   <br />
   <label for="post"><h5>What is Kyugon Cho's salary?</h5></label>
   <input
     class="form-control"
     type="text"
-    name="author"
-    id="author"
+    name="salary"
+    id="salary"
     placeholder="Enter Kyugon Cho's salary"
     aria-label="Enter Salary"
   />
    <br />
-  <input type="submit" class="btn btn-primary" value="Submit" />
+  <input type="submit" name="action" class="btn btn-primary" value="Submit-Salary" />
 </form>
 <hr>
 <br>

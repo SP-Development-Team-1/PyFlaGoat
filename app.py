@@ -1,5 +1,6 @@
 from operator import attrgetter
 from flask import Flask, Markup, render_template, request, redirect, flash
+from sqlalchemy.sql.expression import null
 from flask_sqlalchemy import SQLAlchemy
 from datetime import datetime
 from sqlalchemy.sql import text
@@ -271,24 +272,24 @@ def filtering():
         
 @app.route('/client/client-filtering', methods=['GET', 'POST'])
 def profile():
-        if request.method == 'POST':
+    if request.method == 'POST':
+        if request.form['action'] == "Submit-Salary":
+            kyugon_salary = request.form['salary']
+            if kyugon_salary == 99999999:
+                flash("Correct! You have found out Fasoo CEO's salary! Congratulations!")
+                return render_template("flash.html")
+            else:
+                flash("Wrong! That's not his salary, try again!")
+                return render_template("flash.html")
+        else:
             post_filter_by = request.form['firstName']
             all_posts = Filtering.query.filter(text("firstName={}".format("\'"+ post_filter_by +"\'"))).all()
             return render_template('client_side/filtered.html', posts=all_posts)
-        else:
-            return render_template('client_side/client_filtering.html')
+    else:
+       return render_template('client_side/client_filtering.html')
 
 @app.route('/client/client-filtering/filtered', methods=['GET', 'POST'])
 def filtered():
-        '''
-        if request.method == 'POST':
-            post_filter_by = request.form['firstName']
-            all_posts = Filtering.query.filter(text("firstName={}".format("\'"+ post_filter_by +"\'"))).all()
-            return render_template('client_side/client_filtering.html', posts=all_posts)
-        else:
-            all_posts = Filtering.query.order_by(BlogPost.date_posted).all()
-            return render_template('client_side/client_filtering.html', posts=all_posts)
-        '''
         return render_template('client_side/filtered.html')
 
 @app.route('/client/client-filtering/delete/<int:user_id>')
