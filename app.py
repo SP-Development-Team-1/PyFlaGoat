@@ -254,6 +254,10 @@ class Filtering(db.Model):
 def filtering():
     if request.method == 'POST':
         post_userid = request.form['userid']
+        userid = len(Filtering.query.filter_by(user_id=post_userid).all())
+        if userid:
+            flash("Creation Failed! User ID is already in use.")
+            return render_template("flash.html")
         post_firstName = request.form['firstName']
         post_lastName = request.form['lastName']
         post_ssn = request.form['ssn']
