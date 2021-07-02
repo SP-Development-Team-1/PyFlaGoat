@@ -273,9 +273,9 @@ def filtering():
 @app.route('/client/client-filtering', methods=['GET', 'POST'])
 def profile():
     if request.method == 'POST':
-        if request.form['action'] == "Submit-Salary":
+        if request.form['action'] == "Submit Salary":
             kyugon_salary = request.form['salary']
-            if kyugon_salary == 99999999:
+            if kyugon_salary == 999999999:
                 flash("Correct! You have found out Fasoo CEO's salary! Congratulations!")
                 return render_template("flash.html")
             else:
