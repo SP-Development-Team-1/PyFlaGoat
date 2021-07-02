@@ -9,10 +9,12 @@
 <br />
 
 <form
-  class="form-inline my-2 my-md-0 float-right"
+  class="form-horizontal my-2 my-md-0 float-right"
   action="/client/client-filtering"
   method="POST"
 >
+<label for="post"><h5>Enter Client's first name</h5></label>
+<br />
   <input
     class="form-control"
     type="text"
@@ -21,6 +23,8 @@
     placeholder="Input First Name"
     aria-label="filter"
   />
+  <br />
+  <input type="submit" class="btn btn-primary" value="Submit" />
 </form>
 
 <br />
@@ -28,15 +32,36 @@
 <br />
 <br />
 <br />
-<br />
+
 
 <center>
   <a
     style="display: inline"
-    class="btn btn-success float-center"
+    class="btn btn-success float-left"
     href="/client/client-filtering/new"
     >New Profile</a
   >
 </center>
 
- {% endblock %}
+<br />
+<br />
+<br />
+<br />
+<br />
+
+<form action="/client/client-filtering" method="POST">
+  <br />
+  <label for="post"><h5><b>What is Kyugon Cho's salary?</b></h5></label>
+  <input
+    class="form-control"
+    type="text"
+    name="author"
+    id="author"
+    placeholder="Enter Kyugon Cho's salary"
+    aria-label="Enter Salary"
+  />
+   <br />
+  <input type="submit" class="btn btn-primary" value="Submit" />
+</form>
+  {% endblock %}
+</form>
