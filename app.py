@@ -364,11 +364,22 @@ def create_user():
 @app.route('/xss', methods=['GET', 'POST'])
 def xss():
         if request.method == 'POST':
-            user_input = Markup(request.form['user_input'])
-            return render_template('xss/xss.html', my_name=user_input)
+            user_name = request.form['user_name']
+            user_occupation = Markup(request.form['user_occupation'])
+            return redirect('/xss/name='+ user_name + '_occup=' + user_occupation)
         else:
-            user_input = ""
-            return render_template('xss/xss.html', my_name=user_input)
+            return render_template('xss/xss.html', my_name="", my_occupation="", random=random)
+
+@app.route('/xss/name=<string:name>_occup=<path:occupation>', methods=['GET', 'POST'])
+def xss_dom(name, occupation):
+        if request.method == 'POST':
+            user_name = request.form['user_name']
+            user_occupation = Markup(request.form['user_occupation'])
+            return redirect('/xss/name='+ user_name + '_occup=' + user_occupation)
+        else:
+            user_name = name
+            user_occupation = Markup(occupation)
+            return render_template('xss/xss.html', my_name=user_name, my_occupation=user_occupation, random=random)
 
 #############
 # DEBUGGING #
