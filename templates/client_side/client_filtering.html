@@ -8,12 +8,26 @@
 <h2>Client-side Filtering:</h2>
 <br />
 
+<style>
+  .br-special {
+    content: " ";
+    display: block;
+    margin: -7px;
+  }
+</style>
+
+<img
+  src="{{url_for('static', filename='code.PNG')}}"
+  width="70%"
+  height="70%"
+/>
+
 <form
-  class="form-horizontal my-2 my-md-0 float-right"
+  class="form-horizontal my-2 my-md-4 float-right"
   action="/client/client-filtering"
   method="POST"
 >
-<label for="post"><h5>Enter Client's first name</h5></label>
+<label for="post"><h5>Enter Client's first name: </h5></label>
 <br />
   <input
     class="form-control"
@@ -30,10 +44,9 @@
 <br />
 <br />
 <br />
-<br />
-<br />
 
-
+<h5>Click to create a new client profile:</h5>
+<div class="br-special"><br></div>
 <center>
   <a
     style="display: inline"
@@ -46,12 +59,10 @@
 <br />
 <br />
 <br />
-<br />
-<br />
 
 <form action="/client/client-filtering" method="POST">
   <br />
-  <label for="post"><h5><b>What is Kyugon Cho's salary?</b></h5></label>
+  <label for="post"><h5>What is Kyugon Cho's salary?</h5></label>
   <input
     class="form-control"
     type="text"
@@ -63,5 +74,9 @@
    <br />
   <input type="submit" class="btn btn-primary" value="Submit" />
 </form>
-  {% endblock %}
+<hr>
+<br>
+<br>
+<br>
+{% endblock %}
 </form>
