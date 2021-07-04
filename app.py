@@ -276,7 +276,7 @@ def profile():
         if request.form['action'] == "Submit Salary":
             kyugon_salary = request.form['salary']
             if int(kyugon_salary) == 999999999:
-                flash("Correct! You have found out Fasoo CEO's salary! Congratulations!")
+                flash("Congratulations! You have found out Fasoo CEO's salary!")
                 return render_template("flash.html")
             else:
                 flash("Wrong! That's not his salary, try again!")
