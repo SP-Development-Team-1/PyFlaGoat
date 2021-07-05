@@ -298,6 +298,24 @@ def delete_client(user_id):
     db.session.delete(profile)
     db.session.commit()
     return redirect('/client/client-filtering')
+
+################################
+# CLIENT SIDE - HTML TAMPERING #
+################################
+
+class Tampering(db.Model):
+    user_id = db.Column(db.Integer, primary_key=True, nullable=False)
+    firstName = db.Column(db.String(10), nullable=False)
+    lastName = db.Column(db.String(20), nullable=False)
+    SSN = db.Column(db.String(10), nullable=False)
+    salary = db.Column(db.Integer, nullable=False)
+
+@app.route('/client/html-tampering', methods=['GET', 'POST'])
+def tampering():
+    if request.method == 'POST':
+        return redirect('client/html-tampering')
+    else:
+        return render_template('client_side/html_tampering.html')
     
 #########################
 # BROKEN ACCESS CONTROL #
