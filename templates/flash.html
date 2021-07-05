@@ -1,14 +1,16 @@
 <!DOCTYPE html>
 <html>
   <head>
+    <link
+      rel="stylesheet"
+      href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"
+      integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T"
+      crossorigin="anonymous"
+    />
     <style>
-      .alert {
-        padding: 20px;
-        border-radius: 6px;
-        font-size: 1.2rem;
-        margin-bottom: 16px;
-        border-width: 4px;
-        border-style: solid;
+      .button {
+        margin-left: 20px;
+        font-size: 1.3rem;
       }
 
       .heading {
@@ -64,5 +66,12 @@
         <div class="alert-error">Error: {{ message }}</div>
       {% endif %}
     {% endfor %}
+    <br> 
+    <button onclick="goBack()" class="btn btn-dark button">Go Back</button>
+    <script>
+      function goBack() {
+        window.history.back();
+      }
+    </script>
   </body>
 </html>
