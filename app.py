@@ -1,6 +1,4 @@
-from operator import attrgetter
 from flask import Flask, Markup, render_template, request, redirect, flash, make_response
-from sqlalchemy.sql.expression import null
 from flask_sqlalchemy import SQLAlchemy
 from datetime import datetime
 from sqlalchemy.sql import text
