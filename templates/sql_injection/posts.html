@@ -1,37 +1,47 @@
-{% extends 'base.html' %}
-
-{% block head %} 
+{% extends 'base.html' %} {% block head %}
 <title>Posts</title>
-{% endblock %}
-
-{% block body %}
-<br>
+{% endblock %} {% block body %}
+<br />
 <div>
-	<h1 style="display:inline">Sensitive Information Cloud</h1>
-	<a style="display:inline" class="btn btn-success float-right" href="/sql_injection/new">New Post</a>
+  <h1 style="display: inline">Sensitive Information Cloud</h1>
+  <a
+    style="display: inline"
+    class="btn btn-success float-right"
+    href="/sql_injection/new"
+    >New Post</a
+  >
 </div>
-	<hr> 
-	<form class="form-inline my-2 my-md-0 float-right" action="\sql_injection" method="POST">
-		<input class="form-control" type="text" name="auth_TAN" id='auth_TAN' placeholder="Input TAN ..." aria-label="filter">
-	</form>
+<hr />
+<form
+  class="form-inline my-2 my-md-0 float-right"
+  action="\sql_injection"
+  method="POST"
+>
+  <input
+    class="form-control"
+    type="text"
+    name="auth_TAN"
+    id="auth_TAN"
+    placeholder="Input TAN ..."
+    aria-label="filter"
+  />
+</form>
 
-	{% for post in posts %}
-		<h2>{{ post.title }}</h2>
+{% for post in posts %}
+<h2>{{ post.title }}</h2>
 
-		{% if post.auth_TAN %}
-			<small> Authentication TAN: {{ post.auth_TAN }} </small>
-		{% else %}
-			<small> Authentication TAN: {{ NULL }} </small>
-		{% endif %}
+{% if post.auth_TAN %}
+<small> Authentication TAN: {{ post.auth_TAN }} </small>
+{% else %}
+<small> Authentication TAN: {{ NULL }} </small>
+{% endif %}
 
-		<br>
-		<br>
+<br />
+<br />
 
-		<p style="white-space:pre-wrap">{{ post.content }}</p>
-		<a class="btn btn-danger" href="/sql_injection/delete/{{post.id}}">Delete</a>
-		<a class="btn btn-primary" href="/sql_injection/edit/{{post.id}}">Edit</a>
-		<br>
-		<hr>
-	{% endfor %}
-
-{% endblock %}
+<p style="white-space: pre-wrap">{{ post.content }}</p>
+<a class="btn btn-danger" href="/sql_injection/delete/{{post.id}}">Delete</a>
+<a class="btn btn-primary" href="/sql_injection/edit/{{post.id}}">Edit</a>
+<br />
+<hr />
+{% endfor %} {% endblock %}

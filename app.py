@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 from operator import attrgetter
 from flask import Flask, render_template, request, redirect, flash
 from flask_sqlalchemy import SQLAlchemy
@@ -303,3 +304,417 @@ def create_user():
 if __name__ == "__main__":
 	app.run(debug=True)
 
+=======
+from operator import attrgetter
+from flask import Flask, Markup, render_template, request, redirect, flash, make_response
+from sqlalchemy.sql.expression import null
+from flask_sqlalchemy import SQLAlchemy
+from datetime import datetime
+from sqlalchemy.sql import text
+import random
+
+app = Flask(__name__)
+app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///database/default.db'
+app.config['SQLALCHEMY_BINDS'] = {
+    'injection': 'sqlite:///database/injection.db',
+    'broken_access': 'sqlite:///database/broken_access.db'
+}
+app.config['SECRET_KEY'] = 'FASOO'
+db = SQLAlchemy(app)
+db.create_all()
+db.session.commit()
+
+########
+# HOME #
+########
+
+@app.route('/')
+def index():
+        return render_template('index.html')
+
+#################
+# SQL INJECTION #
+#################
+
+class BlogPost(db.Model):
+    __bind_key__ = 'injection'
+    id = db.Column(db.Integer, primary_key=True)
+    title = db.Column(db.String(255), nullable=False)
+    content = db.Column(db.Text, nullable=False)
+    auth_TAN = db.Column(db.String(20), nullable=False, default='N/A')
+    date_posted = db.Column(db.DateTime, nullable=False, default=datetime.utcnow)
+    
+    def __repr__(self):
+        return 'Blog Post ' + str(self.id)
+
+@app.route('/sql_injection', methods=['GET', 'POST'])
+def posts():
+        if request.method == 'POST':
+            post_filter_by = request.form['auth_TAN']
+            all_posts = BlogPost.query.filter(text("auth_TAN={}".format("\'"+ post_filter_by +"\'"))).all()
+            return render_template('sql_injection/posts.html', posts=all_posts)
+        else:
+            all_posts = BlogPost.query.order_by(BlogPost.date_posted).all()
+            return render_template('sql_injection/posts.html', posts=all_posts)
+
+@app.route('/sql_injection/delete/<int:id>')
+def delete(id):
+    post = BlogPost.query.get_or_404(id)
+    db.session.delete(post)
+    db.session.commit()
+    return redirect('/sql_injection')
+
+@app.route('/sql_injection/edit/<int:id>', methods=['GET', 'POST'])
+def edit(id):
+    post = BlogPost.query.get_or_404(id)
+    if request.method == 'POST':
+        post.title = request.form['title']
+        post.auth_TAN = request.form['auth_TAN']
+        post.content = request.form['content']
+        db.session.commit()
+        return redirect('/sql_injection')
+    else:
+        return render_template('sql_injection/edit.html', post=post)
+
+@app.route('/sql_injection/new', methods=['GET', 'POST'])
+def new_post():
+    if request.method =='POST':
+        post_title = request.form['title']
+        post_content = request.form['content']
+        post_auth_TAN = request.form['auth_TAN']
+        new_post = BlogPost(title=post_title, content=post_content, auth_TAN=post_auth_TAN)
+        db.session.add(new_post)
+        db.session.commit()
+        return redirect('/sql_injection')
+    else:
+        return render_template("sql_injection/new_post.html")
+
+#########################
+# BROKEN AUTHENTICATION #
+#########################
+
+class BlogAuth(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    username = db.Column(db.String(50), nullable=False)
+    password = db.Column(db.String(20), nullable=False)
+        
+@app.route('/auth', methods=['GET', 'POST'])
+def broken_auth():
+    flag = 0
+    if request.method == 'POST':
+        acc_username = request.form['username']
+        acc_password = request.form['password']
+        username = BlogAuth.query.filter_by(username=acc_username).first()
+        password = BlogAuth.query.filter_by(password=acc_password).first()
+        
+        if username and password:
+            flash("Login Success!")
+            return render_template("flash.html")
+        elif username and not password:
+            flash("Login Failed, Please enter a valid password!")
+            return render_template("flash.html")
+        elif not username and password:
+            flash("Login Failed!, Please register before logging in!")
+            return render_template("flash.html")
+        else:
+            flash("Login Failed!, Please register before logging in!")
+            return render_template("flash.html")
+    else:
+        return render_template("broken_auth/broken_auth.html")    
+
+@app.route('/auth/register', methods=['GET', 'POST'])
+def register():
+    if request.method == 'POST':
+        acc_username = request.form['username']
+        username_exists = len(BlogAuth.query.filter_by(username=acc_username).all())
+        if username_exists:
+            flash("Registration Failed! Username is already in use.")
+            return render_template("flash.html")
+        acc_password = request.form['password']
+        new_acc = BlogAuth(username=acc_username, password=acc_password)
+        db.session.add(new_acc)
+        db.session.commit()
+        return redirect('/auth')
+    else:
+        return render_template("broken_auth/register.html")
+
+###########################
+# SENSITIVE DATA EXPOSURE #
+###########################
+
+class SensitiveUsers(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    username = db.Column(db.String(50), nullable=False)
+    password = db.Column(db.String(20), nullable=False)
+        
+@app.route('/sensitive_data', methods=['GET', 'POST'])
+def sensitive_data():
+    flag = 0
+    if request.method == 'POST':
+        acc_username = request.form['username']
+        acc_password = request.form['password']
+        username = SensitiveUsers.query.filter_by(username=acc_username).first()
+        password = SensitiveUsers.query.filter_by(password=acc_password).first()
+        
+        if username and password:
+            flash("Login Success!")
+            return render_template("flash.html")
+        elif username and not password:
+            flash("Login Failed, Please enter a valid password!")
+            return render_template("flash.html")
+        elif not username and password:
+            flash("Login Failed!, Please register before logging in!")
+            return render_template("flash.html")
+        else:
+            flash("Login Failed!, Please register before logging in!")
+            return render_template("flash.html")
+    else:
+        return render_template("sensitive_data/sensitive_data.html")    
+
+@app.route('/sensitive_data/register', methods=['GET', 'POST'])
+def sensitive_register():
+    if request.method == 'POST':
+        acc_username = request.form['username']
+        username_exists = len(SensitiveUsers.query.filter_by(username=acc_username).all())
+        if username_exists:
+            flash("Registration Failed! Username is already in use.")
+            return render_template("flash.html")
+        acc_password = request.form['password']
+        new_acc = SensitiveUsers(username=acc_username, password=acc_password)
+        db.session.add(new_acc)
+        db.session.commit()
+        return redirect('/sensitive_data')
+    else:
+        return render_template("sensitive_data/register.html")
+
+##############################
+# XML EXTERNAL ENTITY ATTACK #
+##############################
+
+class XXE(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    author = db.Column(db.String(20), nullable=False, default='N/A')
+    comment = db.Column(db.String(255), nullable=False)
+    date_posted = db.Column(db.DateTime, nullable=False, default=datetime.utcnow)
+    
+    def __repr__(self):
+        return 'Comment ' + str(self.id)
+    
+@app.route('/xxe', methods=['GET', 'POST'])
+def xxe():
+    if request.method == 'POST':
+        user_name = request.form['author']
+        user_comment = request.form['comment']
+        new_comment = XXE(author=user_name, comment=user_comment)
+        db.session.add(new_comment)
+        db.session.commit()
+        return redirect('/xxe')
+    else:
+        all_comments = XXE.query.order_by(XXE.date_posted).all()
+        return render_template("xxe/xxe.html", comments=all_comments)
+
+@app.route('/xxe/delete/<int:id>')
+def delete_comment(id):
+    comment = XXE.query.get_or_404(id)
+    db.session.delete(comment)
+    db.session.commit()
+    return redirect('/xxe')
+
+##############################################
+# CLIENT SIDE - BYPASS FRONTEND RESTRICTIONS #
+##############################################
+
+class Frontend(db.Model):
+    id = db.Column(db.Integer, primary_key=True, nullable=False)
+    company = db.Column(db.String(10), nullable=False)
+    profession = db.Column(db.String(20), nullable=False)
+    role = db.Column(db.String(10), nullable=False)
+    inputMax = db.Column(db.String(10), nullable=False)
+    readonly = db.Column(db.String(10), nullable=False)
+
+@app.route('/client/front-end', methods=['GET', 'POST'])
+def frontend():
+    if request.method == 'POST':
+        select_field = request.form['company']
+        radio_button = request.form['profession']
+        checkbox = request.form['role']
+        input_5 = request.form['comment']
+        random_input = request.form['readonly']
+        new_input = Frontend(company=select_field, profession=radio_button, role=checkbox, inputMax=input_5, readonly=random_input)
+        db.session.add(new_input)
+        db.session.commit()
+        return redirect('/client/front-end')
+    else:
+        return render_template("client_side/frontend.html")
+
+#######################################
+# CLIENT SIDE - CLIENT SIDE FILTERING #
+#######################################
+
+class Filtering(db.Model):
+    user_id = db.Column(db.Integer, primary_key=True, nullable=False)
+    firstName = db.Column(db.String(10), nullable=False)
+    lastName = db.Column(db.String(20), nullable=False)
+    SSN = db.Column(db.String(10), nullable=False)
+    salary = db.Column(db.Integer, nullable=False)
+
+@app.route('/client/client-filtering/new', methods=['GET', 'POST'])
+def filtering():
+    if request.method == 'POST':
+        post_userid = request.form['userid']
+        userid = len(Filtering.query.filter_by(user_id=post_userid).all())
+        if userid:
+            flash("Creation Failed! User ID is already in use.")
+            return render_template("flash.html")
+        post_firstName = request.form['firstName']
+        post_lastName = request.form['lastName']
+        post_ssn = request.form['ssn']
+        post_salary = request.form['salary']
+        new_post = Filtering(user_id=post_userid, firstName=post_firstName, lastName=post_lastName, SSN=post_ssn, salary=post_salary)
+        db.session.add(new_post)
+        db.session.commit()
+        return redirect('/client/client-filtering')
+    else:
+        return render_template("client_side/new.html")
+        
+@app.route('/client/client-filtering', methods=['GET', 'POST'])
+def profile():
+    if request.method == 'POST':
+        if request.form['action'] == "Submit Salary":
+            kyugon_salary = request.form['salary']
+            if int(kyugon_salary) == 999999999:
+                flash("Congratulations! You have found out Fasoo CEO's salary!")
+                return render_template("flash.html")
+            else:
+                flash("Wrong! That's not his salary, try again!")
+                return render_template("flash.html")
+        else:
+            post_filter_by = request.form['firstName']
+            all_posts = Filtering.query.filter(text("firstName={}".format("\'"+ post_filter_by +"\'"))).all()
+            return render_template('client_side/filtered.html', posts=all_posts)
+    else:
+       return render_template('client_side/client_filtering.html')
+
+@app.route('/client/client-filtering/filtered', methods=['GET', 'POST'])
+def filtered():
+        return render_template('client_side/filtered.html')
+
+@app.route('/client/client-filtering/delete/<int:user_id>')
+def delete_client(user_id):
+    profile = Filtering.query.get_or_404(user_id)
+    db.session.delete(profile)
+    db.session.commit()
+    return redirect('/client/client-filtering')
+
+################################
+# CLIENT SIDE - HTML TAMPERING #
+################################
+
+class Tampering(db.Model):
+    user_id = db.Column(db.Integer, primary_key=True, nullable=False)
+    firstName = db.Column(db.String(10), nullable=False)
+    lastName = db.Column(db.String(20), nullable=False)
+    SSN = db.Column(db.String(10), nullable=False)
+    salary = db.Column(db.Integer, nullable=False)
+
+@app.route('/client/html-tampering', methods=['GET', 'POST'])
+def tampering():
+    if request.method == 'POST':
+        return redirect('client/html-tampering')
+    else:
+        return render_template('client_side/html_tampering.html')
+    
+#########################
+# BROKEN ACCESS CONTROL #
+#########################
+
+class DirectObj(db.Model):
+    __bind_key__ = 'broken_access'
+    id = db.Column(db.Integer, primary_key=True, nullable=False)
+    username = db.Column(db.String(50), nullable=False)
+    password = db.Column(db.String(20), nullable=False)
+    name = db.Column(db.String(50), nullable=False)
+    occupation = db.Column(db.String(50), nullable=False)
+
+@app.route('/broken_access', methods=['GET', 'POST'])
+def broken_access():
+    return redirect('/broken_access/profile/0')
+
+@app.route('/broken_access/profile/<int:id>', methods=['GET', 'POST'])
+def profile_view(id):
+    if id == 0 and not len(DirectObj.query.filter_by(id=0).all()):
+        sentinel = DirectObj(id=0, username="WebGoat", password="password", name = "Chief WebGoat", occupation = "Administrator of WebGoat")
+        db.session.add(sentinel)
+        db.session.commit()
+    return render_template("broken_access/broken_access.html", user = DirectObj.query.get_or_404(id))
+
+@app.route('/broken_access/profile/<int:id>/edit', methods=['GET', 'POST'])
+def profile_edit(id):
+    to_edit = DirectObj.query.get_or_404(id)
+    if request.method == 'POST':
+        to_edit.username = request.form['username']
+        to_edit.name = request.form['name']
+        to_edit.occupation = request.form['occupation']
+        to_edit.password = request.form['password']
+        db.session.commit()
+        return redirect('/broken_access/profile/' + str(id))
+    else:
+        return render_template('broken_access/edit.html', profile=to_edit)
+
+@app.route('/broken_access/new', methods=['GET', 'POST'])
+def create_user():
+    if request.method == 'POST':
+        acc_username = request.form['username']
+        username_exists = len(DirectObj.query.filter_by(username=acc_username).all())
+        if username_exists:
+            flash("Creation Failed! Username is already in use.")
+            return render_template("flash.html")
+        acc_password = request.form['password']
+        acc_id = random.randint(1, 9999999999)
+        while len(DirectObj.query.filter_by(id=acc_id).all()):
+            acc_id = random.randint(1, 9999999999)
+        acc_name = request.form['name']
+        acc_occupation = request.form['occupation']
+        new_acc = DirectObj(id=acc_id, username=acc_username, password=acc_password, name=acc_name, occupation=acc_occupation)
+        db.session.add(new_acc)
+        db.session.commit()
+        return redirect('/broken_access/profile/' + str(acc_id))
+    else:
+        return render_template("broken_access/new.html")
+
+#######
+# XSS #
+#######
+
+@app.route('/xss', methods=['GET', 'POST'])
+def xss():
+        if request.method == 'POST':
+            user_name = request.form['user_name']
+            user_occupation = Markup(request.form['user_occupation'])
+            resp = make_response(redirect('/xss/name='+ user_name + '_occup=' + user_occupation))
+            resp.set_cookie('userID', "33C181DJSESSAUTH"+user_name.replace(" ", "").upper()+"221A28FE8913F1234!@#BDB94AF7F")
+            return resp
+        else:
+            resp = make_response(render_template('xss/xss.html', my_name="", my_occupation="", random=random))
+            resp.set_cookie('userID', "33C181DJSESSAUTHJOHNDOEADMIN221A28FE8913F1234!@#BDB94AF7F")
+            return resp
+
+@app.route('/xss/name=<string:name>_occup=<path:occupation>', methods=['GET', 'POST'])
+def xss_dom(name, occupation):
+        if request.method == 'POST':
+            user_name = request.form['user_name']
+            user_occupation = Markup(request.form['user_occupation'])
+            resp = make_response(redirect('/xss/name='+ user_name + '_occup=' + user_occupation))
+            resp.set_cookie('userID', "33C181DJSESSAUTH"+user_name.replace(" ", "").upper()+"221A28FE8913F1234!@#BDB94AF7F")
+            return resp
+        else:
+            user_name = name
+            user_occupation = Markup(occupation)
+            return render_template('xss/xss.html', my_name=user_name, my_occupation=user_occupation, random=random)
+
+#############
+# DEBUGGING #
+#############
+if __name__ == "__main__":
+	app.run(debug=True)
+>>>>>>> 0490cfe3a703612338c8fbbe6a97a16e6d688047

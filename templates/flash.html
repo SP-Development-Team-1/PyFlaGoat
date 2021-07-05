@@ -3,7 +3,7 @@
   <head>
     <style>
       .alert {
-        padding: 17px;
+        padding: 20px;
         border-radius: 6px;
         font-size: 1.2rem;
         margin-bottom: 16px;
@@ -11,24 +11,55 @@
         border-style: solid;
       }
 
+      .heading {
+        color: black;
+        padding: 20px;
+        border-radius: 6px;
+        font-size: 2.7rem;
+        font-family: Impact, Haettenschweiler, 'Arial Narrow Bold', sans-serif;
+        margin-bottom: 16px;
+      }
+
       .alert-error {
-        border-color: darkred;
+        font-family: monospace;
+        border-color: red;
         background-color: red;
         color: white;
+        padding: 15px;
+        border-radius: 15px;
+        font-size: 1.5rem;
+        font-weight: 800;
+        margin-bottom: 16px;
+        margin-left: 20px;
+        margin-right: 20px;
+        border-width: 6px;
+        border-style: solid;
       }
 
       .alert-info {
+        font-family: monospace;
         border-color: greenyellow;
         background-color: greenyellow;
         color: black;
+        padding: 15px;
+        border-radius: 15px;
+        font-size: 1.5rem;
+        font-weight: 800;
+        margin-bottom: 16px;
+        margin-left: 20px;
+        margin-right: 20px;
+        border-width: 6px;
+        border-style: solid;
       }
     </style>
   </head>
   <body>
-    <h1>Login Status</h1>
+    <div class="heading">Login Status: </div>
     {% for message in get_flashed_messages() %}
       {% if "Success" in message %}
         <div class="alert-info">Success: {{ message }}</div>
+      {% elif "Congratulations" in message %}
+        <div class="alert-info">Correct: {{ message }}</div>
       {% else %}
         <div class="alert-error">Error: {{ message }}</div>
       {% endif %}
