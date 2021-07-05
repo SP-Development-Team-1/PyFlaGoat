@@ -1,5 +1,5 @@
 from operator import attrgetter
-from flask import Flask, Markup, render_template, request, redirect, flash
+from flask import Flask, Markup, render_template, request, redirect, flash, make_response
 from sqlalchemy.sql.expression import null
 from flask_sqlalchemy import SQLAlchemy
 from datetime import datetime
@@ -384,16 +384,22 @@ def xss():
         if request.method == 'POST':
             user_name = request.form['user_name']
             user_occupation = Markup(request.form['user_occupation'])
-            return redirect('/xss/name='+ user_name + '_occup=' + user_occupation)
+            resp = make_response(redirect('/xss/name='+ user_name + '_occup=' + user_occupation))
+            resp.set_cookie('userID', "33C181DJSESSAUTH"+user_name.replace(" ", "").upper()+"221A28FE8913F1234!@#BDB94AF7F")
+            return resp
         else:
-            return render_template('xss/xss.html', my_name="", my_occupation="", random=random)
+            resp = make_response(render_template('xss/xss.html', my_name="", my_occupation="", random=random))
+            resp.set_cookie('userID', "33C181DJSESSAUTHJOHNDOEADMIN221A28FE8913F1234!@#BDB94AF7F")
+            return resp
 
 @app.route('/xss/name=<string:name>_occup=<path:occupation>', methods=['GET', 'POST'])
 def xss_dom(name, occupation):
         if request.method == 'POST':
             user_name = request.form['user_name']
             user_occupation = Markup(request.form['user_occupation'])
-            return redirect('/xss/name='+ user_name + '_occup=' + user_occupation)
+            resp = make_response(redirect('/xss/name='+ user_name + '_occup=' + user_occupation))
+            resp.set_cookie('userID', "33C181DJSESSAUTH"+user_name.replace(" ", "").upper()+"221A28FE8913F1234!@#BDB94AF7F")
+            return resp
         else:
             user_name = name
             user_occupation = Markup(occupation)
