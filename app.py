@@ -407,31 +407,39 @@ def xss_dom(name, occupation):
 # INSECURE DESERIALIZATION #
 ############################
 
-class Deserialization(db.Model):
+class Serialization(db.Model):
     id = db.Column(db.Integer, primary_key=True, nullable=False)
     data = db.Column(db.String(100), nullable=False)
     serialized = db.Column(db.String(400), nullable=False)
-    
-class Vulnerable(object):
-    def __reduce__(self, command):
-        return (os.system, (command,))
-    
+
+class Deserialization(db.Model):
+    id = db.Column(db.Integer, primary_key=True, nullable=False)
+    serialized = db.Column(db.String(100), nullable=False)
+    deserialized = db.Column(db.String(100), nullable=False)
+
 @app.route('/insecure-deserialization', methods=['GET', 'POST'])
 def serialize_exploit():
     if request.method == 'POST':
         if request.form['action'] == "Serialize":
             command = request.form['command']
             serialized_command = base64.urlsafe_b64encode(pickle.dumps(command))
-            unique_command = len(Deserialization.query.filter_by(data=command).all())
+            unique_command = len(Serialization.query.filter_by(data=command).all())
             if not unique_command:
-                new_command = Deserialization(data=command, serialized=serialized_command)
+                new_command = Serialization(data=command, serialized=serialized_command)
                 db.session.add(new_command)
                 db.session.commit()
-            all_commands = Deserialization.query.filter(text("data={}".format("\'"+ command +"\'"))).all()
+            all_commands = Serialization.query.filter(text("data={}".format("\'"+ command +"\'"))).all()
             return render_template('insecure_deserialization/serialized.html', commands = all_commands)
         else:
-            deserialized_object = pickle.loads(base64.urlsafe_b64decode(serialized_command))
-            return render_template('insecure_desrialization/serialized.html', deserialized_object)
+            alr_serialized = request.form['serialized']
+            deserialized_object = pickle.loads(base64.urlsafe_b64decode(alr_serialized))
+            unique_serializedCommand = len(Deserialization.query.filter_by(serialized=alr_serialized).all())
+            if not unique_serializedCommand:
+                new_serializedCommand = Deserialization(serialized=alr_serialized, deserialized=deserialized_object)
+                db.session.add(new_serializedCommand)
+                db.session.commit()
+            all_commands = Deserialization.query.filter(text("serialized={}".format("\'"+ alr_serialized +"\'"))).all()
+            return render_template('insecure_desrialization/deserialized.html', commands = all_commands)
     else:
         return render_template('insecure_deserialization/deserialization.html')
 
@@ -440,8 +448,8 @@ def result():
         return render_template('insecure_deserialization/serialized.html')
 
 @app.route('/insecure-deserialization/delete/<int:id>')
-def delete_command(id):
-    command = Deserialization.query.get_or_404(id)
+def delete_linuxCommand(id):
+    command = Serialization.query.get_or_404(id)
     db.session.delete(command)
     db.session.commit()
     return redirect('/insecure-deserialization/result')
