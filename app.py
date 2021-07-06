@@ -412,27 +412,43 @@ class Deserialization(db.Model):
     data = db.Column(db.String(100), nullable=False)
     serialized = db.Column(db.String(400), nullable=False)
     
-class Vulnerable():
+class Vulnerable(object):
     def __reduce__(self, command):
         return (os.system, (command,))
     
 @app.route('/insecure-deserialization', methods=['GET', 'POST'])
 def serialize_exploit():
     if request.method == 'POST':
-        command = request.form['command']
-        serialized_command = pickle.dumps(Vulnerable(command))
-        commands = Deserialization(data=command, serialized=serialized_command)
-        deserialized_object = pickle.loads(serialized_command)
-        return render_template('insecure_deserialization/serialized.html', commands)
+        if request.form['action'] == "Serialize":
+            command = request.form['command']
+            serialized_command = base64.urlsafe_b64encode(pickle.dumps(command))
+            unique_command = len(Deserialization.query.filter_by(data=command).all())
+            if not unique_command:
+                new_command = Deserialization(data=command, serialized=serialized_command)
+                db.session.add(new_command)
+                db.session.commit()
+            all_commands = Deserialization.query.filter(text("data={}".format("\'"+ command +"\'"))).all()
+            return render_template('insecure_deserialization/serialized.html', commands = all_commands)
+        else:
+            deserialized_object = pickle.loads(base64.urlsafe_b64decode(serialized_command))
+            return render_template('insecure_desrialization/serialized.html', deserialized_object)
     else:
         return render_template('insecure_deserialization/deserialization.html')
 
 @app.route('/insecure-deserialization/result', methods=['GET', 'POST'])
 def result():
         return render_template('insecure_deserialization/serialized.html')
+
+@app.route('/insecure-deserialization/delete/<int:id>')
+def delete_command(id):
+    command = Deserialization.query.get_or_404(id)
+    db.session.delete(command)
+    db.session.commit()
+    return redirect('/insecure-deserialization/result')
     
 #############
 # DEBUGGING #
 #############
+
 if __name__ == "__main__":
 	app.run(debug=True)

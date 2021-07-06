@@ -8,11 +8,17 @@
 <hr />
 
 {% for command in commands %}
-<p> <b>Original Command:</b> {{ command.data }}</p>
-<p> <b>Serialized Command:</b> {{ command.serialized }} </p>
+<p> <b>Original Linux Command:</b> {{ command.data }}</p>
+<p> <b>Serialized Linux Command:</b> {{ command.serialized }} </p>
 
-<a class="btn btn-dark" href="/insecure-deserialization">Go Back</a>
+<a class="btn btn-danger" href="/insecure-deserialization/delete/{{ command.id }}">Delete</a>
 <br />
 <hr />
-  {% endfor %} {% endblock %}
+{% endfor %} 
+<a class="btn btn-dark" href="/insecure-deserialization">Go Back</a>
+<br />
+<br />
+<br />
+{% endblock %}
+
 </form>

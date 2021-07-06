@@ -8,7 +8,7 @@
 <hr />
 <h2>Deserializing Linux Kernel Commands</h2>
 <br />
-<form action="/sensitive_data" method="POST">
+<form action="/insecure-deserialization" method="POST">
   <label for="post">Command:</label>
   <input
     class="form-control"
@@ -19,12 +19,8 @@
     aria-label="Enter Linux command to serialize"
   />
   <br />
-  <a
-    style="display: inline"
-    class="btn btn-primary float-center"
-    href="/insecure-deserialization/result"
-    >Serialize</a
-  > <br />
+  <input type="submit" name="action" class="btn btn-primary" value="Serialize" />
+  <br />
 <br />
   <label for="post">Serialized Command:</label>
   <input
@@ -37,12 +33,7 @@
   />
   <br />
 
-  <a
-    style="display: inline"
-    class="btn btn-success float-center"
-    href="/sensitive_data/register"
-    >Deserialize</a
-  >
+  <input type="submit" name="action" class="btn btn-primary" value="Deserialize" />
 </form>
 <hr />
 
