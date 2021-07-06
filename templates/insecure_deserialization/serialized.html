@@ -1,0 +1,18 @@
+{% extends 'base.html' %} {% block head %}
+<title>Serialized Command</title>
+{% endblock %} {% block body %}
+<br>
+<div>
+  <h1 style="display: inline">Result:</h1>
+</div>
+<hr />
+
+{% for command in commands %}
+<p> <b>Original Command:</b> {{ command.data }}</p>
+<p> <b>Serialized Command:</b> {{ command.serialized }} </p>
+
+<a class="btn btn-dark" href="/insecure-deserialization">Go Back</a>
+<br />
+<hr />
+  {% endfor %} {% endblock %}
+</form>

@@ -2,7 +2,7 @@ from flask import Flask, Markup, render_template, request, redirect, flash, make
 from flask_sqlalchemy import SQLAlchemy
 from datetime import datetime
 from sqlalchemy.sql import text
-import random, os, pickle
+import random, os, pickle, base64
 
 app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///database/default.db'
@@ -410,7 +410,8 @@ def xss_dom(name, occupation):
 class Deserialization(db.Model):
     id = db.Column(db.Integer, primary_key=True, nullable=False)
     data = db.Column(db.String(100), nullable=False)
-
+    serialized = db.Column(db.String(400), nullable=False)
+    
 class Vulnerable():
     def __reduce__(self, command):
         return (os.system, (command,))
@@ -418,18 +419,18 @@ class Vulnerable():
 @app.route('/insecure-deserialization', methods=['GET', 'POST'])
 def serialize_exploit():
     if request.method == 'POST':
-        command = request.form['data']
-        f = open("demo.pickle", "wb")
-        safecode = pickle.dump(Vulnerable(command), f)
-        return redirect('/insecure-deserialization')
+        command = request.form['command']
+        serialized_command = pickle.dumps(Vulnerable(command))
+        commands = Deserialization(data=command, serialized=serialized_command)
+        deserialized_object = pickle.loads(serialized_command)
+        return render_template('insecure_deserialization/serialized.html', commands)
     else:
         return render_template('insecure_deserialization/deserialization.html')
-    
-def insecure_deserialization():
-    f = open("demo.pickle", "rb") 
-    na = pickle.load(f) 
-    return na
 
+@app.route('/insecure-deserialization/result', methods=['GET', 'POST'])
+def result():
+        return render_template('insecure_deserialization/serialized.html')
+    
 #############
 # DEBUGGING #
 #############

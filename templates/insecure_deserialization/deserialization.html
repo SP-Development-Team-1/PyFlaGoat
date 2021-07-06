@@ -6,34 +6,43 @@
 <h1>Insecure Deserialization</h1>
 
 <hr />
-<h2>Insecure Login</h2>
+<h2>Deserializing Linux Kernel Commands</h2>
+<br />
 <form action="/sensitive_data" method="POST">
-  <label for="post">Username:</label>
+  <label for="post">Command:</label>
   <input
     class="form-control"
     type="text"
-    name="username"
-    id="username"
-    placeholder="Enter Username"
-    aria-label="Enter Username"
+    name="command"
+    id="command"
+    placeholder="Enter linux command to serialize"
+    aria-label="Enter linux command to serialize"
   />
   <br />
-  <label for="post">Password:</label>
+  <a
+    style="display: inline"
+    class="btn btn-primary float-center"
+    href="/insecure-deserialization/result"
+    >Serialize</a
+  > <br />
+<br />
+  <label for="post">Serialized Command:</label>
   <input
     class="form-control"
-    type="password"
-    name="password"
-    id="password"
-    placeholder="Enter Password"
-    aria-label="Enter Password"
+    type="text"
+    name="serialized"
+    id="serialized"
+    placeholder="Enter serialized command to deserialize"
+    aria-label="Enter serialized command to deserialize"
   />
   <br />
-  <input type="submit" class="btn btn-primary" value="Login" />
 
-    <a style="display: inline" class="btn btn-success float-center" href="/sensitive_data/register"
-      >Register</a
-    >
-
+  <a
+    style="display: inline"
+    class="btn btn-success float-center"
+    href="/sensitive_data/register"
+    >Deserialize</a
+  >
 </form>
 <hr />
 
