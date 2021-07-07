@@ -1,9 +1,8 @@
-from operator import attrgetter
-from flask import Flask, render_template, request, redirect, flash
+from flask import Flask, Markup, render_template, request, redirect, flash, make_response
 from flask_sqlalchemy import SQLAlchemy
 from datetime import datetime
 from sqlalchemy.sql import text
-import random
+import random, os, pickle, base64
 
 app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///database/default.db'
@@ -16,9 +15,9 @@ db = SQLAlchemy(app)
 db.create_all()
 db.session.commit()
 
-#########
-# HOMIE # 
-#########
+########
+# HOME #
+########
 
 @app.route('/')
 def index():
@@ -212,9 +211,9 @@ def delete_comment(id):
     db.session.commit()
     return redirect('/xxe')
 
-##############################
-      # CLIENT SIDE #
-##############################
+##############################################
+# CLIENT SIDE - BYPASS FRONTEND RESTRICTIONS #
+##############################################
 
 class Frontend(db.Model):
     id = db.Column(db.Integer, primary_key=True, nullable=False)
@@ -238,7 +237,84 @@ def frontend():
         return redirect('/client/front-end')
     else:
         return render_template("client_side/frontend.html")
+
+#######################################
+# CLIENT SIDE - CLIENT SIDE FILTERING #
+#######################################
+
+class Filtering(db.Model):
+    user_id = db.Column(db.Integer, primary_key=True, nullable=False)
+    firstName = db.Column(db.String(10), nullable=False)
+    lastName = db.Column(db.String(20), nullable=False)
+    SSN = db.Column(db.String(10), nullable=False)
+    salary = db.Column(db.Integer, nullable=False)
+
+@app.route('/client/client-filtering/new', methods=['GET', 'POST'])
+def filtering():
+    if request.method == 'POST':
+        post_userid = request.form['userid']
+        userid = len(Filtering.query.filter_by(user_id=post_userid).all())
+        if userid:
+            flash("Creation Failed! User ID is already in use.")
+            return render_template("flash.html")
+        post_firstName = request.form['firstName']
+        post_lastName = request.form['lastName']
+        post_ssn = request.form['ssn']
+        post_salary = request.form['salary']
+        new_post = Filtering(user_id=post_userid, firstName=post_firstName, lastName=post_lastName, SSN=post_ssn, salary=post_salary)
+        db.session.add(new_post)
+        db.session.commit()
+        return redirect('/client/client-filtering')
+    else:
+        return render_template("client_side/new.html")
         
+@app.route('/client/client-filtering', methods=['GET', 'POST'])
+def profile():
+    if request.method == 'POST':
+        if request.form['action'] == "Submit Salary":
+            kyugon_salary = request.form['salary']
+            if int(kyugon_salary) == 999999999:
+                flash("Congratulations! You have found out Fasoo CEO's salary!")
+                return render_template("flash.html")
+            else:
+                flash("Wrong! That's not his salary, try again!")
+                return render_template("flash.html")
+        else:
+            post_filter_by = request.form['firstName']
+            all_posts = Filtering.query.filter(text("firstName={}".format("\'"+ post_filter_by +"\'"))).all()
+            return render_template('client_side/filtered.html', posts=all_posts)
+    else:
+       return render_template('client_side/client_filtering.html')
+
+@app.route('/client/client-filtering/filtered', methods=['GET', 'POST'])
+def filtered():
+        return render_template('client_side/filtered.html')
+
+@app.route('/client/client-filtering/delete/<int:user_id>')
+def delete_client(user_id):
+    profile = Filtering.query.get_or_404(user_id)
+    db.session.delete(profile)
+    db.session.commit()
+    return redirect('/client/client-filtering')
+
+################################
+# CLIENT SIDE - HTML TAMPERING #
+################################
+
+class Tampering(db.Model):
+    user_id = db.Column(db.Integer, primary_key=True, nullable=False)
+    firstName = db.Column(db.String(10), nullable=False)
+    lastName = db.Column(db.String(20), nullable=False)
+    SSN = db.Column(db.String(10), nullable=False)
+    salary = db.Column(db.Integer, nullable=False)
+
+@app.route('/client/html-tampering', methods=['GET', 'POST'])
+def tampering():
+    if request.method == 'POST':
+        return redirect('client/html-tampering')
+    else:
+        return render_template('client_side/html_tampering.html')
+    
 #########################
 # BROKEN ACCESS CONTROL #
 #########################
@@ -261,7 +337,7 @@ def profile_view(id):
         sentinel = DirectObj(id=0, username="WebGoat", password="password", name = "Chief WebGoat", occupation = "Administrator of WebGoat")
         db.session.add(sentinel)
         db.session.commit()
-    return render_template("broken_access/broken_access.html", user = DirectObj.query.get(id))
+    return render_template("broken_access/broken_access.html", user = DirectObj.query.get_or_404(id))
 
 @app.route('/broken_access/profile/<int:id>/edit', methods=['GET', 'POST'])
 def profile_edit(id):
@@ -297,9 +373,90 @@ def create_user():
     else:
         return render_template("broken_access/new.html")
 
+#######
+# XSS #
+#######
+
+@app.route('/xss', methods=['GET', 'POST'])
+def xss():
+        if request.method == 'POST':
+            user_name = request.form['user_name']
+            user_occupation = Markup(request.form['user_occupation'])
+            resp = make_response(redirect('/xss/name='+ user_name + '_occup=' + user_occupation))
+            resp.set_cookie('userID', "33C181DJSESSAUTH"+user_name.replace(" ", "").upper()+"221A28FE8913F1234!@#BDB94AF7F")
+            return resp
+        else:
+            resp = make_response(render_template('xss/xss.html', my_name="", my_occupation="", random=random))
+            resp.set_cookie('userID', "33C181DJSESSAUTHJOHNDOEADMIN221A28FE8913F1234!@#BDB94AF7F")
+            return resp
+
+@app.route('/xss/name=<string:name>_occup=<path:occupation>', methods=['GET', 'POST'])
+def xss_dom(name, occupation):
+        if request.method == 'POST':
+            user_name = request.form['user_name']
+            user_occupation = Markup(request.form['user_occupation'])
+            resp = make_response(redirect('/xss/name='+ user_name + '_occup=' + user_occupation))
+            resp.set_cookie('userID', "33C181DJSESSAUTH"+user_name.replace(" ", "").upper()+"221A28FE8913F1234!@#BDB94AF7F")
+            return resp
+        else:
+            user_name = name
+            user_occupation = Markup(occupation)
+            return render_template('xss/xss.html', my_name=user_name, my_occupation=user_occupation, random=random)
+
+############################
+# INSECURE DESERIALIZATION #
+############################
+
+class Serialization(db.Model):
+    id = db.Column(db.Integer, primary_key=True, nullable=False)
+    data = db.Column(db.String(100), nullable=False)
+    serialized = db.Column(db.String(400), nullable=False)
+
+class Deserialization(db.Model):
+    id = db.Column(db.Integer, primary_key=True, nullable=False)
+    serialized = db.Column(db.String(100), nullable=False)
+    deserialized = db.Column(db.String(100), nullable=False)
+
+@app.route('/insecure-deserialization', methods=['GET', 'POST'])
+def serialize_exploit():
+    if request.method == 'POST':
+        if request.form['action'] == "Serialize":
+            command = request.form['command']
+            serialized_command = base64.urlsafe_b64encode(pickle.dumps(command))
+            unique_command = len(Serialization.query.filter_by(data=command).all())
+            if not unique_command:
+                new_command = Serialization(data=command, serialized=serialized_command)
+                db.session.add(new_command)
+                db.session.commit()
+            all_commands = Serialization.query.filter(text("data={}".format("\'"+ command +"\'"))).all()
+            return render_template('insecure_deserialization/serialized.html', commands = all_commands)
+        else:
+            alr_serialized = request.form['serialized']
+            deserialized_object = pickle.loads(base64.urlsafe_b64decode(alr_serialized))
+            unique_serializedCommand = len(Deserialization.query.filter_by(serialized=alr_serialized).all())
+            if not unique_serializedCommand:
+                new_serializedCommand = Deserialization(serialized=alr_serialized, deserialized=deserialized_object)
+                db.session.add(new_serializedCommand)
+                db.session.commit()
+            all_commands = Deserialization.query.filter(text("serialized={}".format("\'"+ alr_serialized +"\'"))).all()
+            return render_template('insecure_deserialization/deserialized.html', commands = all_commands)
+    else:
+        return render_template('insecure_deserialization/deserialization.html')
+
+@app.route('/insecure-deserialization/result', methods=['GET', 'POST'])
+def result():
+        return render_template('insecure_deserialization/serialized.html')
+
+@app.route('/insecure-deserialization/delete/<int:id>')
+def delete_linuxCommand(id):
+    command = Serialization.query.get_or_404(id)
+    db.session.delete(command)
+    db.session.commit()
+    return redirect('/insecure-deserialization/result')
+    
 #############
 # DEBUGGING #
 #############
+
 if __name__ == "__main__":
 	app.run(debug=True)
-

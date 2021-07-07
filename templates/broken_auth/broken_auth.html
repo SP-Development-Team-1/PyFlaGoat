@@ -1,10 +1,13 @@
 {% extends 'base.html' %} {% block head %}
 <title>Broken Authentication</title>
 {% endblock %} {% block body %}
+<br>
 <h1>Broken Authentication</h1>
 
 <hr />
 <h2>Authentication Bypasses:</h2>
+<br>
+
 <form action="/auth" method="POST">
   <label for="post">Username:</label>
   <input
