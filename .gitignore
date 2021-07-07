@@ -1,4 +1,7 @@
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> 90711699dd7b41a582734279a9bb3914fdb719b1
 # DATABASE <<<<<<<<<<<< WILL REMOVE AFTER DEVELOPMENT
 #*.db
 
@@ -63,6 +66,7 @@ docs/_build/
 *.code-workspace
 
 # Local History for Visual Studio Code
+<<<<<<< HEAD
 =======
 # DATABASE <<<<<<<<<<<< WILL REMOVE AFTER DEVELOPMENT
 *.db
@@ -129,4 +133,6 @@ docs/_build/
 
 # Local History for Visual Studio Code
 >>>>>>> main
+=======
+>>>>>>> 90711699dd7b41a582734279a9bb3914fdb719b1
 .history/
