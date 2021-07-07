@@ -453,6 +453,21 @@ def delete_linuxCommand(id):
     db.session.delete(command)
     db.session.commit()
     return redirect('/insecure-deserialization/result')
+
+
+########
+# CSRF #
+########
+
+@app.route('/csrf')
+def csrf():
+    return render_template('csrf/csrf.html')
+
+########
+# SSRF #
+########
+
+
     
 #############
 # DEBUGGING #
