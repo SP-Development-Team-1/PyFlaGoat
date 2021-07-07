@@ -1,10 +1,14 @@
 {% extends 'base.html' %} {% block head %}
 <title>Sensitive Data Exposure</title>
 {% endblock %} {% block body %}
+<br>
+
 <h1>Sensitive Data Exposure</h1>
 
 <hr />
 <h2>Insecure Login</h2>
+<br>
+
 <form action="/sensitive_data" method="POST">
   <label for="post">Username:</label>
   <input
