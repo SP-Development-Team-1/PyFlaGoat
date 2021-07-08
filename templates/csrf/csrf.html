@@ -1,0 +1,44 @@
+{% extends 'base.html' %} {% block head %}
+<title>CSRF</title>
+{% endblock %} {% block body %}
+
+<br>
+
+<h1>Cross Site Request Forgery</h1>
+
+<hr />
+<h2>CSRF Comments</h2>
+<br>
+
+<form action="/csrf" method="POST">
+  <label for="post">Author:</label>
+  <input
+    class="form-control"
+    type="text"
+    name="author"
+    id="author"
+    placeholder="Enter Author Name"
+    aria-label="Enter Author Name"
+  />
+  <br />
+  <label for="post">Comment:</label>
+  <input
+    class="form-control"
+    type="text"
+    name="comment"
+    id="comment"
+    placeholder="Add a comment"
+    aria-label="Add a comment"
+  />
+  <br />
+  <input type="submit" class="btn btn-primary" value="Submit" />
+</form>
+<hr />
+
+{% for comment in comments %}
+<small>{{ comment.date_posted }}</small>
+<h5><b>{{ comment.author }}:</b></h5>
+<p>{{ comment.comment }}</p>
+<a class="btn btn-danger" href="/csrf/delete/{{ comment.id }}">Delete</a>
+<hr />
+{% endfor %} {% endblock %}

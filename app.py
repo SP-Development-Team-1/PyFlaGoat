@@ -459,9 +459,34 @@ def delete_linuxCommand(id):
 # CSRF #
 ########
 
-@app.route('/csrf')
+class CSRF_Comment(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    author = db.Column(db.String(20), nullable=False, default='N/A')
+    comment = db.Column(db.String(255), nullable=False)
+    date_posted = db.Column(db.DateTime, nullable=False, default=datetime.utcnow)
+    
+    def __repr__(self):
+        return 'Comment ' + str(self.id)
+    
+@app.route('/csrf', methods=['GET', 'POST'])
 def csrf():
-    return render_template('csrf/csrf.html')
+    if request.method == 'POST':
+        user_name = request.form['author']
+        user_comment = request.form['comment']
+        new_comment = CSRF_Comment(author=user_name, comment=user_comment)
+        db.session.add(new_comment)
+        db.session.commit()
+        return redirect('/csrf')
+    else:
+        all_comments = CSRF_Comment.query.order_by(CSRF_Comment.date_posted).all()
+        return render_template("csrf/csrf.html", comments=all_comments)
+
+@app.route('/csrf/delete/<int:id>')
+def csrf_delete_comment(id):
+    comment = CSRF_Comment.query.get_or_404(id)
+    db.session.delete(comment)
+    db.session.commit()
+    return redirect('/csrf')
 
 ########
 # SSRF #
