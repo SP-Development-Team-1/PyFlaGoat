@@ -439,6 +439,7 @@ def serialize_exploit():
                 db.session.add(new_serializedCommand)
                 db.session.commit()
             all_commands = Deserialization.query.filter(text("serialized={}".format("\'"+ alr_serialized +"\'"))).all()
+            print(deserialized_object)
             return render_template('insecure_deserialization/deserialized.html', commands = all_commands)
     else:
         return render_template('insecure_deserialization/deserialization.html')
