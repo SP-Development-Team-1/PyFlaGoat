@@ -4,41 +4,77 @@
 
 <br>
 
-<h1>Cross Site Request Forgery</h1>
+<div>
+  <h1 style="display: inline">Cross Site Request Forgery</h1>
+  <div class="btn-group float-right">
+    <button style="display: inline" type="button" class="btn btn-primary dropdown-toggle" data-toggle="dropdown"
+      aria-haspopup="true" aria-expanded="false">
+      Log In
+    </button>
+    <style>
+          .dropdown-menu-right {
+          width: 250px !important;
+          height: 320px !important;
+      }
+    </style>
+    <form class="dropdown-menu p-4 dropdown-menu-right">
+      <div class="form-group">
+        <label for="exampleDropdownFormEmail2">Username</label>
+        <input type="username" class="form-control" id="username" placeholder="Username">
+      </div>
+      <div class="form-group">
+        <label for="exampleDropdownFormPassword2">Password</label>
+        <input type="password" class="form-control" id="password" placeholder="Password">
+      </div>
+      <div class="form-check">
+        <input type="checkbox" class="form-check-input" id="rememberMe">
+        <label class="form-check-label" for="rememberMe">
+          Remember me
+        </label>
+      </div>
+      <br>
+      <button type="submit" class="btn btn-primary">Sign in</button>
+    </form>
+  </div>
+</div>
 
-<hr />
-<h2>CSRF Comments</h2>
-<br>
+<hr>
 
+<div class="jumbotron">
+
+  <h2>Funny Post</h2>
+  <p>This intentionally vulnerable site was created for pre-development research at Fasoo.
+    The skeleton repository for this site can be found <a
+      href="https://github.com/SP-Development-Team-1/PyFlaGoat">here</a>.</p>
+  <p style="text-align: center"><img src="/static/img/csrf/bigO.jpg" width="50%" height="50%">
+  </p>
+  <p>Go visit <a href="https://en.fasoo.com">Fasoo</a>, Korea's leading data security firm.</p>
+  <hr>
+  <h3>Comments</h3><br>
+  {% for comment in comments %}
+  <div style="margin-left: 3%">
+    <small>{{ comment.date_posted }}</small>
+    <h5>
+      <img src="/static/img/broken_access/blank_profile.png" class="rounded" width=5%>
+      <b>{{ comment.author }}</b>
+      <a class="btn btn-danger float-right" href="/csrf/delete/{{ comment.id }}">Delete</a>
+    </h5>
+    <p>{{ comment.comment }}</p>
+    <hr>
+  </div>
+  {% endfor %}
+</div>
+<hr>
+
+<h3>Submit a comment:</h3>
 <form action="/csrf" method="POST">
-  <label for="post">Author:</label>
-  <input
-    class="form-control"
-    type="text"
-    name="author"
-    id="author"
-    placeholder="Enter Author Name"
-    aria-label="Enter Author Name"
-  />
+  <input class="form-control" type="text" name="author" id="author" placeholder="Enter Author Name"
+    aria-label="Enter Author Name" />
   <br />
-  <label for="post">Comment:</label>
-  <input
-    class="form-control"
-    type="text"
-    name="comment"
-    id="comment"
-    placeholder="Add a comment"
-    aria-label="Add a comment"
-  />
-  <br />
+  <textarea class="form-control" placeholder="Compose a comment ..." name="comment" id="comment" rows="3"
+    aria-label="Enter Content"></textarea>
+  <br>
   <input type="submit" class="btn btn-primary" value="Submit" />
 </form>
-<hr />
 
-{% for comment in comments %}
-<small>{{ comment.date_posted }}</small>
-<h5><b>{{ comment.author }}:</b></h5>
-<p>{{ comment.comment }}</p>
-<a class="btn btn-danger" href="/csrf/delete/{{ comment.id }}">Delete</a>
-<hr />
-{% endfor %} {% endblock %}
+{% endblock %}

@@ -471,6 +471,9 @@ class CSRF_Comment(db.Model):
 @app.route('/csrf', methods=['GET', 'POST'])
 def csrf():
     if request.method == 'POST':
+        if request.form['username'] and request.form['password']:
+            curr_user = request.form['username']
+            return render_template
         user_name = request.form['author']
         user_comment = request.form['comment']
         new_comment = CSRF_Comment(author=user_name, comment=user_comment)
