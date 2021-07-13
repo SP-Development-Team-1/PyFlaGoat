@@ -12,11 +12,13 @@
 <script defer src="{{url_for('static', filename='js/xxe.js')}}"></script>
 
 <p><b>Youngjun</b> uploaded a photo.</p>
+<p style="text-align: left;">
 <img
-  src="{{url_for('static', filename='meme1.jpg')}}"
+  src="/static/meme1.jpg"
   width="30%"
-  height="50%"
+  height="30%"
 />
+</p>
 <form name='ajax' onsubmit="SendToServer()">
   <br />
   <label for="post">Author:</label>
