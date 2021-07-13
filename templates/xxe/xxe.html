@@ -6,6 +6,9 @@
 <hr />
 <h2>XML External Entity Attack:</h2>
 <br />
+
+<script src="{{url_for('static', filename='js/xxe.js')}}"></script>
+
 <p><b>Youngjun</b> uploaded a photo.</p>
 <img
   src="{{url_for('static', filename='meme1.jpg')}}"
@@ -44,4 +47,7 @@
 <p>{{ comment.comment }}</p>
 <a class="btn btn-danger" href="/xxe/delete/{{ comment.id }}">Delete</a>
 <hr />
-{% endfor %} {% endblock %}
+{% endfor %}
+
+<script src="{{url_for('static', filename='js/xxe.js')}}"></script>
+{% endblock %}

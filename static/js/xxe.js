@@ -24,7 +24,7 @@ function SendToServer() {
     comment +
     "</text>" +
     "</comm>";
-  var url = "http://127.0.0.1:2000/xxe_parse";
+  var url = "http://127.0.0.1:5000/xxe";
   xhr.open("POST", url, true);
   xhr.setRequestHeader("Content-Type", "text/xml");
   xhr.send(xml);
