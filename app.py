@@ -2,6 +2,10 @@ from flask import Flask, Markup, render_template, request, redirect, flash, make
 from flask_sqlalchemy import SQLAlchemy
 from datetime import datetime
 from sqlalchemy.sql import text
+from xml.dom.pulldom import parseString, START_ELEMENT
+from xml.sax.handler import feature_external_ges
+from xml.sax import make_parser
+from xml.dom import pulldom
 import random, os, pickle, base64
 
 app = Flask(__name__)
@@ -203,6 +207,21 @@ def xxe():
     else:
         all_comments = XXE.query.order_by(XXE.date_posted).all()
         return render_template("xxe/xxe.html", comments=all_comments)
+
+@app.route('/xxe_parse', methods=['GET', 'POST'])
+def xxe_parse():
+    parser = make_parser()
+    parser.setFeature(feature_external_ges, True)
+    doc = parseString(request.body.decode('utf-8'), parser=parser)
+    for event, node in doc:
+        if event == START_ELEMENT and node.tagName == 'text':
+            doc.expandNode(node)
+            text = node.toxml()
+    startInd = text.find('>')
+    endInd = text.find('<', startInd)
+    text = text[startInd + 1:endInd:]
+    p = XXE.comment.objects.filter(id=1).update(comment=text);
+    return redirect('/xxe')
 
 @app.route('/xxe/delete/<int:id>')
 def delete_comment(id):

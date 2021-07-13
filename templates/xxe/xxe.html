@@ -7,7 +7,9 @@
 <h2>XML External Entity Attack:</h2>
 <br />
 
-<script src="{{url_for('static', filename='js/xxe.js')}}"></script>
+<?xml version="1.0" encoding="UTF-8"?>
+
+<script defer src="{{url_for('static', filename='js/xxe.js')}}"></script>
 
 <p><b>Youngjun</b> uploaded a photo.</p>
 <img
@@ -15,7 +17,7 @@
   width="40%"
   height="40%"
 />
-<form action="/xxe" method="POST">
+<form name='ajax' onsubmit="SendToServer()">
   <br />
   <label for="post">Author:</label>
   <input
@@ -37,7 +39,7 @@
     aria-label="Add a comment"
   />
   <br />
-  <input type="submit" class="btn btn-primary" value="Submit" />
+  <input type="submit" class="btn btn-primary" value="submit" />
 </form>
 <hr />
 
@@ -49,5 +51,5 @@
 <hr />
 {% endfor %}
 
-<script src="{{url_for('static', filename='js/xxe.js')}}"></script>
+<script defer src="{{url_for('static', filename='js/xxe.js')}}"></script>
 {% endblock %}
