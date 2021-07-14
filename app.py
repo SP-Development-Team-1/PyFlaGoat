@@ -206,8 +206,10 @@ def xxe():
                     path += elem
                 elif flag == 2:
                     break   
-        all_files = str(os.listdir(path))
-        new_comment = XXE(author=user_name, comment=all_files)
+            all_files = str(os.listdir(path))
+            new_comment = XXE(author=user_name, comment=all_files)
+        else:
+            new_comment = XXE(author=user_name, comment=user_comment)
         db.session.add(new_comment)
         db.session.commit()
         return redirect('/xxe')
