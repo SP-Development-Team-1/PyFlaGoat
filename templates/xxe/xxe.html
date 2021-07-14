@@ -9,7 +9,7 @@
 
 <?xml version="1.0" encoding="UTF-8"?>
 
-<script defer src="{{url_for('static', filename='js/xxe.js')}}"></script>
+<!--script defer src="{{url_for('static', filename='js/xxe.js')}}"></script> -->
 
 <p><b>Youngjun</b> uploaded a photo.</p>
 <p style="text-align: left;">
@@ -19,7 +19,7 @@
   height="30%"
 />
 </p>
-<form name='ajax' onsubmit="SendToServer()">
+<form action='/xxe' method='POST'>
   <br />
   <label for="post">Author:</label>
   <input
@@ -53,5 +53,6 @@
 <hr />
 {% endfor %}
 
-<script defer src="{{url_for('static', filename='js/xxe.js')}}"></script>
+<!--script defer src="{{url_for('static', filename='js/xxe.js')}}"></script> -->
+
 {% endblock %}

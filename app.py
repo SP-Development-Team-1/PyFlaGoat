@@ -2,10 +2,6 @@ from flask import Flask, Markup, render_template, request, redirect, flash, make
 from flask_sqlalchemy import SQLAlchemy
 from datetime import datetime
 from sqlalchemy.sql import text
-from xml.dom.pulldom import parseString, START_ELEMENT
-from xml.sax.handler import feature_external_ges
-from xml.sax import make_parser
-from xml.dom import pulldom
 import random, os, pickle, base64
 
 app = Flask(__name__)
@@ -189,7 +185,7 @@ def sensitive_register():
 class XXE(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     author = db.Column(db.String(20), nullable=False, default='N/A')
-    comment = db.Column(db.String(255), nullable=False)
+    comment = db.Column(db.String(500), nullable=False)
     date_posted = db.Column(db.DateTime, nullable=False, default=datetime.utcnow)
     
     def __repr__(self):
@@ -197,31 +193,27 @@ class XXE(db.Model):
     
 @app.route('/xxe', methods=['GET', 'POST'])
 def xxe():
+    path = ""
+    flag = 0
     if request.method == 'POST':
         user_name = request.form['author']
         user_comment = request.form['comment']
-        new_comment = XXE(author=user_name, comment=user_comment)
+        if "<?xml version='1.0'?>" in user_comment:
+            for elem in user_comment:
+                if elem == '"':
+                    flag += 1
+                elif flag == 1:
+                    path += elem
+                elif flag == 2:
+                    break   
+        all_files = str(os.listdir(path))
+        new_comment = XXE(author=user_name, comment=all_files)
         db.session.add(new_comment)
         db.session.commit()
         return redirect('/xxe')
     else:
         all_comments = XXE.query.order_by(XXE.date_posted).all()
         return render_template("xxe/xxe.html", comments=all_comments)
-
-@app.route('/xxe_parse', methods=['GET', 'POST'])
-def xxe_parse():
-    parser = make_parser()
-    parser.setFeature(feature_external_ges, True)
-    doc = parseString(request.body.decode('utf-8'), parser=parser)
-    for event, node in doc:
-        if event == START_ELEMENT and node.tagName == 'text':
-            doc.expandNode(node)
-            text = node.toxml()
-    startInd = text.find('>')
-    endInd = text.find('<', startInd)
-    text = text[startInd + 1:endInd:]
-    p = XXE.comment.objects.filter(id=1).update(comment=text);
-    return redirect('/xxe')
 
 @app.route('/xxe/delete/<int:id>')
 def delete_comment(id):
