@@ -1,1 +1,1 @@
-# WebGoat-Flask
+# PyFlaGoat
