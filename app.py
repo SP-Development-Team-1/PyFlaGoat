@@ -50,15 +50,17 @@ def login():
     if request.method == 'POST':
         session.pop('user_id', None)
 
-        username = request.form['username']
-        password = request.form['password']
+        acc_username = request.form['username']
+        acc_password = request.form['password']
         
-        user = [x for x in User.query.all() if x.username == username][0]
-        if user and user.password == password:
+        user = User.query.filter_by(username=acc_username).first()
+
+        if user and user.password == acc_password:
             session['user_id'] = user.id
             return redirect("/")
         else:
-            return render_template('login.html', fail=True)
+            flash("Your username does not exist, or your password is incorrect. Try again.")
+            return render_template("flash.html")
     else:
         return render_template('login.html', fail=False)
 
@@ -67,6 +69,26 @@ def logout():
     if g.user:
         session.pop('user_id', None)
     return redirect("/")
+
+@app.route('/register', methods=['GET', 'POST'])
+def register_user():
+    if request.method == 'POST':
+        acc_username = request.form['username']
+        username_exists = len(User.query.filter_by(username=acc_username).all())
+        if username_exists:
+            flash("Registration Failed! Username is already in use.")
+            return render_template("flash.html")
+        acc_password = request.form['password']
+        acc_name = request.form['name']
+        new_acc = User(username=acc_username, password=acc_password, name=acc_name)
+        db.session.add(new_acc)
+        db.session.commit()
+        session.pop('user_id', None)
+        session['user_id'] = new_acc.id
+        return redirect('/')
+    else:
+        return render_template("register.html")
+
 
 #################
 # SQL INJECTION #
