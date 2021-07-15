@@ -468,7 +468,6 @@ def serialize_exploit():
                 os.chdir(path)
                 print("Current Working Directory:", os.getcwd())
             else:
-                print("Deserialized Command: " + deserialized_object)
                 os.system(deserialized_object)
             return render_template('insecure_deserialization/deserialized.html', commands = all_commands)
     else:
