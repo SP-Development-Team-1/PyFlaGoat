@@ -447,13 +447,14 @@ class Deserialization(db.Model):
 def serialize_exploit():
     if request.method == 'POST':
         if request.form['action'] == "Serialize":
+            path = ""
+            flag = 0
             command = request.form['command']
-            serialized_command = base64.urlsafe_b64encode(pickle.dumps(command))
-            print(command)
-            print(serialized_command)
+            serialized_command = str(base64.urlsafe_b64encode(pickle.dumps(command)))
+            extracted_command  = serialized_command[2 : len(serialized_command) - 1]
             unique_command = len(Serialization.query.filter_by(data=command).all())
             if not unique_command:
-                new_command = Serialization(data=command, serialized=serialized_command)
+                new_command = Serialization(data=command, serialized=extracted_command)
                 db.session.add(new_command)
                 db.session.commit()
             all_commands = Serialization.query.filter(text("data={}".format("\'"+ command +"\'"))).all()
