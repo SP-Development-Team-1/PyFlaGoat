@@ -6,36 +6,6 @@
 
 <div>
   <h1 style="display: inline">Cross Site Request Forgery</h1>
-  <div class="btn-group float-right">
-    <button style="display: inline" type="button" class="btn btn-primary dropdown-toggle" data-toggle="dropdown"
-      aria-haspopup="true" aria-expanded="false">
-      Log In
-    </button>
-    <style>
-          .dropdown-menu-right {
-          width: 250px !important;
-          height: 320px !important;
-      }
-    </style>
-    <form class="dropdown-menu p-4 dropdown-menu-right">
-      <div class="form-group">
-        <label for="exampleDropdownFormEmail2">Username</label>
-        <input type="username" class="form-control" id="username" placeholder="Username">
-      </div>
-      <div class="form-group">
-        <label for="exampleDropdownFormPassword2">Password</label>
-        <input type="password" class="form-control" id="password" placeholder="Password">
-      </div>
-      <div class="form-check">
-        <input type="checkbox" class="form-check-input" id="rememberMe">
-        <label class="form-check-label" for="rememberMe">
-          Remember me
-        </label>
-      </div>
-      <br>
-      <button type="submit" class="btn btn-primary">Sign in</button>
-    </form>
-  </div>
 </div>
 
 <hr>
@@ -51,18 +21,36 @@
   <p>Go visit <a href="https://en.fasoo.com">Fasoo</a>, Korea's leading data security firm.</p>
   <hr>
   <h3>Comments</h3><br>
-  {% for comment in comments %}
   <div style="margin-left: 3%">
-    <small>{{ comment.date_posted }}</small>
-    <h5>
-      <img src="/static/img/broken_access/blank_profile.png" class="rounded" width=5%>
-      <b>{{ comment.author }}</b>
-      <a class="btn btn-danger float-right" href="/csrf/delete/{{ comment.id }}">Delete</a>
-    </h5>
-    <p>{{ comment.comment }}</p>
-    <hr>
+    {% for comment in comments %}
+      <small>{{ comment.date_posted }}</small>
+      <h5>
+        <img src="/static/img/broken_access/blank_profile.png" class="rounded" width=5%>
+        <b>{{ comment.author }}</b>
+        <a class="btn btn-danger float-right" href="/csrf/delete/{{ comment.id }}">Delete</a>
+      </h5>
+      <p>{{ comment.comment }}</p>
+      <hr>
+    {% endfor %}
+    <div name="comment_example_2">
+      <small>{{ example_date }}</small>
+      <h5>
+        <img src="/static/img/broken_access/blank_profile.png" class="rounded" width=5%>
+        <b>Hater9191</b>
+      </h5>
+      <p>What an insensitive post. I'm triggered. </p>
+      <hr>
+    </div>
+    <div name="comment_example_1">
+      <small>{{ example_date }}</small>
+      <h5>
+        <img src="/static/img/broken_access/blank_profile.png" class="rounded" width=5%>
+        <b>Fanboy0227</b>
+      </h5>
+      <p>Awesome blog! Do you have a donation box?</p>
+      <hr>
+    </div>
   </div>
-  {% endfor %}
 </div>
 <hr>
 

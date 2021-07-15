@@ -1,4 +1,4 @@
-from flask import Flask, Markup, render_template, request, redirect, flash, make_response
+from flask import Flask, Markup, render_template, request, redirect, flash, make_response, g
 from flask_sqlalchemy import SQLAlchemy
 from datetime import datetime
 from sqlalchemy.sql import text
@@ -22,6 +22,19 @@ db.session.commit()
 @app.route('/')
 def index():
         return render_template('index.html')
+
+##########
+# LOG IN #
+##########
+
+class User(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    username = db.Column(db.String(50), nullable=False)
+    password = db.Column(db.String(20), nullable=False)
+
+@app.route('/login')
+def login():
+    return render_template('login.html')
 
 #################
 # SQL INJECTION #
@@ -510,7 +523,8 @@ def csrf():
         return redirect('/csrf')
     else:
         all_comments = CSRF_Comment.query.order_by(CSRF_Comment.date_posted).all()
-        return render_template("csrf/csrf.html", comments=all_comments)
+        all_comments.reverse()
+        return render_template("csrf/csrf.html", comments=all_comments, example_date=datetime(2021, 6, 1))
 
 @app.route('/csrf/delete/<int:id>')
 def csrf_delete_comment(id):
