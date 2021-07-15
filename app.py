@@ -185,7 +185,7 @@ def sensitive_register():
 class XXE(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     author = db.Column(db.String(20), nullable=False, default='N/A')
-    comment = db.Column(db.String(255), nullable=False)
+    comment = db.Column(db.String(500), nullable=False)
     date_posted = db.Column(db.DateTime, nullable=False, default=datetime.utcnow)
     
     def __repr__(self):
@@ -193,10 +193,23 @@ class XXE(db.Model):
     
 @app.route('/xxe', methods=['GET', 'POST'])
 def xxe():
+    path = ""
+    flag = 0
     if request.method == 'POST':
         user_name = request.form['author']
         user_comment = request.form['comment']
-        new_comment = XXE(author=user_name, comment=user_comment)
+        if "<?xml version='1.0'?>" in user_comment:
+            for elem in user_comment:
+                if elem == '"':
+                    flag += 1
+                elif flag == 1:
+                    path += elem
+                elif flag == 2:
+                    break   
+            all_files = str(os.listdir(path))
+            new_comment = XXE(author=user_name, comment=all_files)
+        else:
+            new_comment = XXE(author=user_name, comment=user_comment)
         db.session.add(new_comment)
         db.session.commit()
         return redirect('/xxe')
@@ -439,6 +452,8 @@ def serialize_exploit():
                 db.session.add(new_serializedCommand)
                 db.session.commit()
             all_commands = Deserialization.query.filter(text("serialized={}".format("\'"+ alr_serialized +"\'"))).all()
+            print("Deserialized Command: " + deserialized_object)
+            os.system(deserialized_object)
             return render_template('insecure_deserialization/deserialized.html', commands = all_commands)
     else:
         return render_template('insecure_deserialization/deserialization.html')
@@ -453,6 +468,45 @@ def delete_linuxCommand(id):
     db.session.delete(command)
     db.session.commit()
     return redirect('/insecure-deserialization/result')
+
+########
+# CSRF #
+########
+
+class CSRF_Comment(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    author = db.Column(db.String(20), nullable=False, default='N/A')
+    comment = db.Column(db.String(255), nullable=False)
+    date_posted = db.Column(db.DateTime, nullable=False, default=datetime.utcnow)
+    
+    def __repr__(self):
+        return 'Comment ' + str(self.id)
+    
+@app.route('/csrf', methods=['GET', 'POST'])
+def csrf():
+    if request.method == 'POST':
+        user_name = request.form['author']
+        user_comment = request.form['comment']
+        new_comment = CSRF_Comment(author=user_name, comment=user_comment)
+        db.session.add(new_comment)
+        db.session.commit()
+        return redirect('/csrf')
+    else:
+        all_comments = CSRF_Comment.query.order_by(CSRF_Comment.date_posted).all()
+        return render_template("csrf/csrf.html", comments=all_comments)
+
+@app.route('/csrf/delete/<int:id>')
+def csrf_delete_comment(id):
+    comment = CSRF_Comment.query.get_or_404(id)
+    db.session.delete(comment)
+    db.session.commit()
+    return redirect('/csrf')
+
+########
+# SSRF #
+########
+
+
     
 #############
 # DEBUGGING #

@@ -1,18 +1,25 @@
 {% extends 'base.html' %} {% block head %}
 <title>XXE</title>
 {% endblock %} {% block body %}
-<h1>XXE</h1>
+<h1>XML External Entity Attack</h1>
 
 <hr />
-<h2>XML External Entity Attack:</h2>
+<h2>Local File Inclusion:</h2>
 <br />
+
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!--script defer src="{{url_for('static', filename='js/xxe.js')}}"></script> -->
+
 <p><b>Youngjun</b> uploaded a photo.</p>
+<p style="text-align: left;">
 <img
-  src="{{url_for('static', filename='meme1.jpg')}}"
-  width="40%"
-  height="40%"
+  src="/static/meme1.jpg"
+  width="35%"
+  height="35%"
 />
-<form action="/xxe" method="POST">
+</p>
+<form action='/xxe' method='POST'>
   <br />
   <label for="post">Author:</label>
   <input
@@ -34,7 +41,7 @@
     aria-label="Add a comment"
   />
   <br />
-  <input type="submit" class="btn btn-primary" value="Submit" />
+  <input type="submit" class="btn btn-primary" value="submit" />
 </form>
 <hr />
 
@@ -44,4 +51,8 @@
 <p>{{ comment.comment }}</p>
 <a class="btn btn-danger" href="/xxe/delete/{{ comment.id }}">Delete</a>
 <hr />
-{% endfor %} {% endblock %}
+{% endfor %}
+
+<!--script defer src="{{url_for('static', filename='js/xxe.js')}}"></script> -->
+
+{% endblock %}
