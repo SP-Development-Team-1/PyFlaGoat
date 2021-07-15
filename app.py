@@ -436,6 +436,8 @@ def serialize_exploit():
         if request.form['action'] == "Serialize":
             command = request.form['command']
             serialized_command = base64.urlsafe_b64encode(pickle.dumps(command))
+            print(command)
+            print(serialized_command)
             unique_command = len(Serialization.query.filter_by(data=command).all())
             if not unique_command:
                 new_command = Serialization(data=command, serialized=serialized_command)
@@ -444,6 +446,8 @@ def serialize_exploit():
             all_commands = Serialization.query.filter(text("data={}".format("\'"+ command +"\'"))).all()
             return render_template('insecure_deserialization/serialized.html', commands = all_commands)
         else:
+            path = ""
+            flag = 0
             alr_serialized = request.form['serialized']
             deserialized_object = pickle.loads(base64.urlsafe_b64decode(alr_serialized))
             unique_serializedCommand = len(Deserialization.query.filter_by(serialized=alr_serialized).all())
@@ -453,7 +457,18 @@ def serialize_exploit():
                 db.session.commit()
             all_commands = Deserialization.query.filter(text("serialized={}".format("\'"+ alr_serialized +"\'"))).all()
             print("Deserialized Command: " + deserialized_object)
-            os.system(deserialized_object)
+            if "cd" in deserialized_object:
+                for elem in deserialized_object:
+                    if elem == ' ':
+                        flag += 1
+                    elif flag == 1:
+                        path += elem
+                    elif flag == 2:
+                        break
+                os.chdir(path)
+                print("Current Working Directory:", os.getcwd())
+            else:
+                os.system(deserialized_object)
             return render_template('insecure_deserialization/deserialized.html', commands = all_commands)
     else:
         return render_template('insecure_deserialization/deserialization.html')
