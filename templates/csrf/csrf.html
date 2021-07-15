@@ -55,14 +55,17 @@
 <hr>
 
 <h3>Submit a comment:</h3>
-<form action="/csrf" method="POST">
-  <input class="form-control" type="text" name="author" id="author" placeholder="Enter Author Name"
-    aria-label="Enter Author Name" />
-  <br />
-  <textarea class="form-control" placeholder="Compose a comment ..." name="comment" id="comment" rows="3"
-    aria-label="Enter Content"></textarea>
-  <br>
-  <input type="submit" class="btn btn-primary" value="Submit" />
-</form>
+  <form action="/csrf" method="POST">
+    <textarea class="form-control" placeholder="Compose a comment ..." name="comment" id="comment" rows="3"
+      aria-label="Enter Content"></textarea>
+    <br>
+    {% if g.user %}
+      <input type="submit" class="btn btn-primary" value="Submit">
+    {% else %}
+      <p><input type="submit" class="btn btn-primary" value="Submit" disabled> &nbsp;&nbsp;### <a href="/login">Log in</a> to post a comment.</p>
+    {% endif %}
+  </form>
+
+<br><br><br>
 
 {% endblock %}

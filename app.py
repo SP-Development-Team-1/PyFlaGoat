@@ -6,6 +6,10 @@ import random, os, pickle, base64
 
 app = Flask(__name__)
 app.secret_key = 'thisisasuperdupersecretkey'
+
+app.SESSION_COOKIE_HTTPONLY = False
+app.REMEMBER_COOKIE_HTTPONLY = False
+
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///database/default.db'
 app.config['SQLALCHEMY_BINDS'] = {
     'injection': 'sqlite:///database/injection.db',
