@@ -490,8 +490,6 @@ def serialize_exploit():
             all_commands = Serialization.query.filter(text("data={}".format("\'"+ command +"\'"))).all()
             return render_template('insecure_deserialization/serialized.html', commands = all_commands)
         else:
-            path = ""
-            flag = 0
             alr_serialized = request.form['serialized']
             deserialized_object = pickle.loads(base64.urlsafe_b64decode(alr_serialized))
             unique_serializedCommand = len(Deserialization.query.filter_by(serialized=alr_serialized).all())
@@ -502,13 +500,7 @@ def serialize_exploit():
             all_commands = Deserialization.query.filter(text("serialized={}".format("\'"+ alr_serialized +"\'"))).all()
             print("Deserialized Command: " + deserialized_object)
             if "cd" in deserialized_object:
-                for elem in deserialized_object:
-                    if elem == ' ':
-                        flag += 1
-                    elif flag == 1:
-                        path += elem
-                    elif flag == 2:
-                        break
+                path = deserialized_object[3 : len(deserialized_object)]
                 os.chdir(path)
                 print("Current Working Directory:", os.getcwd())
             else:
