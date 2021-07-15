@@ -479,8 +479,6 @@ class Deserialization(db.Model):
 def serialize_exploit():
     if request.method == 'POST':
         if request.form['action'] == "Serialize":
-            path = ""
-            flag = 0
             command = request.form['command']
             serialized_command = str(base64.urlsafe_b64encode(pickle.dumps(command)))
             extracted_command  = serialized_command[2 : len(serialized_command) - 1]
