@@ -1,10 +1,11 @@
-from flask import Flask, Markup, render_template, request, redirect, flash, make_response, g
+from flask import Flask, Markup, render_template, request, redirect, flash, make_response, session, g
 from flask_sqlalchemy import SQLAlchemy
 from datetime import datetime
 from sqlalchemy.sql import text
 import random, os, pickle, base64
 
 app = Flask(__name__)
+app.secret_key = 'thisisasuperdupersecretkey'
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///database/default.db'
 app.config['SQLALCHEMY_BINDS'] = {
     'injection': 'sqlite:///database/injection.db',
@@ -29,12 +30,43 @@ def index():
 
 class User(db.Model):
     id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(50), nullable=False)
     username = db.Column(db.String(50), nullable=False)
     password = db.Column(db.String(20), nullable=False)
 
-@app.route('/login')
+    def __repr__(self):
+        return self.username
+
+@app.before_request
+def before_request():
+    g.user = None
+
+    if 'user_id' in session:
+        user = [x for x in User.query.all() if x.id == session['user_id']][0]
+        g.user = user
+
+@app.route('/login',  methods=['GET', 'POST'])
 def login():
-    return render_template('login.html')
+    if request.method == 'POST':
+        session.pop('user_id', None)
+
+        username = request.form['username']
+        password = request.form['password']
+        
+        user = [x for x in User.query.all() if x.username == username][0]
+        if user and user.password == password:
+            session['user_id'] = user.id
+            return redirect("/")
+        else:
+            return render_template('login.html', fail=True)
+    else:
+        return render_template('login.html', fail=False)
+
+@app.route('/logout')
+def logout():
+    if g.user:
+        session.pop('user_id', None)
+    return redirect("/")
 
 #################
 # SQL INJECTION #
