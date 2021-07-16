@@ -1,8 +1,13 @@
-from flask import Flask, Markup, render_template, request, redirect, flash, make_response, session, g
+from flask import Flask, Markup, render_template, request, redirect, flash, make_response, session, g, response
 from flask_sqlalchemy import SQLAlchemy
 from datetime import datetime
 from sqlalchemy.sql import text
-import random, os, pickle, base64
+from loguru import logger
+import random
+import os
+import pickle
+import base64
+import time
 
 app = Flask(__name__)
 app.secret_key = 'thisisasuperdupersecretkey'
@@ -500,6 +505,25 @@ class Deserialization(db.Model):
     id = db.Column(db.Integer, primary_key=True, nullable=False)
     serialized = db.Column(db.String(100), nullable=False)
     deserialized = db.Column(db.String(100), nullable=False)
+    
+# configure logger
+logger.add("/static/job.log", format="{time} - {message}")
+
+# adjusted flask_logger
+def flask_logger():
+    with open("/static/job.log") as log_info:
+        for i in range(25):
+            logger.info(f"iteration #{i}")
+            data = log_info.read()
+            yield data.encode()
+            time.sleep(1)
+        # Create empty job.log, old logging will be deleted
+        open("/static/job.log", 'w').close()
+
+@app.route("/log_stream", methods=["GET"])
+def stream():
+    """returns logging information"""
+    return response(flask_logger(), mimetype="text/plain", content_type="text/event-stream")
 
 @app.route('/insecure-deserialization', methods=['GET', 'POST'])
 def serialize_exploit():
