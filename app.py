@@ -3,6 +3,7 @@ from flask_sqlalchemy import SQLAlchemy
 from datetime import datetime
 from sqlalchemy.sql import text
 from loguru import logger
+import subprocess
 import random
 import os
 import pickle
@@ -509,21 +510,38 @@ class Deserialization(db.Model):
 # configure logger
 logger.add("/static/job.log", format="{time} - {message}")
 
-# adjusted flask_logger
-def flask_logger():
+# list to store deserialized_object, making it availabe to stream()
+deserialized_storage = []
+
+def flask_logger(deserialized_object):
     with open("/static/job.log") as log_info:
-        for i in range(25):
-            logger.info(f"iteration #{i}")
+        logger.info("Deserialized Command: " + deserialized_object)
+        data = log_info.read()
+        yield data.encode()
+        time.sleep(1)
+        if "cd" in deserialized_object:
+            path = deserialized_object[3 : len(deserialized_object)]
+            os.chdir(path)
+            logger.info("Current Working Directory: " + str(os.getcwd()))
             data = log_info.read()
             yield data.encode()
             time.sleep(1)
-        # Create empty job.log, old logging will be deleted
+        else:
+            p = subprocess.check_output(deserialized_object, shell=True)
+            #p = subprocess.Popen(deserialized_object, stdout=subprocess.PIPE, shell=True)
+            #logger.info(p.stdout.read())
+            logger.info(p)
+            #logger.info(os.getcwd())
+            data = log_info.read()
+            yield data.encode()
+            time.sleep(1)
+            
         open("/static/job.log", 'w').close()
 
-@app.route("/log_stream", methods=["GET"])
+@app.route("/insecure-deserialization/log_stream", methods=["GET"])
 def stream():
-    """returns logging information"""
-    return Response(flask_logger(), mimetype="text/plain", content_type="text/event-stream")
+    deserialized_object = deserialized_storage[-1]
+    return Response(flask_logger(deserialized_object), mimetype="text/plain", content_type="text/event-stream")
 
 @app.route('/insecure-deserialization', methods=['GET', 'POST'])
 def serialize_exploit():
@@ -542,6 +560,7 @@ def serialize_exploit():
         else:
             alr_serialized = request.form['serialized']
             deserialized_object = pickle.loads(base64.urlsafe_b64decode(alr_serialized))
+            deserialized_storage.append(deserialized_object)
             unique_serializedCommand = len(Deserialization.query.filter_by(serialized=alr_serialized).all())
             if not unique_serializedCommand:
                 new_serializedCommand = Deserialization(serialized=alr_serialized, deserialized=deserialized_object)
@@ -564,8 +583,12 @@ def serialize_exploit():
 
 @app.route('/insecure-deserialization/result', methods=['GET', 'POST'])
 def result():
-        return render_template('insecure_deserialization/serialized.html')
+    return render_template('insecure_deserialization/serialized.html')
 
+@app.route('/insecure-deserialization/log_stream', methods=['GET', 'POST'])
+def log():
+    return render_template('insecure_deserialization/log.html')
+    
 @app.route('/insecure-deserialization/delete/<int:id>')
 def delete_linuxCommand(id):
     command = Serialization.query.get_or_404(id)

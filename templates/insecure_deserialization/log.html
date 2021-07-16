@@ -1,0 +1,35 @@
+{% extends 'base.html' %} {% block head %}
+<title>Log</title>
+<script src="https://code.jquery.com/jquery-2.1.1.min.js"></script>
+<script>
+	$(document).ready(function(){
+    var output = document.getElementById('output');
+    var xhr = new XMLHttpRequest();
+    xhr.open('GET', '{{ url_for('insecure-deserialization/log_stream') }}', true);
+    xhr.send();
+    setInterval(function() {
+        output.textContent = xhr.responseText;
+    	}, 500);
+    });
+</script>
+{% endblock %} {% block body %}
+<br>
+<div>
+  <h1 style="display: inline">Log:</h1>
+</div>
+<hr />
+
+<div style="justify-content: center;">
+  <h4 style="text-align: center;"><b>Logging will appear here:</b></h4>
+  <div class="br-special"></div>
+    <div class="logging_window">
+      <pre id="output"></pre>
+    </div>
+</div>
+<a class="btn btn-dark" href="/insecure-deserialization">Go Back</a>
+<br />
+<br />
+<br />
+{% endblock %}
+
+</form>
