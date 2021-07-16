@@ -533,6 +533,7 @@ def flask_logger(deserialized_object):
             logger.info(p)
             #logger.info(os.getcwd())
             data = log_info.read()
+            data = data[2 : len(data)]
             yield data.encode()
             time.sleep(1)
             
