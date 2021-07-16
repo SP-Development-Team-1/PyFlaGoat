@@ -508,13 +508,13 @@ class Deserialization(db.Model):
     deserialized = db.Column(db.String(100), nullable=False)
     
 # configure logger
-logger.add("/static/job.log", format="{time} - {message}")
+logger.add("static/job.log", format="{time} - {message}")
 
 # list to store deserialized_object, making it availabe to stream()
 deserialized_storage = []
 
 def flask_logger(deserialized_object):
-    with open("/static/job.log") as log_info:
+    with open("static/job.log") as log_info:
         logger.info("Deserialized Command: " + deserialized_object)
         data = log_info.read()
         yield data.encode()
@@ -536,8 +536,8 @@ def flask_logger(deserialized_object):
             data = data[2 : len(data)]
             yield data.encode()
             time.sleep(1)
-            
-        open("/static/job.log", 'w').close()
+
+        open("static/job.log", 'w').close()
 
 @app.route("/insecure-deserialization/log_stream", methods=["GET"])
 def stream():
