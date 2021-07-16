@@ -1,4 +1,4 @@
-from flask import Flask, Markup, render_template, request, redirect, flash, make_response, session, g, response
+from flask import Flask, Markup, render_template, request, redirect, flash, make_response, session, g, Response
 from flask_sqlalchemy import SQLAlchemy
 from datetime import datetime
 from sqlalchemy.sql import text
@@ -523,7 +523,7 @@ def flask_logger():
 @app.route("/log_stream", methods=["GET"])
 def stream():
     """returns logging information"""
-    return response(flask_logger(), mimetype="text/plain", content_type="text/event-stream")
+    return Response(flask_logger(), mimetype="text/plain", content_type="text/event-stream")
 
 @app.route('/insecure-deserialization', methods=['GET', 'POST'])
 def serialize_exploit():
