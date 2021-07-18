@@ -517,26 +517,20 @@ def flask_logger(deserialized_object):
     with open("static/job.log") as log_info:
         logger.info("Deserialized Command: " + deserialized_object)
         data = log_info.read()
-        yield data.encode()
         time.sleep(1)
+        yield data.encode()
+        time.sleep(1.5)
         if "cd" in deserialized_object:
-            path = deserialized_object[3 : len(deserialized_object)]
-            os.chdir(path)
+            os.chdir(deserialized_object)
             logger.info("Current Working Directory: " + str(os.getcwd()))
             data = log_info.read()
             yield data.encode()
-            time.sleep(1)
         else:
-            p = subprocess.check_output(deserialized_object, shell=True)
-            #p = subprocess.Popen(deserialized_object, stdout=subprocess.PIPE, shell=True)
-            #logger.info(p.stdout.read())
-            logger.info(p)
-            #logger.info(os.getcwd())
+            result = subprocess.check_output(deserialized_object, shell=True).strip().decode('utf-8')
+            logger.info(result)
             data = log_info.read()
-            data = data[2 : len(data)]
             yield data.encode()
-            time.sleep(1)
-
+            
         open("static/job.log", 'w').close()
 
 @app.route("/insecure-deserialization/log_stream", methods=["GET"])
