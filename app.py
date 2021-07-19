@@ -508,13 +508,13 @@ class Deserialization(db.Model):
     deserialized = db.Column(db.String(100), nullable=False)
     
 # configure logger
-logger.add("/static/job.log", format="{time} - {message}")
+logger.add("PyFlaGoat/static/job.log", format="{time} - {message}")
 
 # list to store deserialized_object, making it availabe to stream()
 deserialized_storage = []
 
 def flask_logger(deserialized_object):
-    with open("/static/job.log") as log_info:
+    with open("PyFlaGoat/static/job.log") as log_info:
         time.sleep(0.5)
         logger.info("Processing ...")
         data = log_info.read()
@@ -537,7 +537,7 @@ def flask_logger(deserialized_object):
             data = log_info.read()
             yield data.encode()
             
-        open("/static/job.log", 'w').close()
+        open("PyFlaGoat/static/job.log", 'w').close()
 
 @app.route("/insecure-deserialization/log_stream", methods=["GET"])
 def stream():
@@ -572,6 +572,7 @@ def serialize_exploit():
                 db.session.commit()
             all_commands = Deserialization.query.filter(text("serialized={}".format("\'"+ alr_serialized +"\'"))).all()
             print("")
+            '''
             print("Deserialized Command: " + deserialized_object)
             if "cd" in deserialized_object:
                 path = deserialized_object[3 : len(deserialized_object)]
@@ -581,6 +582,7 @@ def serialize_exploit():
             else:
                 os.system(deserialized_object)
                 print("")
+            '''
             return render_template('insecure_deserialization/deserialized.html', commands = all_commands)
     else:
         return render_template('insecure_deserialization/deserialization.html')
