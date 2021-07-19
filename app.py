@@ -521,8 +521,9 @@ def flask_logger(deserialized_object):
         yield data.encode()
         time.sleep(1.5)
         if "cd" in deserialized_object:
-            os.chdir(deserialized_object)
-            logger.info("Current Working Directory: " + str(os.getcwd()))
+            path = deserialized_object[3 : len(deserialized_object)]
+            os.chdir(path)
+            logger.info("Current Working Directory: " + str(os.getcwd()))   
             data = log_info.read()
             yield data.encode()
         else:
