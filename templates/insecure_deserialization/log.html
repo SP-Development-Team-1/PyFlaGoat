@@ -1,18 +1,10 @@
 {% extends 'base.html' %} {% block head %}
 <title>Log</title>
 <script src="https://code.jquery.com/jquery-2.1.1.min.js"></script>
-<script>
-	$(document).ready(function(){
-    var output = document.getElementById('output');
-    var xhr = new XMLHttpRequest();
-    xhr.open('GET', '{{ url_for(',/insecure-deserialization/log_stream,')}}', true);
-    xhr.send();
-    setInterval(function() {
-        output.textContent = xhr.responseText;
-    	}, 500);
-    });
-</script>
+
 {% endblock %} {% block body %}
+
+<link rel="stylesheet" type="text/css" href="/static/css/deserialized.css">
 <br>
 <div>
   <h1 style="display: inline">Log:</h1>
