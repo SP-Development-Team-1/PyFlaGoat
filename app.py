@@ -515,11 +515,16 @@ deserialized_storage = []
 
 def flask_logger(deserialized_object):
     with open("/static/job.log") as log_info:
+        time.sleep(0.5)
+        logger.info("Processing ...")
+        data = log_info.read()
+        yield data.encode()
+        time.sleep(1)
         logger.info("Deserialized Command: " + deserialized_object)
         data = log_info.read()
         time.sleep(1)
         yield data.encode()
-        time.sleep(1.5)
+        time.sleep(1.2)
         if "cd" in deserialized_object:
             path = deserialized_object[3 : len(deserialized_object)]
             os.chdir(path)

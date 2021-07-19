@@ -22,13 +22,18 @@
 <hr />
 
 <div style="justify-content: center;">
-  <h4 style="text-align: center;"><b>Logging will appear here:</b></h4>
+  <h3 style="text-align: center;"><b>Logging will appear here:</b></h3>
   <div class="br-special"></div>
     <div class="logging_window">
       <pre id="output"></pre>
     </div>
 </div>
-<a class="btn btn-dark" href="/insecure-deserialization">Go Back</a>
+<button onclick="goBack()" class="btn btn-dark button">Go Back</button>
+    <script>
+      function goBack() {
+        window.history.back();
+      }
+    </script>
 <br />
 <br />
 <br />
