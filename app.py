@@ -508,13 +508,13 @@ class Deserialization(db.Model):
     deserialized = db.Column(db.String(100), nullable=False)
     
 # configure logger
-logger.add("static/job.log", format="{time} - {message}")
+logger.add("/static/job.log", format="{time} - {message}")
 
 # list to store deserialized_object, making it availabe to stream()
 deserialized_storage = []
 
 def flask_logger(deserialized_object):
-    with open("static/job.log") as log_info:
+    with open("/static/job.log") as log_info:
         logger.info("Deserialized Command: " + deserialized_object)
         data = log_info.read()
         time.sleep(1)
@@ -531,7 +531,7 @@ def flask_logger(deserialized_object):
             data = log_info.read()
             yield data.encode()
             
-        open("static/job.log", 'w').close()
+        open("/static/job.log", 'w').close()
 
 @app.route("/insecure-deserialization/log_stream", methods=["GET"])
 def stream():
@@ -543,11 +543,10 @@ def serialize_exploit():
     if request.method == 'POST':
         if request.form['action'] == "Serialize":
             command = request.form['command']
-            serialized_command = str(base64.urlsafe_b64encode(pickle.dumps(command)))
-            extracted_command  = serialized_command[2 : len(serialized_command) - 1]
+            serialized_command = base64.urlsafe_b64encode(pickle.dumps(command)).strip().decode('utf-8')
             unique_command = len(Serialization.query.filter_by(data=command).all())
             if not unique_command:
-                new_command = Serialization(data=command, serialized=extracted_command)
+                new_command = Serialization(data=command, serialized=serialized_command)
                 db.session.add(new_command)
                 db.session.commit()
             all_commands = Serialization.query.filter(text("data={}".format("\'"+ command +"\'"))).all()
