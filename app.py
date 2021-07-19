@@ -539,7 +539,7 @@ def stream():
     deserialized_object = deserialized_storage[-1]
     return Response(flask_logger(deserialized_object), mimetype="text/plain", content_type="text/event-stream")
 
-@app.route("/insecure-deserialization/log", methods=["GET"])
+@app.route("/insecure-deserialization/log_view", methods=["GET"])
 def log_view():
     return render_template('insecure_deserialization/log.html')
 
