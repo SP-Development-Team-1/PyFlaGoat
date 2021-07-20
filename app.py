@@ -1,10 +1,21 @@
-from flask import Flask, Markup, render_template, request, redirect, flash, make_response
+from flask import Flask, Markup, render_template, request, redirect, flash, make_response, session, g, Response
 from flask_sqlalchemy import SQLAlchemy
 from datetime import datetime
 from sqlalchemy.sql import text
-import random, os, pickle, base64
+from loguru import logger
+import subprocess
+import random
+import os
+import pickle
+import base64
+import time
 
 app = Flask(__name__)
+app.secret_key = 'thisisasuperdupersecretkey'
+
+app.SESSION_COOKIE_HTTPONLY = False
+app.REMEMBER_COOKIE_HTTPONLY = False
+
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///database/default.db'
 app.config['SQLALCHEMY_BINDS'] = {
     'injection': 'sqlite:///database/injection.db',
@@ -22,6 +33,72 @@ db.session.commit()
 @app.route('/')
 def index():
         return render_template('index.html')
+
+##########
+# LOG IN #
+##########
+
+class User(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(50), nullable=False)
+    username = db.Column(db.String(50), nullable=False)
+    password = db.Column(db.String(20), nullable=False)
+
+    def __repr__(self):
+        return self.username
+
+@app.before_request
+def before_request():
+    g.user = None
+
+    if 'user_id' in session:
+        user = [x for x in User.query.all() if x.id == session['user_id']][0]
+        g.user = user
+
+@app.route('/login',  methods=['GET', 'POST'])
+def login():
+    if request.method == 'POST':
+        session.pop('user_id', None)
+
+        acc_username = request.form['username']
+        acc_password = request.form['password']
+        
+        user = User.query.filter_by(username=acc_username).first()
+
+        if user and user.password == acc_password:
+            session['user_id'] = user.id
+            return redirect("/")
+        else:
+            flash("Your username does not exist, or your password is incorrect. Try again.")
+            return render_template("flash.html")
+    else:
+        return render_template('login.html', fail=False)
+
+@app.route('/logout')
+def logout():
+    if g.user:
+        session.pop('user_id', None)
+    return redirect("/")
+
+@app.route('/register', methods=['GET', 'POST'])
+def register_user():
+    if request.method == 'POST':
+        acc_username = request.form['username']
+        username_exists = len(User.query.filter_by(username=acc_username).all())
+        if username_exists:
+            flash("Registration Failed! Username is already in use.")
+            return render_template("flash.html")
+        acc_password = request.form['password']
+        acc_name = request.form['name']
+        new_acc = User(username=acc_username, password=acc_password, name=acc_name)
+        db.session.add(new_acc)
+        db.session.commit()
+        session.pop('user_id', None)
+        session['user_id'] = new_acc.id
+        return redirect('/')
+    else:
+        return render_template("register.html")
+
 
 #################
 # SQL INJECTION #
@@ -430,12 +507,56 @@ class Deserialization(db.Model):
     serialized = db.Column(db.String(100), nullable=False)
     deserialized = db.Column(db.String(100), nullable=False)
 
+log_path = os.path.join(os.getcwd(), "static", "job.log")
+
+# configure logger
+logger.add(log_path, format="{time} - {message}")
+
+# list to store deserialized_object, making it availabe to stream()
+deserialized_storage = []
+
+def flask_logger(deserialized_object):
+    print(log_path)
+    with open(log_path) as log_info:
+        time.sleep(0.5)
+        logger.info("Processing ...")
+        data = log_info.read()
+        yield data.encode()
+        time.sleep(1)
+        logger.info("Deserialized Command: " + deserialized_object)
+        data = log_info.read()
+        time.sleep(1)
+        yield data.encode()
+        time.sleep(1.2)
+        if "cd" in deserialized_object:
+            path = deserialized_object[3 : len(deserialized_object)]
+            os.chdir(path)
+            logger.info("Current Working Directory: " + str(os.getcwd()))   
+            data = log_info.read()
+            yield data.encode()
+        else:
+            result = subprocess.check_output(deserialized_object, shell=True).strip().decode('utf-8')
+            logger.info(result)
+            data = log_info.read()
+            yield data.encode()
+            
+        open(log_path, 'w').close()
+
+@app.route("/insecure-deserialization/log_stream", methods=["GET"])
+def stream():
+    deserialized_object = deserialized_storage[-1]
+    return Response(flask_logger(deserialized_object), mimetype="text/plain", content_type="text/event-stream")
+
+@app.route("/insecure-deserialization/log_view", methods=["GET"])
+def log_view():
+    return render_template('insecure_deserialization/log.html')
+
 @app.route('/insecure-deserialization', methods=['GET', 'POST'])
 def serialize_exploit():
     if request.method == 'POST':
         if request.form['action'] == "Serialize":
             command = request.form['command']
-            serialized_command = base64.urlsafe_b64encode(pickle.dumps(command))
+            serialized_command = base64.urlsafe_b64encode(pickle.dumps(command)).strip().decode('utf-8')
             unique_command = len(Serialization.query.filter_by(data=command).all())
             if not unique_command:
                 new_command = Serialization(data=command, serialized=serialized_command)
@@ -446,28 +567,43 @@ def serialize_exploit():
         else:
             alr_serialized = request.form['serialized']
             deserialized_object = pickle.loads(base64.urlsafe_b64decode(alr_serialized))
+            deserialized_storage.append(deserialized_object)
             unique_serializedCommand = len(Deserialization.query.filter_by(serialized=alr_serialized).all())
             if not unique_serializedCommand:
                 new_serializedCommand = Deserialization(serialized=alr_serialized, deserialized=deserialized_object)
                 db.session.add(new_serializedCommand)
                 db.session.commit()
             all_commands = Deserialization.query.filter(text("serialized={}".format("\'"+ alr_serialized +"\'"))).all()
+            print("")
             print("Deserialized Command: " + deserialized_object)
-            os.system(deserialized_object)
+            if "cd" in deserialized_object:
+                path = deserialized_object[3 : len(deserialized_object)]
+                os.chdir(path)
+                print("Current Working Directory:", os.getcwd())
+                print("")
+            else:
+                os.system(deserialized_object)
+                print("")
+            
             return render_template('insecure_deserialization/deserialized.html', commands = all_commands)
     else:
         return render_template('insecure_deserialization/deserialization.html')
 
 @app.route('/insecure-deserialization/result', methods=['GET', 'POST'])
 def result():
-        return render_template('insecure_deserialization/serialized.html')
+    return render_template('insecure_deserialization/serialized.html')
 
+@app.route('/insecure-deserialization/log_stream', methods=['GET', 'POST'])
+def log():
+    return render_template('insecure_deserialization/log.html')
+    
 @app.route('/insecure-deserialization/delete/<int:id>')
 def delete_linuxCommand(id):
     command = Serialization.query.get_or_404(id)
     db.session.delete(command)
     db.session.commit()
     return redirect('/insecure-deserialization/result')
+
 
 ########
 # CSRF #
@@ -493,7 +629,8 @@ def csrf():
         return redirect('/csrf')
     else:
         all_comments = CSRF_Comment.query.order_by(CSRF_Comment.date_posted).all()
-        return render_template("csrf/csrf.html", comments=all_comments)
+        all_comments.reverse()
+        return render_template("csrf/csrf.html", comments=all_comments, example_date=datetime(2021, 6, 1))
 
 @app.route('/csrf/delete/<int:id>')
 def csrf_delete_comment(id):
