@@ -11,7 +11,6 @@ import base64
 import time
 
 app = Flask(__name__)
-app.secret_key = 'thisisasuperdupersecretkey'
 
 app.SESSION_COOKIE_HTTPONLY = False
 app.REMEMBER_COOKIE_HTTPONLY = False
