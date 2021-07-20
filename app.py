@@ -3,6 +3,7 @@ from flask_sqlalchemy import SQLAlchemy
 from datetime import datetime
 from sqlalchemy.sql import text
 from loguru import logger
+from pathlib import Path
 import subprocess
 import random
 import os
@@ -506,15 +507,18 @@ class Deserialization(db.Model):
     id = db.Column(db.Integer, primary_key=True, nullable=False)
     serialized = db.Column(db.String(100), nullable=False)
     deserialized = db.Column(db.String(100), nullable=False)
-    
+
+log_path = os.path.join(os.getcwd(), "static", "job.log")
+
 # configure logger
-logger.add("static/job.log", format="{time} - {message}")
+logger.add(log_path, format="{time} - {message}")
 
 # list to store deserialized_object, making it availabe to stream()
 deserialized_storage = []
 
 def flask_logger(deserialized_object):
-    with open("static/job.log") as log_info:
+    print(log_path)
+    with open(log_path) as log_info:
         time.sleep(0.5)
         logger.info("Processing ...")
         data = log_info.read()
@@ -537,7 +541,7 @@ def flask_logger(deserialized_object):
             data = log_info.read()
             yield data.encode()
             
-        open("static/job.log", 'w').close()
+        open(log_path, 'w').close()
 
 @app.route("/insecure-deserialization/log_stream", methods=["GET"])
 def stream():
