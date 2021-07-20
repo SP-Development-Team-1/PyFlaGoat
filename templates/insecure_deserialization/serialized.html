@@ -1,5 +1,16 @@
 {% extends 'base.html' %} {% block head %}
 <title>Serialized Command</title>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
+<script>
+  function copyToClipboard(element) {
+  var $temp = $("<input>");
+  $("body").append($temp);
+  $temp.val($(element).text()).select();
+  document.execCommand("copy");
+  alert("Copied successfully!")
+  $temp.remove();
+}
+</script>
 {% endblock %} {% block body %}
 <br>
 <div>
@@ -7,15 +18,21 @@
 </div>
 <hr />
 
+<!--link rel="stylesheet" type="text/css" href="/static/css/serialized.css">-->
+
 {% for command in commands %}
-<p> <b>Original Linux Command:</b> {{ command.data }}</p>
-<p> <b>Serialized Linux Command:</b> {{ command.serialized }} </p>
+<p><b>Original Linux Command:</b> {{ command.data }}</p>
+<div style="overflow: hidden;">
+  <p style="float: left;"><b>Serialized Linux Command:&nbsp;</b></p>
+  <p style="float: center;" id="serialized">{{ command.serialized }}</p>
+</div>
 
 <a class="btn btn-danger" href="/insecure-deserialization/delete/{{ command.id }}">Delete</a>
 <br />
 <hr />
 {% endfor %} 
 <a class="btn btn-dark" href="/insecure-deserialization">Go Back</a>
+<button onclick="copyToClipboard('#serialized')" class="btn btn-outline-success">Copy Serialized Command</button>
 <br />
 <br />
 <br />
