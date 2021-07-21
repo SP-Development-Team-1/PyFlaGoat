@@ -515,7 +515,6 @@ logger.add(log_path, format="{time} - {message}")
 deserialized_storage = []
 
 def flask_logger(deserialized_object):
-    print(log_path)
     with open(log_path) as log_info:
         time.sleep(0.5)
         logger.info("Processing ...")
