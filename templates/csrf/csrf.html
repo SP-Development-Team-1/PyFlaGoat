@@ -61,10 +61,16 @@
     <br>
     {% if g.user %}
       <input type="submit" class="btn btn-primary" value="Submit">
+      </form>
+      
+      <hr>
+
+      <h3>Generate and download hack:</h3>
+      <button class="btn btn-danger" value="Download CSRF">
     {% else %}
-      <p><input type="submit" class="btn btn-primary" value="Submit" disabled> &nbsp;&nbsp;### <a href="/login">Log in</a> to post a comment.</p>
+      <p><input type="submit" class="btn btn-primary" value="Submit" disabled> &nbsp;&nbsp;### <a href="/login">Log in</a> to post a comment and enable request forgery.</p>
+      </form>    
     {% endif %}
-  </form>
 
 <br><br><br>
 
