@@ -3,9 +3,10 @@ from flask_sqlalchemy import SQLAlchemy
 from datetime import datetime
 from sqlalchemy.sql import text
 from loguru import logger
-from io import StringIO
+import io
 import subprocess
 import random
+import zipfile
 import os
 import pickle
 import base64
@@ -603,7 +604,34 @@ def delete_linuxCommand(id):
     db.session.commit()
     return redirect('/insecure-deserialization/result')
 
+#####################
+# PATH MANIPULATION #
+#####################
 
+def unzip(zip_file, extraction_path):
+    print("Unzipping ...")
+    try:
+        files = []
+        with zipfile.ZipFile(zip_file, "r") as z:
+            for fileinfo in z.infolist():
+                filename = fileinfo.filename
+                dat = z.open(filename, "r")
+                files.append(filename)
+                outfile = os.path.join(extraction_path, filename)
+                if not os.path.exists(os.path.dirname(outfile)):
+                    try:
+                        os.makedirs(os.path.dirname(outfile))
+                    except OSError as exc:  # Guard against race condition
+                        if exc.errno != errno.EEXIST:
+                            print ("\n[WARN] OS Error: Race Condition")
+                if not outfile.endswith("/"):
+                    with io.open(outfile, mode='wb') as f:
+                        f.write(dat.read())
+                dat.close()
+        return files
+    except Exception as e:
+        print ("[ERROR] Unzipping Error" + str(e))  
+        
 ########
 # CSRF #
 ########
