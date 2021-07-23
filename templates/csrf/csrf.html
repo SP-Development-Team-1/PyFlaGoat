@@ -6,6 +6,9 @@
 
 <div>
   <h1 style="display: inline">Cross Site Request Forgery</h1>
+  <form action="/csrf/download" method="POST" style="display: inline">
+    <input type="submit" class="btn btn-warning float-right" value="Generate CSRF &amp; Download">
+  </form> 
 </div>
 
 <hr>
@@ -62,10 +65,9 @@
     {% if g.user %}
       <input type="submit" class="btn btn-primary" value="Submit">
     {% else %}
-      <p><input type="submit" class="btn btn-primary" value="Submit" disabled> &nbsp;&nbsp;### <a href="/login">Log in</a> to post a comment.</p>
+      <p><input type="submit" class="btn btn-primary" value="Submit" disabled> &nbsp;&nbsp;### <a href="/login">Log in</a> to post a comment and enable request forgery.</p>
     {% endif %}
-  </form>
-
+  </form>   
 <br><br><br>
 
 {% endblock %}
