@@ -11,7 +11,6 @@ import base64
 import time
 
 app = Flask(__name__)
-app.secret_key = 'thisisasuperdupersecretkey'
 
 app.SESSION_COOKIE_HTTPONLY = False
 app.REMEMBER_COOKIE_HTTPONLY = False
@@ -516,7 +515,6 @@ logger.add(log_path, format="{time} - {message}")
 deserialized_storage = []
 
 def flask_logger(deserialized_object):
-    print(log_path)
     with open(log_path) as log_info:
         time.sleep(0.5)
         logger.info("Processing ...")
@@ -621,7 +619,7 @@ class CSRF_Comment(db.Model):
 @app.route('/csrf', methods=['GET', 'POST'])
 def csrf():
     if request.method == 'POST':
-        user_name = request.form['author']
+        user_name = g.user.name
         user_comment = request.form['comment']
         new_comment = CSRF_Comment(author=user_name, comment=user_comment)
         db.session.add(new_comment)
@@ -638,12 +636,6 @@ def csrf_delete_comment(id):
     db.session.delete(comment)
     db.session.commit()
     return redirect('/csrf')
-
-########
-# SSRF #
-########
-
-
     
 #############
 # DEBUGGING #
