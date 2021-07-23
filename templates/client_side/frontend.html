@@ -1,7 +1,7 @@
 {% extends 'base.html' %} {% block head %}
 <title>Client Side</title>
 {% endblock %} {% block body %}
-<br>
+<br />
 <h1>Client Side</h1>
 
 <hr />
@@ -25,17 +25,33 @@
   <p><br /><b>Select your profession:</b></p>
 
   <div>
-    <input type="radio" id="Software Engineer" name="profession" value="Software_Engineer" checked />
+    <input
+      type="radio"
+      id="Software Engineer"
+      name="profession"
+      value="Software_Engineer"
+      checked
+    />
     <label for="post">Software Engineer</label>
   </div>
 
   <div>
-    <input type="radio" id="Data Scientist" name="profession" value="Data_Scientist" />
+    <input
+      type="radio"
+      id="Data Scientist"
+      name="profession"
+      value="Data_Scientist"
+    />
     <label for="post">Data Scientist</label>
   </div>
 
   <div>
-    <input type="radio" id="Product Owner" name="profession" value="Product_Owner" />
+    <input
+      type="radio"
+      id="Product Owner"
+      name="profession"
+      value="Product_Owner"
+    />
     <label for="post">Product Owner</label>
   </div>
   <p><br /><b>Choose your role:</b></p>
@@ -78,5 +94,5 @@
   <br />
   <br />
   <br />
-  {% endblock %}
 </form>
+{% endblock %}
