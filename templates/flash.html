@@ -56,13 +56,18 @@
     </style>
   </head>
   <body>
-    <div class="heading">Login Status: </div>
     {% for message in get_flashed_messages() %}
       {% if "Success" in message %}
+        <div class="heading">Login Status: </div>
         <div class="alert-info">Success: {{ message }}</div>
       {% elif "Congratulations" in message %}
+        <div class="heading">Salary Found: </div>
         <div class="alert-info">Correct: {{ message }}</div>
+      {% elif "not his salary" in message %}
+        <div class="heading">Salary Not Found: </div>
+        <div class="alert-error">Error: {{ message }}</div>
       {% else %}
+        <div class="heading">Login Status: </div>
         <div class="alert-error">Error: {{ message }}</div>
       {% endif %}
     {% endfor %}
