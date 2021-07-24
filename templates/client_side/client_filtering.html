@@ -16,11 +16,11 @@
   }
 </style>
 
-<img
+<p><img
   src="/static/code.PNG"
   width="70%"
   height="70%"
-/>
+></p>
 
 <form
   class="form-horizontal my-2 my-md-4 float-right"
@@ -28,8 +28,8 @@
   method="POST"
   name="name-form"
 >
-<label for="post"><h5>Choose client's first name: </h5></label>
-<br />
+  <label for="post"><h5>Choose client's first name:</h5></label>
+  <br />
   <!--input
     class="form-control"
     type="text"
@@ -48,8 +48,13 @@
     <option value="Soli">Soli</option>
     <option value="Junhyeok">Junhyeok</option>
   </select>
-  <div class="br-special"><br></div>
-  <input type="submit" name="action" class="btn btn-primary" value="Submit Name" />
+  <div class="br-special"><br /></div>
+  <input
+    type="submit"
+    name="action"
+    class="btn btn-primary"
+    value="Submit Name"
+  />
 </form>
 
 <br />
@@ -57,7 +62,7 @@
 <br />
 
 <h5>Click to create a new client profile:</h5>
-<div class="br-special"><br></div>
+<div class="br-special"><br /></div>
 <center>
   <a
     style="display: inline"
@@ -71,7 +76,7 @@
 <br />
 <br />
 
-<form action="/client/client-filtering" method="POST" name="salary-form"> 
+<form action="/client/client-filtering" method="POST" name="salary-form">
   <br />
   <label for="post"><h5>What is Kyugon Cho's salary?</h5></label>
   <input
@@ -82,17 +87,16 @@
     placeholder="Enter Kyugon Cho's salary"
     aria-label="Enter Salary"
   />
-   <br />
-  <input type="submit" name="action" class="btn btn-primary" value="Submit Salary" />
+  <br />
+  <input
+    type="submit"
+    name="action"
+    class="btn btn-primary"
+    value="Submit Salary"
+  />
 </form>
-<hr>
-<br>
-<br>
-<br>
-<<<<<<< HEAD
-</form>
+<hr />
+<br />
+<br />
+<br />
 {% endblock %}
-=======
-{% endblock %}
-
->>>>>>> eb954a16c0d9cb6fc91b6f97f4fb58026b304456
