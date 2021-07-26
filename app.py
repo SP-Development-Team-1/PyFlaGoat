@@ -272,6 +272,7 @@ class XXE(db.Model):
 @app.route('/xxe', methods=['GET', 'POST'])
 def xxe():
     path = ""
+    xml = '''<?xml version='1.0'?><!DOCTYPE comment [<!ENTITY xxe SYSTEM "/app">]><comment><text>&xxe;</text></comment>'''
     flag = 0
     if request.method == 'POST':
         user_name = request.form['author']
@@ -293,7 +294,7 @@ def xxe():
         return redirect('/xxe')
     else:
         all_comments = XXE.query.order_by(XXE.date_posted).all()
-        return render_template("xxe/xxe.html", comments=all_comments)
+        return render_template("xxe/xxe.html", comments=all_comments, xml=xml)
 
 @app.route('/xxe/delete/<int:id>')
 def delete_comment(id):
