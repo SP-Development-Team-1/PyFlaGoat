@@ -3,7 +3,7 @@ from flask_sqlalchemy import SQLAlchemy
 from datetime import datetime
 from sqlalchemy.sql import text
 from loguru import logger
-import io
+from io import StringIO
 import subprocess
 import random
 import zipfile
