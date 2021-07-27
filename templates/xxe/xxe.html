@@ -1,14 +1,28 @@
 {% extends 'base.html' %} {% block head %}
 <title>XXE</title>
+<script>
+  function copyToClipboard(element) {
+  var $temp = $("<input>");
+  $("body").append($temp);
+  $temp.val($(element).text()).select();
+  document.execCommand("copy");
+  alert("Copied successfully!")
+  $temp.remove();
+}
+</script>
 {% endblock %} {% block body %}
 <br />
 <h1>XML External Entity Attack</h1>
 
 <hr />
-<h2>Local File Inclusion:</h2>
+<div>
+  <h2 style="display: inline">Local File Inclusion:</h2>
+    <button onclick="copyToClipboard('#xml')" class="btn btn-success float-right">Copy XML Command</button>
+  </form> 
+</div>
 <br />
 
-<?xml version="1.0" encoding="UTF-8"?>
+<p style="display: none;" id="xml"><?xml version='1.0'?>{{ xml }}</p>
 
 <!--script defer src="{{url_for('static', filename='js/xxe.js')}}"></script> -->
 

@@ -3,9 +3,10 @@ from flask_sqlalchemy import SQLAlchemy
 from datetime import datetime
 from sqlalchemy.sql import text
 from loguru import logger
-from io import StringIO
+import io
 import subprocess
 import random
+import zipfile
 import os
 import pickle
 import base64
@@ -271,6 +272,7 @@ class XXE(db.Model):
 @app.route('/xxe', methods=['GET', 'POST'])
 def xxe():
     path = ""
+    xml = '''<?xml version='1.0'?><!DOCTYPE comment [<!ENTITY xxe SYSTEM "/app">]><comment><text>&xxe;</text></comment>'''
     flag = 0
     if request.method == 'POST':
         user_name = request.form['author']
@@ -292,7 +294,7 @@ def xxe():
         return redirect('/xxe')
     else:
         all_comments = XXE.query.order_by(XXE.date_posted).all()
-        return render_template("xxe/xxe.html", comments=all_comments)
+        return render_template("xxe/xxe.html", comments=all_comments, xml=xml)
 
 @app.route('/xxe/delete/<int:id>')
 def delete_comment(id):
@@ -603,7 +605,34 @@ def delete_linuxCommand(id):
     db.session.commit()
     return redirect('/insecure-deserialization/result')
 
+#####################
+# PATH MANIPULATION #
+#####################
 
+def unzip(zip_file, extraction_path):
+    print("Unzipping ...")
+    try:
+        files = []
+        with zipfile.ZipFile(zip_file, "r") as z:
+            for fileinfo in z.infolist():
+                filename = fileinfo.filename
+                dat = z.open(filename, "r")
+                files.append(filename)
+                outfile = os.path.join(extraction_path, filename)
+                if not os.path.exists(os.path.dirname(outfile)):
+                    try:
+                        os.makedirs(os.path.dirname(outfile))
+                    except OSError as exc:  # Guard against race condition
+                        if exc.errno != errno.EEXIST:
+                            print ("\n[WARN] OS Error: Race Condition")
+                if not outfile.endswith("/"):
+                    with io.open(outfile, mode='wb') as f:
+                        f.write(dat.read())
+                dat.close()
+        return files
+    except Exception as e:
+        print ("[ERROR] Unzipping Error" + str(e))  
+        
 ########
 # CSRF #
 ########
