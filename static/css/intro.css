@@ -1,0 +1,28 @@
+#content {
+  width: 100%;
+  padding: 20px;
+  min-height: 100vh;
+  transition: all 0.3s;
+}
+
+.box {
+  margin-top: 2rem;
+  border-radius: 10px;
+  padding: 2rem;
+  background-color: #f8ede3;
+}
+
+.bp {
+  font-family:sans-serif; 
+  font-size: 1.1em;
+  line-height: 1.7em;
+  color: black;
+}
+
+.lab {
+  padding: 0 18px;
+  display: none;
+  overflow: hidden;
+  background-color: #f1f1f1;
+  border-radius: 1rem;
+}
