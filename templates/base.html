@@ -17,6 +17,14 @@
 
     <header class="header body-pd" id="header">
         <div class="header_toggle" class="bx-x"> <i class='bx bx-menu' id="header-toggle"></i> </div>
+          
+        {% if g.safe_mode_on %}
+        <a class="btn btn-success" href="/togglemode"> Mode: SECURE</a>
+
+        {% else %}
+        <a class="btn btn-danger" href="/togglemode"> Mode: VULNERABLE</a>
+        
+        {% endif %}
         
         {% if g.user %}
         <span>Hello, <b>{{g.user.name}}&nbsp;&nbsp;&nbsp;</b> <a type="button" class="btn btn-danger" href="/logout">Log Out</a></span>

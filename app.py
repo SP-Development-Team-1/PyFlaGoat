@@ -1,4 +1,5 @@
 from flask import Flask, Markup, render_template, request, redirect, flash, make_response, session, g, Response
+from flask.helpers import url_for
 from flask_sqlalchemy import SQLAlchemy
 from datetime import datetime
 from sqlalchemy.sql import text
@@ -11,18 +12,18 @@ import os
 import pickle
 import base64
 import time
+import urllib.parse
 
 app = Flask(__name__)
-
 app.SESSION_COOKIE_HTTPONLY = False
 app.REMEMBER_COOKIE_HTTPONLY = False
-
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///database/default.db'
 app.config['SQLALCHEMY_BINDS'] = {
     'injection': 'sqlite:///database/injection.db',
     'broken_access': 'sqlite:///database/broken_access.db'
 }
 app.config['SECRET_KEY'] = 'FASOO'
+
 db = SQLAlchemy(app)
 db.create_all()
 db.session.commit()
@@ -55,6 +56,11 @@ def before_request():
     if 'user_id' in session:
         user = [x for x in User.query.all() if x.id == session['user_id']][0]
         g.user = user
+    
+    g.safe_mode_on = False
+
+    if 'safe_mode_on' in session:
+        g.safe_mode_on = session['safe_mode_on'] 
 
 @app.route('/login',  methods=['GET', 'POST'])
 def login():
@@ -99,6 +105,29 @@ def register_user():
         return redirect('/')
     else:
         return render_template("register.html")
+
+######################
+# TOGGLE SECURE MODE #
+######################
+
+@app.route('/togglemode', methods=['GET', 'POST'])
+def togglemode():
+    new_mode = not session.pop('safe_mode_on', False)
+    session['safe_mode_on'] = new_mode
+    return redirect_back()
+
+def redirect_back(default='hello', **kwargs):
+    for target in request.args.get('next'), request.referrer:
+        if not target:
+            continue
+        if is_safe_url(target):
+            return redirect(target)
+    return redirect(url_for(default, **kwargs))
+ 
+def is_safe_url(target):
+    ref_url = urllib.parse.urlparse(request.host_url)
+    test_url = urllib.parse.urlparse(urllib.parse.urljoin(request.host_url, target))
+    return test_url.scheme in ('http', 'https') and ref_url.netloc == test_url.netloc
 
 
 #################
