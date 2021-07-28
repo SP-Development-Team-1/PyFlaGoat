@@ -298,8 +298,38 @@ class XXE(db.Model):
     def __repr__(self):
         return 'Comment ' + str(self.id)
     
+@app.route('/xxe-intro', methods=['GET'])
+def xxe_intro():
+    return render_template('xxe/intro.html')
+    
 @app.route('/xxe', methods=['GET', 'POST'])
 def xxe():
+    path = ""
+    xml = '''<?xml version='1.0'?><!DOCTYPE comment [<!ENTITY xxe SYSTEM "/app">]><comment><text>&xxe;</text></comment>'''
+    flag = 0
+    if request.method == 'POST':
+        user_name = request.form['author']
+        user_comment = request.form['comment']
+        if "<?xml version='1.0'?>" in user_comment:
+            for elem in user_comment:
+                if elem == '"':
+                    flag += 1
+                elif flag == 1:
+                    path += elem
+                elif flag == 2:
+                    break   
+            all_files = str(os.listdir(path))
+            new_comment = XXE(author=user_name, comment=all_files)
+        else:
+            new_comment = XXE(author=user_name, comment=user_comment)
+        db.session.add(new_comment)
+        db.session.commit()
+        return redirect('/xxe')
+    else:
+        all_comments = XXE.query.order_by(XXE.date_posted).all()
+        return render_template("xxe/xxe.html", comments=all_comments, xml=xml)
+
+def xxe_secure():
     path = ""
     xml = '''<?xml version='1.0'?><!DOCTYPE comment [<!ENTITY xxe SYSTEM "/app">]><comment><text>&xxe;</text></comment>'''
     flag = 0
