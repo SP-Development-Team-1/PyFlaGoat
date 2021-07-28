@@ -8,7 +8,7 @@
     <h3><b>XXE Injection</b></h3>
     <div class="box">
 
-        <h4><b>What is XML External Entity Injection</b></h4>
+        <h4><b>What is XML External Entity Injection?</b></h4>
             <p class="bp">XML external entity injection (also known as XXE) is a web security vulnerability that allows an attacker to 
 	    interfere with an application's processing of XML data. It is a type of attack against an application that parses XML input. 
 	    This attack occurs when XML input containing a reference to an external entity is processed by a weakly configured XML parser.  
@@ -16,7 +16,7 @@
 
 	    In some situations, an attacker can escalate an XXE attack to compromise the underlying server or other back-end infrastructure, by leveraging the XXE vulnerability to perform server-side request forgery (SSRF) attacks.
             </p>
-        <button class="coll btn btn-info">Lab Details</button>
+        <button class="coll btn btn-xxe">View Demo</button>
 	<br />
         <div class="lab">
 	
@@ -69,13 +69,13 @@
               </p>
 
               <br>
-                  <div align="right"> <button class="btn btn-primary" type="button" onclick="window.location.href='/xxe'">Access Lab</button></div>
+                  <div align="right"> <button class="btn btn-xxe" type="button" onclick="window.location.href='/xxe'">Access Demo</button></div>
 
               </p>
 	      <br />
         </div>
 	<br />
-        <h4>Mitigation</h4>
+        <h4><b>Mitigation</b></h4>
              <p class="bp">
                  <ul>
                     <li>DTD and XML external entity features must be disabled.</li>

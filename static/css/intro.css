@@ -9,11 +9,11 @@
   margin-top: 2rem;
   border-radius: 10px;
   padding: 2rem;
-  background-color: #f8ede3;
+  background-color: #edeafb;
 }
 
 .bp {
-  font-family:sans-serif; 
+  font-family: "Nunito", sans-serif;
   font-size: 1.1em;
   line-height: 1.7em;
   color: black;
@@ -25,4 +25,50 @@
   overflow: hidden;
   background-color: #f1f1f1;
   border-radius: 1rem;
+}
+
+.btn-xxe {
+  color: #ffffff;
+  background-color: #4723d9;
+  border-color: #4723d9;
+}
+
+.btn-xxe:hover,
+.btn-xxe:focus,
+.btn-xxe:active,
+.btn-xxe.active,
+.open .dropdown-toggle.btn-xxe {
+  color: #ffffff;
+  background-color: #3516ad;
+  border-color: #4723d9;
+}
+
+.btn-xxe:active,
+.btn-xxe.active,
+.open .dropdown-toggle.btn-xxe {
+  background-image: none;
+}
+
+.btn-xxe.disabled,
+.btn-xxe[disabled],
+fieldset[disabled] .btn-xxe,
+.btn-xxe.disabled:hover,
+.btn-xxe[disabled]:hover,
+fieldset[disabled] .btn-xxe:hover,
+.btn-xxe.disabled:focus,
+.btn-xxe[disabled]:focus,
+fieldset[disabled] .btn-xxe:focus,
+.btn-xxe.disabled:active,
+.btn-xxe[disabled]:active,
+fieldset[disabled] .btn-xxe:active,
+.btn-xxe.disabled.active,
+.btn-xxe[disabled].active,
+fieldset[disabled] .btn-xxe.active {
+  background-color: #4723d9;
+  border-color: #4723d9;
+}
+
+.btn-xxe .badge {
+  color: #4723d9;
+  background-color: #ffffff;
 }
