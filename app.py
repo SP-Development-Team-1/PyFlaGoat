@@ -198,6 +198,10 @@ class BlogAuth(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     username = db.Column(db.String(50), nullable=False)
     password = db.Column(db.String(20), nullable=False)
+
+@app.route('/auth-intro', methods=['GET', "POST"])
+def auth_intro():
+    return render_template('broken_auth/intro.html')
         
 @app.route('/auth', methods=['GET', 'POST'])
 def broken_auth():
@@ -611,6 +615,10 @@ def flask_logger(deserialized_object):
             yield data.encode()
             
         open(log_path, 'w').close()
+
+@app.route('/insecure-deserialization-intro', methods=['GET', "POST"])
+def insecureDeserialization_intro():
+    return render_template('insecure_deserialization/intro.html')
 
 @app.route("/insecure-deserialization/log_stream", methods=["GET"])
 def stream():
