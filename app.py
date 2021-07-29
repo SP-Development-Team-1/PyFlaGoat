@@ -328,7 +328,7 @@ def xxe():
                 new_comment = XXE(author=user_name, comment=user_comment)
         else:
             if "<?xml version='1.0'?>" in user_comment:
-                error = "Malicious XMl commands aren't allowed!"
+                error = "Malicious XML commands aren't allowed!"
                 new_comment = XXE(author=user_name, comment=error)
             else:
                 new_comment = XXE(author=user_name, comment=user_comment)
