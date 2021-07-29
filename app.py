@@ -149,7 +149,10 @@ class BlogPost(db.Model):
 def posts():
         if request.method == 'POST':
             post_filter_by = request.form['auth_TAN']
-            all_posts = BlogPost.query.filter(text("auth_TAN={}".format("\'"+ post_filter_by +"\'"))).all()
+            if g.safe_mode_on:
+                all_posts = BlogPost.query.filter_by(auth_TAN=post_filter_by).all()
+            else:
+                all_posts = BlogPost.query.filter(text("auth_TAN={}".format("\'"+ post_filter_by +"\'"))).all()
             return render_template('sql_injection/posts.html', posts=all_posts)
         else:
             all_posts = BlogPost.query.order_by(BlogPost.date_posted).all()
