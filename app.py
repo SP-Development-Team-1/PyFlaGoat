@@ -298,7 +298,7 @@ class XXE(db.Model):
     def __repr__(self):
         return 'Comment ' + str(self.id)
     
-@app.route('/xxe-intro', methods=['GET'])
+@app.route('/xxe-intro', methods=['GET', "POST"])
 def xxe_intro():
     return render_template('xxe/intro.html')
     
