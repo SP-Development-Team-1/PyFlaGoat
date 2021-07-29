@@ -251,7 +251,11 @@ class SensitiveUsers(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     username = db.Column(db.String(50), nullable=False)
     password = db.Column(db.String(20), nullable=False)
-        
+
+@app.route('/sensitive_data-intro', methods=['GET', "POST"])
+def sensitive_data_intro():
+    return render_template('sensitive_data/intro.html')
+
 @app.route('/sensitive_data', methods=['GET', 'POST'])
 def sensitive_data():
     flag = 0
