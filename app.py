@@ -198,6 +198,10 @@ class BlogAuth(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     username = db.Column(db.String(50), nullable=False)
     password = db.Column(db.String(20), nullable=False)
+
+@app.route('/auth-intro', methods=['GET', "POST"])
+def auth_intro():
+    return render_template('broken_auth/intro.html')
         
 @app.route('/auth', methods=['GET', 'POST'])
 def broken_auth():
@@ -313,18 +317,25 @@ def xxe():
     if request.method == 'POST':
         user_name = request.form['author']
         user_comment = request.form['comment']
-        if "<?xml version='1.0'?>" in user_comment:
-            for elem in user_comment:
-                if elem == '"':
-                    flag += 1
-                elif flag == 1:
-                    path += elem
-                elif flag == 2:
-                    break   
-            all_files = str(os.listdir(path))
-            new_comment = XXE(author=user_name, comment=all_files)
+        if not g.safe_mode_on:
+            if "<?xml version='1.0'?>" in user_comment:
+                for elem in user_comment:
+                    if elem == '"':
+                        flag += 1
+                    elif flag == 1:
+                        path += elem
+                    elif flag == 2:
+                        break   
+                all_files = str(os.listdir(path))
+                new_comment = XXE(author=user_name, comment=all_files)
+            else:
+                new_comment = XXE(author=user_name, comment=user_comment)
         else:
-            new_comment = XXE(author=user_name, comment=user_comment)
+            if "<?xml version='1.0'?>" in user_comment:
+                error = "Malicious XML commands aren't allowed!"
+                new_comment = XXE(author=user_name, comment=error)
+            else:
+                new_comment = XXE(author=user_name, comment=user_comment)
         db.session.add(new_comment)
         db.session.commit()
         return redirect('/xxe')
@@ -604,6 +615,10 @@ def flask_logger(deserialized_object):
             yield data.encode()
             
         open(log_path, 'w').close()
+
+@app.route('/insecure-deserialization-intro', methods=['GET', "POST"])
+def insecureDeserialization_intro():
+    return render_template('insecure_deserialization/intro.html')
 
 @app.route("/insecure-deserialization/log_stream", methods=["GET"])
 def stream():
