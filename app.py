@@ -313,18 +313,25 @@ def xxe():
     if request.method == 'POST':
         user_name = request.form['author']
         user_comment = request.form['comment']
-        if "<?xml version='1.0'?>" in user_comment:
-            for elem in user_comment:
-                if elem == '"':
-                    flag += 1
-                elif flag == 1:
-                    path += elem
-                elif flag == 2:
-                    break   
-            all_files = str(os.listdir(path))
-            new_comment = XXE(author=user_name, comment=all_files)
+        if not g.safe_mode_on:
+            if "<?xml version='1.0'?>" in user_comment:
+                for elem in user_comment:
+                    if elem == '"':
+                        flag += 1
+                    elif flag == 1:
+                        path += elem
+                    elif flag == 2:
+                        break   
+                all_files = str(os.listdir(path))
+                new_comment = XXE(author=user_name, comment=all_files)
+            else:
+                new_comment = XXE(author=user_name, comment=user_comment)
         else:
-            new_comment = XXE(author=user_name, comment=user_comment)
+            if "<?xml version='1.0'?>" in user_comment:
+                error = "Malicious XMl commands aren't allowed!"
+                new_comment = XXE(author=user_name, comment=error)
+            else:
+                new_comment = XXE(author=user_name, comment=user_comment)
         db.session.add(new_comment)
         db.session.commit()
         return redirect('/xxe')
