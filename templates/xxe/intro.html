@@ -1,5 +1,6 @@
 {% extends 'base.html' %} {% block head %}
 <title>XXE</title>
+<script src="/static/js/xxe.js"></script>
 {% endblock %} {% block body %}
 <link rel="stylesheet" type="text/css" href="/static/css/intro.css">
 <br />
@@ -19,7 +20,6 @@
         <button class="coll btn btn-xxe">View Demo</button>
 	<br />
         <div class="lab">
-	
               <p class="bp">
 
                   <p class="bp">
@@ -60,14 +60,9 @@
                             <li>Forward the request and turn of intercept.</li>
                             <li>Go to the see comments option and click view comments this should show you the requested files in your payload if the vulnerability exists.</li>
 
-
-
                     </ul>
                 </p>
-
-
               </p>
-
               <br>
                   <div align="right"> <button class="btn btn-xxe" type="button" onclick="window.location.href='/xxe'">Access Demo</button></div>
 
@@ -85,9 +80,6 @@
 
                 </ul>
              </p>
-
-
-
     </div>
 </div>
 

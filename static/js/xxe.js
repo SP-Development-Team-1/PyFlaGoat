@@ -12,20 +12,3 @@ for (i = 0; i < coll.length; i++) {
     }
   });
 }
-function SendToServer() {
-  comment = document.getElementById("comment").value;
-
-  var xhr;
-  xhr = new XMLHttpRequest();
-  xml =
-    "<?xml version='1.0'?>" +
-    "<comm>" +
-    "<text>" +
-    comment +
-    "</text>" +
-    "</comm>";
-  var url = "http://127.0.0.1:5000/xxe_parse";
-  xhr.open("POST", url, true);
-  xhr.setRequestHeader("Content-Type", "text/xml");
-  xhr.send(xml);
-}
