@@ -496,6 +496,10 @@ class DirectObj(db.Model):
     name = db.Column(db.String(50), nullable=False)
     occupation = db.Column(db.String(50), nullable=False)
 
+@app.route('/broken_access-intro', methods=['GET', "POST"])
+def broken_access_intro():
+    return render_template('broken_access/intro.html')
+
 @app.route('/broken_access', methods=['GET', 'POST'])
 def broken_access():
     return redirect('/broken_access/profile/0')
