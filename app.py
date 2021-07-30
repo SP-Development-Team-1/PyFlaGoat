@@ -210,11 +210,12 @@ def broken_auth():
         acc_username = request.form['username']
         acc_password = request.form['password']
         username = BlogAuth.query.filter_by(username=acc_username).first()
-        password = BlogAuth.query.filter_by(password=acc_password).first()
-        
+        password = False
+        if username:
+            password = username.password == acc_password
         if username and password:
             flash("Login Success!")
-            return render_template("flash.html")
+            return render_template(flash.html)
         elif username and not password:
             flash("Login Failed, Please enter a valid password!")
             return render_template("flash.html")
@@ -263,7 +264,9 @@ def sensitive_data():
         acc_username = request.form['username']
         acc_password = request.form['password']
         username = SensitiveUsers.query.filter_by(username=acc_username).first()
-        password = SensitiveUsers.query.filter_by(password=acc_password).first()
+        password = False
+        if username:
+            password = username.password == acc_password
         
         if username and password:
             flash("Login Success!")
