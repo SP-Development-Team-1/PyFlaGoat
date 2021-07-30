@@ -560,32 +560,51 @@ log_path = os.path.join(os.getcwd(), "static", "job.log")
 logger.add(log_path, format="{time} - {message}")
 
 # list to store deserialized_object, making it availabe to stream()
-deserialized_storage = []
+deserialized_storage = {}
 
-def flask_logger(deserialized_object):
+def flask_logger(deserialized_object, status):
     with open(log_path) as log_info:
         time.sleep(0.5)
         logger.info("Processing ...")
         data = log_info.read()
         yield data.encode()
         time.sleep(1)
-        logger.info("Deserialized Command: " + deserialized_object)
-        data = log_info.read()
-        time.sleep(1)
-        yield data.encode()
-        time.sleep(1.2)
-        if "cd" in deserialized_object:
-            path = deserialized_object[3 : len(deserialized_object)]
-            os.chdir(path)
-            logger.info("Current Working Directory: " + str(os.getcwd()))   
+        if status == "Not Safe":
+            logger.info("Deserialized Command: " + deserialized_object)
             data = log_info.read()
+            time.sleep(1)
             yield data.encode()
+            time.sleep(1.2)
+            if "cd" in deserialized_object:
+                path = deserialized_object[3 : len(deserialized_object)]
+                os.chdir(path)
+                logger.info("Current Working Directory: " + str(os.getcwd()))   
+                data = log_info.read()
+                yield data.encode()
+            else:
+                result = subprocess.check_output(deserialized_object, shell=True).strip().decode('utf-8')
+                logger.info(result)
+                data = log_info.read()
+                yield data.encode()
         else:
-            result = subprocess.check_output(deserialized_object, shell=True).strip().decode('utf-8')
-            logger.info(result)
-            data = log_info.read()
-            yield data.encode()
-            
+            if not (deserialized_object == "ls -l" or deserialized_object == "ls" or deserialized_object == "ls -la"):
+                logger.info("Insecure linux commands can't be deserialized!")
+                data = log_info.read()
+                yield data.encode()
+                logger.info("Please only deserialize secure linux commands!")
+                data = log_info.read()
+                yield data.encode()
+            else:
+                logger.info("Deserialized Command: " + deserialized_object)
+                data = log_info.read()
+                time.sleep(1)
+                yield data.encode()
+                time.sleep(1.2)
+                result = subprocess.check_output(deserialized_object, shell=True).strip().decode('utf-8')
+                logger.info(result)
+                data = log_info.read()
+                yield data.encode()
+                
         open(log_path, 'w').close()
 
 @app.route('/insecure-deserialization-intro', methods=['GET', "POST"])
@@ -594,8 +613,9 @@ def insecureDeserialization_intro():
 
 @app.route("/insecure-deserialization/log_stream", methods=["GET"])
 def stream():
-    deserialized_object = deserialized_storage[-1]
-    return Response(flask_logger(deserialized_object), mimetype="text/plain", content_type="text/event-stream")
+    deserialized_object = list(deserialized_storage.keys())[-1]
+    status = list(deserialized_storage.values())[-1]
+    return Response(flask_logger(deserialized_object, status), mimetype="text/plain", content_type="text/event-stream")
 
 @app.route("/insecure-deserialization/log_view", methods=["GET"])
 def log_view():
@@ -604,72 +624,46 @@ def log_view():
 @app.route('/insecure-deserialization', methods=['GET', 'POST'])
 def serialize_exploit():
     if request.method == 'POST':
-        if not g.safe_mode_on:
-            if request.form['action'] == "Serialize":
-                command = request.form['command']
-                serialized_command = base64.urlsafe_b64encode(pickle.dumps(command)).strip().decode('utf-8')
-                unique_command = len(Serialization.query.filter_by(data=command).all())
-                if not unique_command:
-                    new_command = Serialization(data=command, serialized=serialized_command)
-                    db.session.add(new_command)
-                    db.session.commit()
-                all_commands = Serialization.query.filter(text("data={}".format("\'"+ command +"\'"))).all()
-                return render_template('insecure_deserialization/serialized.html', commands = all_commands)
-            else:
-                alr_serialized = request.form['serialized']
-                deserialized_object = pickle.loads(base64.urlsafe_b64decode(alr_serialized))
-                deserialized_storage.append(deserialized_object)
-                unique_serializedCommand = len(Deserialization.query.filter_by(serialized=alr_serialized).all())
-                if not unique_serializedCommand:
-                    new_serializedCommand = Deserialization(serialized=alr_serialized, deserialized=deserialized_object)
-                    db.session.add(new_serializedCommand)
-                    db.session.commit()
-                all_commands = Deserialization.query.filter(text("serialized={}".format("\'"+ alr_serialized +"\'"))).all()
-                print("")
+        if request.form['action'] == "Serialize":
+            command = request.form['command']
+            serialized_command = base64.urlsafe_b64encode(pickle.dumps(command)).strip().decode('utf-8')
+            unique_command = len(Serialization.query.filter_by(data=command).all())
+            if not unique_command:
+                new_command = Serialization(data=command, serialized=serialized_command)
+                db.session.add(new_command)
+                db.session.commit()
+            all_commands = Serialization.query.filter(text("data={}".format("\'"+ command +"\'"))).all()
+            return render_template('insecure_deserialization/serialized.html', commands = all_commands)
+        else:
+            alr_serialized = request.form['serialized']
+            deserialized_object = pickle.loads(base64.urlsafe_b64decode(alr_serialized))
+            unique_serializedCommand = len(Deserialization.query.filter_by(serialized=alr_serialized).all())
+            if not unique_serializedCommand:
+                new_serializedCommand = Deserialization(serialized=alr_serialized, deserialized=deserialized_object)
+                db.session.add(new_serializedCommand)
+                db.session.commit()
+            all_commands = Deserialization.query.filter(text("serialized={}".format("\'"+ alr_serialized +"\'"))).all()
+            print("")
+            if not g.safe_mode_on:
+                deserialized_storage[deserialized_object] = "Not Safe"
                 print("Deserialized Command: " + deserialized_object)
                 if "cd" in deserialized_object:
                     path = deserialized_object[3 : len(deserialized_object)]
                     os.chdir(path)
                     print("Current Working Directory:", os.getcwd())
-                    print("")
                 else:
                     os.system(deserialized_object)
-                    print("")
-                
-                return render_template('insecure_deserialization/deserialized.html', commands = all_commands)
-        else:
-            if request.form['action'] == "Serialize":
-                command = request.form['command']
-                serialized_command = base64.urlsafe_b64encode(pickle.dumps(command)).strip().decode('utf-8')
-                unique_command = len(Serialization.query.filter_by(data=command).all())
-                if not unique_command:
-                    new_command = Serialization(data=command, serialized=serialized_command)
-                    db.session.add(new_command)
-                    db.session.commit()
-                all_commands = Serialization.query.filter(text("data={}".format("\'"+ command +"\'"))).all()
-                return render_template('insecure_deserialization/serialized.html', commands = all_commands)
-            else:
-                alr_serialized = request.form['serialized']
-                deserialized_object = pickle.loads(base64.urlsafe_b64decode(alr_serialized))
-                deserialized_storage.append(deserialized_object)
-                unique_serializedCommand = len(Deserialization.query.filter_by(serialized=alr_serialized).all())
-                if not (deserialized_object == "ls -l" or deserialized_object == "ls" or deserialized_object == "ls -la"):
-                    new_serializedCommand = Deserialization(serialized=alr_serialized, deserialized="Insecure linux commands can't be deserialized!")
-                    db.session.add(new_serializedCommand)
-                    db.session.commit()
-                elif not unique_serializedCommand:
-                    new_serializedCommand = Deserialization(serialized=alr_serialized, deserialized=deserialized_object)
-                    db.session.add(new_serializedCommand)
-                    db.session.commit()
-                all_commands = Deserialization.query.filter(text("serialized={}".format("\'"+ alr_serialized +"\'"))).all()
                 print("")
+            else:
+                deserialized_storage[deserialized_object] = "Safe"
                 if deserialized_object == "ls -l" or deserialized_object == "ls" or deserialized_object == "ls -la":
                     print("Deserialized Command: " + deserialized_object)
                     os.system(deserialized_object)
                 else:
                     print("Insecure linux commands can't be deserialized!")
                 print("")
-                return render_template('insecure_deserialization/deserialized.html', commands = all_commands)   
+                
+            return render_template('insecure_deserialization/deserialized.html', commands = all_commands) 
     else:
         return render_template('insecure_deserialization/deserialization.html')
 
