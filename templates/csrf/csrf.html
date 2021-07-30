@@ -62,6 +62,7 @@
     <textarea class="form-control" placeholder="Compose a comment ..." name="comment" id="comment" rows="3"
       aria-label="Enter Content"></textarea>
     <br>
+    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
     {% if g.user %}
       <input type="submit" class="btn btn-primary" value="Submit">
     {% else %}

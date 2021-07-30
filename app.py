@@ -5,6 +5,7 @@ from datetime import datetime
 from sqlalchemy.sql import text
 from loguru import logger
 from io import StringIO
+from flask_wtf.csrf import CSRFProtect
 import subprocess
 import random
 import zipfile
@@ -22,11 +23,13 @@ app.config['SQLALCHEMY_BINDS'] = {
     'injection': 'sqlite:///database/injection.db',
     'broken_access': 'sqlite:///database/broken_access.db'
 }
-app.config['SECRET_KEY'] = 'FASOO'
+app.config['SECRET_KEY'] = 'FASOOINCSPARROWCOLTD'
 
 db = SQLAlchemy(app)
 db.create_all()
 db.session.commit()
+
+CSRFProtect(app)
 
 ########
 # HOME #
@@ -52,15 +55,15 @@ class User(db.Model):
 @app.before_request
 def before_request():
     g.user = None
-
     if 'user_id' in session:
         user = [x for x in User.query.all() if x.id == session['user_id']][0]
         g.user = user
     
     g.safe_mode_on = False
-
     if 'safe_mode_on' in session:
         g.safe_mode_on = session['safe_mode_on'] 
+
+    app.config['WTF_CSRF_ENABLED'] = False 
 
 @app.route('/login',  methods=['GET', 'POST'])
 def login():
@@ -694,6 +697,8 @@ class CSRF_Comment(db.Model):
     
 @app.route('/csrf', methods=['GET', 'POST'])
 def csrf():
+    if g.safe_mode_on:
+        app.config['WTF_CSRF_ENABLED'] = True 
     if request.method == 'POST':
         user_name = g.user.name
         user_comment = request.form['comment']
@@ -708,6 +713,8 @@ def csrf():
 
 @app.route('/csrf/delete/<int:id>')
 def csrf_delete_comment(id):
+    if g.safe_mode_on:
+        app.config['WTF_CSRF_ENABLED'] = True 
     comment = CSRF_Comment.query.get_or_404(id)
     db.session.delete(comment)
     db.session.commit()
@@ -715,6 +722,8 @@ def csrf_delete_comment(id):
 
 @app.route('/csrf/download', methods=['GET', 'POST'])
 def csrf_download():
+    if g.safe_mode_on:
+        app.config['WTF_CSRF_ENABLED'] = True
     output_string = '''
     <!DOCTYPE html>
     <html lang = "en">
