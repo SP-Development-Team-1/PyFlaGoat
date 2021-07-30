@@ -16,8 +16,7 @@ import time
 import urllib.parse
 
 app = Flask(__name__)
-app.SESSION_COOKIE_HTTPONLY = False
-app.REMEMBER_COOKIE_HTTPONLY = False
+app.config['SESSION_COOKIE_HTTPONLY'] = False
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///database/default.db'
 app.config['SQLALCHEMY_BINDS'] = {
     'injection': 'sqlite:///database/injection.db',
@@ -520,11 +519,9 @@ def xss():
             user_name = request.form['user_name']
             user_occupation = Markup(request.form['user_occupation'])
             resp = make_response(redirect('/xss/name='+ user_name + '_occup=' + user_occupation))
-            resp.set_cookie('userID', "33C181DJSESSAUTH"+user_name.replace(" ", "").upper()+"221A28FE8913F1234!@#BDB94AF7F")
             return resp
         else:
             resp = make_response(render_template('xss/xss.html', my_name="", my_occupation="", random=random))
-            resp.set_cookie('userID', "33C181DJSESSAUTHJOHNDOEADMIN221A28FE8913F1234!@#BDB94AF7F")
             return resp
 
 @app.route('/xss/name=<string:name>_occup=<path:occupation>', methods=['GET', 'POST'])
@@ -532,12 +529,16 @@ def xss_dom(name, occupation):
         if request.method == 'POST':
             user_name = request.form['user_name']
             user_occupation = Markup(request.form['user_occupation'])
+            if g.safe_mode_on:
+                user_occupation = request.form(['user_occupation'])
             resp = make_response(redirect('/xss/name='+ user_name + '_occup=' + user_occupation))
             resp.set_cookie('userID', "33C181DJSESSAUTH"+user_name.replace(" ", "").upper()+"221A28FE8913F1234!@#BDB94AF7F")
             return resp
         else:
             user_name = name
             user_occupation = Markup(occupation)
+            if g.safe_mode_on:
+                user_occupation = occupation
             return render_template('xss/xss.html', my_name=user_name, my_occupation=user_occupation, random=random)
 
 ############################
