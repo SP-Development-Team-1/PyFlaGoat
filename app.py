@@ -1,4 +1,4 @@
-from flask import Flask, Markup, render_template, request, redirect, flash, make_response, session, g, Response
+from flask import Flask, Markup, render_template, request, redirect, flash, make_response, session, g, Response, abort
 from flask.helpers import url_for
 from flask_sqlalchemy import SQLAlchemy
 from datetime import datetime
@@ -347,32 +347,6 @@ def xxe():
         all_comments = XXE.query.order_by(XXE.date_posted).all()
         return render_template("xxe/xxe.html", comments=all_comments, xml=xml)
 
-def xxe_secure():
-    path = ""
-    xml = '''<?xml version='1.0'?><!DOCTYPE comment [<!ENTITY xxe SYSTEM "/app">]><comment><text>&xxe;</text></comment>'''
-    flag = 0
-    if request.method == 'POST':
-        user_name = request.form['author']
-        user_comment = request.form['comment']
-        if "<?xml version='1.0'?>" in user_comment:
-            for elem in user_comment:
-                if elem == '"':
-                    flag += 1
-                elif flag == 1:
-                    path += elem
-                elif flag == 2:
-                    break   
-            all_files = str(os.listdir(path))
-            new_comment = XXE(author=user_name, comment=all_files)
-        else:
-            new_comment = XXE(author=user_name, comment=user_comment)
-        db.session.add(new_comment)
-        db.session.commit()
-        return redirect('/xxe')
-    else:
-        all_comments = XXE.query.order_by(XXE.date_posted).all()
-        return render_template("xxe/xxe.html", comments=all_comments, xml=xml)
-
 @app.route('/xxe/delete/<int:id>')
 def delete_comment(id):
     comment = XXE.query.get_or_404(id)
@@ -465,24 +439,6 @@ def delete_client(user_id):
     db.session.delete(profile)
     db.session.commit()
     return redirect('/client/client-filtering')
-
-################################
-# CLIENT SIDE - HTML TAMPERING #
-################################
-
-class Tampering(db.Model):
-    user_id = db.Column(db.Integer, primary_key=True, nullable=False)
-    firstName = db.Column(db.String(10), nullable=False)
-    lastName = db.Column(db.String(20), nullable=False)
-    SSN = db.Column(db.String(10), nullable=False)
-    salary = db.Column(db.Integer, nullable=False)
-
-@app.route('/client/html-tampering', methods=['GET', 'POST'])
-def tampering():
-    if request.method == 'POST':
-        return redirect('client/html-tampering')
-    else:
-        return render_template('client_side/html_tampering.html')
     
 #########################
 # BROKEN ACCESS CONTROL #
@@ -498,18 +454,19 @@ class DirectObj(db.Model):
 
 @app.route('/broken_access', methods=['GET', 'POST'])
 def broken_access():
+    session['direct_obj'] = DirectObj.query.get_or_404(0).id
     return redirect('/broken_access/profile/0')
 
 @app.route('/broken_access/profile/<int:id>', methods=['GET', 'POST'])
 def profile_view(id):
-    if id == 0 and not len(DirectObj.query.filter_by(id=0).all()):
-        sentinel = DirectObj(id=0, username="WebGoat", password="password", name = "Chief WebGoat", occupation = "Administrator of WebGoat")
-        db.session.add(sentinel)
-        db.session.commit()
+    if g.safe_mode_on and session['direct_obj'] != id:
+        abort(403)
     return render_template("broken_access/broken_access.html", user = DirectObj.query.get_or_404(id))
 
 @app.route('/broken_access/profile/<int:id>/edit', methods=['GET', 'POST'])
 def profile_edit(id):
+    if g.safe_mode_on and session['direct_obj'] != id:
+        abort(403)
     to_edit = DirectObj.query.get_or_404(id)
     if request.method == 'POST':
         to_edit.username = request.form['username']
@@ -538,6 +495,7 @@ def create_user():
         new_acc = DirectObj(id=acc_id, username=acc_username, password=acc_password, name=acc_name, occupation=acc_occupation)
         db.session.add(new_acc)
         db.session.commit()
+        session['direct_obj'] = acc_id
         return redirect('/broken_access/profile/' + str(acc_id))
     else:
         return render_template("broken_access/new.html")
