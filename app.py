@@ -428,9 +428,14 @@ def profile():
                 flash("Wrong! That's not his salary, try again!")
                 return render_template("flash.html")
         else:
-            post_filter_by = request.form['firstName']
-            all_posts = Filtering.query.filter(text("firstName={}".format("\'"+ post_filter_by +"\'"))).all()
-            return render_template('client_side/filtered.html', posts=all_posts)
+            if g.safe_mode_on:
+                name_filter_by = request.form['firstName']
+                all_posts = Filtering.query.filter(text("firstName={}".format("\'"+ name_filter_by +"\'"))).all()
+                return render_template('client_side/filtered.html', posts=all_posts)
+            else:
+                name_filter_by = request.form['firstName']
+                all_posts = Filtering.query.filter(text("firstName={}".format("\'"+ name_filter_by +"\'"))).all()
+                return render_template('client_side/filtered.html', posts=all_posts)
     else:
        return render_template('client_side/client_filtering.html')
 
@@ -557,10 +562,10 @@ class Deserialization(db.Model):
 
 log_path = os.path.join(os.getcwd(), "static", "job.log")
 
-# configure logger
+# Configure logger
 logger.add(log_path, format="{time} - {message}")
 
-# list to store deserialized_object, making it availabe to stream()
+# Dictionary to store deserialized_object and safe status, making it availabe to stream()
 deserialized_storage = {}
 
 def flask_logger(deserialized_object, status):
