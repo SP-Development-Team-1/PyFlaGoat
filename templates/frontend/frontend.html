@@ -1,0 +1,98 @@
+{% extends 'base.html' %} {% block head %}
+<title>Client Side</title>
+{% endblock %} {% block body %}
+<br />
+<h1>Client Side</h1>
+
+<hr />
+<h2>Bypass front-end restrictions:</h2>
+<br />
+
+<form action="/front-end" method="POST">
+  <br />
+  <label for="post"><b>Select a company:</b></label>
+  <br />
+  <select name="company" id="company">
+    <option value="Facebook">Facebook</option>
+    <option value="Google">Google</option>
+    <option value="Airbnb">Airbnb</option>
+    <option value="Amazon">Amazon</option>
+    <option value="Lyft">Lyft</option>
+    <option value="Uber">Uber</option>
+    <option value="Citadel">Citadel</option>
+    <option value="Two Sigma">Two Sigma</option>
+  </select>
+  <p><br /><b>Select your profession:</b></p>
+
+  <div>
+    <input
+      type="radio"
+      id="Software Engineer"
+      name="profession"
+      value="Software_Engineer"
+      checked
+    />
+    <label for="post">Software Engineer</label>
+  </div>
+
+  <div>
+    <input
+      type="radio"
+      id="Data Scientist"
+      name="profession"
+      value="Data_Scientist"
+    />
+    <label for="post">Data Scientist</label>
+  </div>
+
+  <div>
+    <input
+      type="radio"
+      id="Product Owner"
+      name="profession"
+      value="Product_Owner"
+    />
+    <label for="post">Product Owner</label>
+  </div>
+  <p><br /><b>Choose your role:</b></p>
+
+  <div>
+    <input type="checkbox" id="check" name="role" value="Frontend" checked />
+    <label for="post">Frontend</label>
+  </div>
+
+  <div>
+    <input type="checkbox" id="check" name="role" value="Backend" />
+    <label for="post">Backend</label>
+  </div>
+  <br />
+  <label for="post"><b>Input restricted to max 5 characters:</b></label>
+  <input
+    class="form-control"
+    type="text"
+    maxlength="5"
+    name="comment"
+    id="comment"
+    placeholder="Add a comment"
+    aria-label="Add a comment"
+  />
+  <br />
+  <br />
+  <label for="post"><b>Readonly input field</b></label>
+  <input
+    class="form-control"
+    type="text"
+    maxlength="5"
+    name="readonly"
+    id="readonly"
+    value="FAANG"
+    readonly
+  />
+  <br />
+  <input type="submit" class="btn btn-primary" value="Submit" />
+  <br />
+  <br />
+  <br />
+  <br />
+</form>
+{% endblock %}
