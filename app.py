@@ -371,7 +371,7 @@ class Frontend(db.Model):
     inputMax = db.Column(db.String(10), nullable=False)
     readonly = db.Column(db.String(10), nullable=False)
 
-@app.route('/client/front-end', methods=['GET', 'POST'])
+@app.route('/front-end', methods=['GET', 'POST'])
 def frontend():
     if request.method == 'POST':
         select_field = request.form['company']
@@ -382,9 +382,9 @@ def frontend():
         new_input = Frontend(company=select_field, profession=radio_button, role=checkbox, inputMax=input_5, readonly=random_input)
         db.session.add(new_input)
         db.session.commit()
-        return redirect('/client/front-end')
+        return redirect('front-end')
     else:
-        return render_template("client_side/frontend.html")
+        return render_template("frontend/frontend.html")
 
 #######################################
 # CLIENT SIDE - CLIENT SIDE FILTERING #
