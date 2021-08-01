@@ -1,0 +1,107 @@
+{% extends 'base.html' %} {% block head %}
+<title>Client Side</title>
+<script src="http://sibeeshpassion.com/content/scripts/jquery-1.11.1.min.js"></script>
+<script>
+  document.onkeydown = function (e) {
+    if (event.keyCode == 123) {
+      return false;
+    }
+    if (e.ctrlKey && e.shiftKey && e.keyCode == "I".charCodeAt(0)) {
+      return false;
+    }
+    if (e.ctrlKey && e.shiftKey && e.keyCode == "J".charCodeAt(0)) {
+      return false;
+    }
+    if (e.ctrlKey && e.keyCode == "U".charCodeAt(0)) {
+      return false;
+    }
+  };
+</script>
+{% endblock %} {% block body %}
+<br />
+<h1>Client Side</h1>
+
+<hr />
+<h2>Client-side Filtering:</h2>
+<br />
+
+<style>
+  .br-special {
+    content: " ";
+    display: block;
+    margin: -4px;
+  }
+</style>
+
+<p><img src="/static/code.PNG" width="70%" height="70%" /></p>
+<body oncontextmenu="return false;">
+  <form
+    class="form-horizontal my-2 my-md-4 float-right"
+    action="/client/client-filtering"
+    method="POST"
+    name="name-form"
+  >
+    <label for="post"><h5>Choose client's first name:</h5></label>
+    <br />
+    <select name="firstName" id="firstName">
+      <option value="Rachel">Rachel</option>
+      <option value="Michael">Michael</option>
+      <option value="Jisoo">Jisoo</option>
+      <option value="Shelly">Shelly</option>
+      <option value="Youngjun">Youngjun</option>
+      <option value="Soli">Soli</option>
+      <option value="Junhyeok">Junhyeok</option>
+    </select>
+    <div class="br-special"><br /></div>
+    <input
+      type="submit"
+      name="action"
+      class="btn btn-primary"
+      value="Submit Name"
+    />
+  </form>
+
+  <br />
+  <br />
+  <br />
+
+  <h5>Click to create a new client profile:</h5>
+  <div class="br-special"><br /></div>
+  <center>
+    <a
+      style="display: inline"
+      class="btn btn-success float-left"
+      href="/client/client-filtering/new"
+      >New Profile</a
+    >
+  </center>
+
+  <br />
+  <br />
+  <br />
+
+  <form action="/client/client-filtering" method="POST" name="salary-form">
+    <br />
+    <label for="post"><h5>What is Kyugon Cho's salary?</h5></label>
+    <input
+      class="form-control"
+      type="text"
+      name="salary"
+      id="salary"
+      placeholder="Enter Kyugon Cho's salary"
+      aria-label="Enter Salary"
+    />
+    <br />
+    <input
+      type="submit"
+      name="action"
+      class="btn btn-primary"
+      value="Submit Salary"
+    />
+  </form>
+  <hr />
+  <br />
+  <br />
+  <br />
+  {% endblock %}
+</body>

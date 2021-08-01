@@ -371,7 +371,7 @@ class Frontend(db.Model):
     inputMax = db.Column(db.String(10), nullable=False)
     readonly = db.Column(db.String(10), nullable=False)
 
-@app.route('/front-end', methods=['GET', 'POST'])
+@app.route('/client/front-end', methods=['GET', 'POST'])
 def frontend():
     if request.method == 'POST':
         select_field = request.form['company']
@@ -382,9 +382,9 @@ def frontend():
         new_input = Frontend(company=select_field, profession=radio_button, role=checkbox, inputMax=input_5, readonly=random_input)
         db.session.add(new_input)
         db.session.commit()
-        return redirect('front-end')
+        return redirect('/client/front-end')
     else:
-        return render_template("frontend/frontend.html")
+        return render_template("client_side/frontend.html")
 
 #######################################
 # CLIENT SIDE - CLIENT SIDE FILTERING #
@@ -428,16 +428,14 @@ def profile():
                 flash("Wrong! That's not his salary, try again!")
                 return render_template("flash.html")
         else:
-            if g.safe_mode_on:
-                name_filter_by = request.form['firstName']
-                all_posts = Filtering.query.filter(text("firstName={}".format("\'"+ name_filter_by +"\'"))).all()
-                return render_template('client_side/filtered.html', posts=all_posts)
-            else:
-                name_filter_by = request.form['firstName']
-                all_posts = Filtering.query.filter(text("firstName={}".format("\'"+ name_filter_by +"\'"))).all()
-                return render_template('client_side/filtered.html', posts=all_posts)
+            name_filter_by = request.form['firstName']
+            all_posts = Filtering.query.filter(text("firstName={}".format("\'"+ name_filter_by +"\'"))).all()
+            return render_template('client_side/filtered.html', posts=all_posts)
     else:
-       return render_template('client_side/client_filtering.html')
+        if g.safe_mode_on:
+            return render_template('client_side/client_filtering_secure.html')
+        else:
+            return render_template('client_side/client_filtering.html')
 
 @app.route('/client/client-filtering/filtered', methods=['GET', 'POST'])
 def filtered():
