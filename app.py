@@ -147,6 +147,10 @@ class BlogPost(db.Model):
     def __repr__(self):
         return 'Blog Post ' + str(self.id)
 
+@app.route('/sql_injection-intro', methods=['GET', "POST"])
+def sql_injection_intro():
+    return render_template('sql_injection/intro.html')
+
 @app.route('/sql_injection', methods=['GET', 'POST'])
 def posts():
         if request.method == 'POST':
@@ -513,6 +517,10 @@ def create_user():
 # XSS #
 #######
 
+@app.route('/xss-intro', methods=['GET', "POST"])
+def xss_intro():
+    return render_template('xss/intro.html')
+
 @app.route('/xss', methods=['GET', 'POST'])
 def xss():
         if request.method == 'POST':
@@ -723,6 +731,10 @@ class CSRF_Comment(db.Model):
     
     def __repr__(self):
         return 'Comment ' + str(self.id)
+
+@app.route('/csrf-intro', methods=['GET', 'POST'])
+def csrf_intro():
+    return render_template("csrf/intro.html")
     
 @app.route('/csrf', methods=['GET', 'POST'])
 def csrf():

@@ -1,0 +1,33 @@
+{% extends 'base.html' %} {% block head %}
+<title>XSS</title>
+{% endblock %} {% block body %}
+<link rel="stylesheet" type="text/css" href="/static/css/intro.css" />
+<br />
+<div class="content">
+    <br />
+    <h3><b>Cross-Site Scripting</b></h3>
+    <div class="box">
+        <h4><b>What is Cross-Site Scripting</b></h4>
+        <p class="bp"> Cross site scripting or XSS is a client side code injection.
+            In this type of attack the attacker tries to inject malicious script into a trusted site.The malicious
+            script is usually a javascript code ,which helps the attacker to perform malicious activities, like
+            redirecting the victim to an attacker site , stealing cookies etc. Some times XSS vulnerability can be
+            chained with other vulnerabilities to create great impact .
+        </p>
+        <button class="coll btn btn-xxe" type="button" onclick="window.location.href='/xss'">View
+            Demo</button>
+        <br />
+        <br />
+        <h4><b>Mitigation</b></h4>
+        <p class="bp">
+            To avoid executing malicious commands from raw user input, you should
+            <ul>
+                <li> Escape special characters such as <code>&amp;, &quot;, &apos;, &lt; and &gt;</code>.</li>
+                <li> NOT <code>Markup()</code> any user input. </li>
+                <li> Specify the data type of user input. </li>
+            </ul>
+        </p>
+    </div>
+</div>
+
+{% endblock %}

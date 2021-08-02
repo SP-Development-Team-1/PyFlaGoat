@@ -1,0 +1,33 @@
+{% extends 'base.html' %} {% block head %}
+<title>CSRF</title>
+{% endblock %} {% block body %}
+<link rel="stylesheet" type="text/css" href="/static/css/intro.css" />
+<br />
+<div class="content">
+    <br />
+    <h3><b>Cross-Site Request Forgery</b></h3>
+    <div class="box">
+        <h4><b>What is Cross-Site Request Forgery</b></h4>
+        <p class="bp"> Cross-Site Request Forgery (CSRF) is an attack that forces an end user to execute unwanted
+            actions on a web application in which they’re currently authenticated. With a little help of social
+            engineering (such as sending a link via email or chat), an attacker may trick the users of a web application
+            into executing actions of the attacker’s choosing. If the victim is a normal user, a successful CSRF attack
+            can force the user to perform state changing requests like transferring funds, changing their email address,
+            and so forth. If the victim is an administrative account, CSRF can compromise the entire web application.
+        </p>
+        <button class="coll btn btn-xxe" type="button" onclick="window.location.href='/csrf'">View
+            Demo</button>
+        <br />
+        <br />
+        <h4><b>Mitigation</b></h4>
+        <p class="bp">
+            <ul>
+                <li>Add a per-request nonce to the URL and all forms in addition to the standard session. This is also referred to as “form keys”. Many frameworks (e.g., Drupal.org 4.7.4+) either have or are starting to include this type of protection “built-in” to every form so the programmer does not need to code this protection manually.</li>
+                <li>Add a hash (session id, function name, server-side secret) to all forms.</li>
+                <li>Checking the referrer header in the client’s HTTP request can prevent CSRF attacks. Ensuring that the HTTP request has come from the original site means that attacks from other sites will not function.</li>
+            </ul>
+        </p>
+    </div>
+</div>
+
+{% endblock %}
