@@ -386,7 +386,7 @@ def frontend():
         new_input = Frontend(company=select_field, profession=radio_button, role=checkbox, inputMax=input_5, readonly=random_input)
         db.session.add(new_input)
         db.session.commit()
-        return redirect('front-end')
+        return redirect('/front-end')
     else:
         return render_template("frontend/frontend.html")
 
@@ -400,6 +400,10 @@ class Filtering(db.Model):
     lastName = db.Column(db.String(20), nullable=False)
     SSN = db.Column(db.String(10), nullable=False)
     salary = db.Column(db.Integer, nullable=False)
+
+@app.route('/client/client-filtering-intro', methods=['GET', "POST"])
+def client_filtering_intro():
+    return render_template('client_side/intro.html')
 
 @app.route('/client/client-filtering/new', methods=['GET', 'POST'])
 def filtering():
@@ -432,11 +436,14 @@ def profile():
                 flash("Wrong! That's not his salary, try again!")
                 return render_template("flash.html")
         else:
-            post_filter_by = request.form['firstName']
-            all_posts = Filtering.query.filter(text("firstName={}".format("\'"+ post_filter_by +"\'"))).all()
+            name_filter_by = request.form['firstName']
+            all_posts = Filtering.query.filter(text("firstName={}".format("\'"+ name_filter_by +"\'"))).all()
             return render_template('client_side/filtered.html', posts=all_posts)
     else:
-       return render_template('client_side/client_filtering.html')
+        if g.safe_mode_on:
+            return render_template('client_side/client_filtering_secure.html')
+        else:
+            return render_template('client_side/client_filtering.html')
 
 @app.route('/client/client-filtering/filtered', methods=['GET', 'POST'])
 def filtered():
@@ -565,10 +572,10 @@ class Deserialization(db.Model):
 
 log_path = os.path.join(os.getcwd(), "static", "job.log")
 
-# configure logger
+# Configure logger
 logger.add(log_path, format="{time} - {message}")
 
-# list to store deserialized_object, making it availabe to stream()
+# Dictionary to store deserialized_object and safe status, making it availabe to stream()
 deserialized_storage = {}
 
 def flask_logger(deserialized_object, status):
