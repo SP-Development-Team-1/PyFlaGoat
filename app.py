@@ -375,6 +375,10 @@ class Frontend(db.Model):
     inputMax = db.Column(db.String(10), nullable=False)
     readonly = db.Column(db.String(10), nullable=False)
 
+@app.route('/front-end-intro', methods=['GET', "POST"])
+def frontend_intro():
+    return render_template('frontend/intro.html')
+
 @app.route('/front-end', methods=['GET', 'POST'])
 def frontend():
     if request.method == 'POST':
@@ -388,7 +392,10 @@ def frontend():
         db.session.commit()
         return redirect('/front-end')
     else:
-        return render_template("frontend/frontend.html")
+        if g.safe_mode_on:
+            return render_template("frontend/frontend_secure.html")
+        else:
+            return render_template("frontend/frontend.html")
 
 #######################################
 # CLIENT SIDE - CLIENT SIDE FILTERING #
