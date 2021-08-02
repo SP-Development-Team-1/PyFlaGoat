@@ -397,6 +397,10 @@ class Filtering(db.Model):
     SSN = db.Column(db.String(10), nullable=False)
     salary = db.Column(db.Integer, nullable=False)
 
+@app.route('/client/client-filtering-intro', methods=['GET', "POST"])
+def client_filtering_intro():
+    return render_template('client_side/intro.html')
+
 @app.route('/client/client-filtering/new', methods=['GET', 'POST'])
 def filtering():
     if request.method == 'POST':

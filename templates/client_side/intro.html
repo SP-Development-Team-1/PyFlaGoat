@@ -1,0 +1,80 @@
+{% extends 'base.html' %} {% block head %}
+<title>Client Side</title>
+<script src="/static/js/xxe.js"></script>
+{% endblock %} {% block body %}
+<link rel="stylesheet" type="text/css" href="/static/css/intro.css">
+<br />
+<div class="content">
+<br />
+    <h3><b>Client-side Filtering</b></h3>
+    <div class="box">
+        <h4><b>What is Client-side Filtering?</b></h4>
+            <p class="bp">The software is composed of a server that relies on the client to implement a mechanism that is intended to protect the server.
+	    When the server relies on protection mechanisms placed on the client side, an attacker can modify the client-side behavior to bypass the protection 
+	    mechanisms resulting in potentially unexpected interactions between the client and server. The consequences will vary, depending on what the mechanisms are trying to protect.
+	    Client-side Filtering checks can be easily bypassed, allowing malformed or unexpected input to pass into the application, potentially as trusted data. 
+	    This may lead to unexpected states, behaviors and possibly a resulting crash.
+            </p>
+        <button class="coll btn btn-xxe" type="button" onclick="window.location.href='/client/client-filtering'">View Demo</button>
+	<br />
+	<div class="lab">
+	<p class="bp">
+		<p class="bp">
+		This lab helps us to understand how xxe vulnerabilities can be exploited in the wild.
+		The lab consists of a commenting feature which asks the user to enter his/her thoughts about a picture show!
+		Once he enters his comments, he is also given a feature to see how his comments are stored in the database.
+		This can be done by clicking the <i>click here</i>  button .
+		</p>
+		<p class="bp">
+		<b>What could go wrong here?</b><br>
+		When the user clicks the button to save his comments, the data is sent to the server in th from of xml post request.
+		This can be seen , by intercepting the request done to the server by that button using <i>BurpSuite</i>.<br>
+		Sending data to the server in the form of XML is not actually vulnerable, the vulnerability lies in the way the <i>xml is being parsed.</i>
+		An xml parsers which allows the DTD retrival is said to vulnerable to XXE injection if there arent any input validation done on the xml data.
+		</p>
+		<p class="bp">
+		<b>Exploiting the XML Parser</b>
+		<ul>
+			<li>Open Burpsuite and make sure it is ready to capture the web traffic. </li>
+			<li>Enter your comments in the input box provided.</li>
+			<li>Before hiting the <i>Let the world see</i> button go to burpsuite and turn on intercept.</li>
+			<li>Now you should be able to see a post request containing a xml data with your comment inside your the text tag. </li>
+			<li>Now we need to introduce a DTD, which tries to fetch files from its server. </li>
+			<li>This can be done by using the document tag and defining the Entity.</li>
+			<li>The Payload </li><br>
+				<code style="text-align:center">
+					&lt;?xml version='1.0'?><br>
+					&lt;!DOCTYPE comm [<br>
+					&lt;!ELEMENT comm (#PCDATA)><br>
+					&lt;!ENTITY xxe SYSTEM "C:\windows\system32\drivers\etc\hosts"><br>
+					]><br>
+					&lt;comm><br>
+					&lt;text>&xxe;&lt;/text><br>
+					&lt;/comm><br>
+				</code><br>
+			<li>Incase if the serve is a linux serve then use <code>SYSTEM "file:///etc/passwd"</code> instead.</li>
+			<li>Forward the request and turn of intercept.</li>
+			<li>Go to the see comments option and click view comments this should show you the requested files in your payload if the vulnerability exists.</li>
+		</ul>
+		</p>
+	</p>
+	<br>
+		<div align="right"> <button class="btn btn-xxe" type="button" onclick="window.location.href='/client/client-filtering'">Access Demo</button></div>
+	</p>
+	<br />
+	</div>
+	<br />
+	<h4><b>Mitigation</b></h4>
+		<p class="bp">
+			<ul>
+			<li>For any security checks that are performed on the client side, ensure that these checks are duplicated on the server side.</li>
+			<li>Use dynamic tools and techniques that interact with the software using large test suites with many diverse inputs, such as fuzz testing (fuzzing), robustness testing, and fault injection.</li>
+			<li>Use tools and techniques that require manual (human) analysis, such as penetration testing, threat modeling, and interactive tools that allow the tester to record and modify an active session.</li>
+			<li>Use integrity checking and strong authentication to ensure that the inputs are coming from a trusted source.</li>
+		</ul>
+		</p>
+    </div>
+</div>
+
+
+{% endblock %}
