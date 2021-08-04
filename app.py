@@ -1,9 +1,11 @@
-from flask import Flask, Markup, render_template, request, redirect, flash, make_response, session, g, Response
+from flask import Flask, Markup, render_template, request, redirect, flash, make_response, session, g, Response, abort
+from flask.helpers import url_for
 from flask_sqlalchemy import SQLAlchemy
 from datetime import datetime
 from sqlalchemy.sql import text
 from loguru import logger
 from io import StringIO
+from flask_wtf.csrf import CSRFProtect
 import subprocess
 import random
 import zipfile
@@ -11,21 +13,22 @@ import os
 import pickle
 import base64
 import time
+import urllib.parse
 
 app = Flask(__name__)
-
-app.SESSION_COOKIE_HTTPONLY = False
-app.REMEMBER_COOKIE_HTTPONLY = False
-
+app.config['SESSION_COOKIE_HTTPONLY'] = False
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///database/default.db'
 app.config['SQLALCHEMY_BINDS'] = {
     'injection': 'sqlite:///database/injection.db',
     'broken_access': 'sqlite:///database/broken_access.db'
 }
-app.config['SECRET_KEY'] = 'FASOO'
+app.config['SECRET_KEY'] = 'FASOOINCSPARROWCOLTD'
+
 db = SQLAlchemy(app)
 db.create_all()
 db.session.commit()
+
+CSRFProtect(app)
 
 ########
 # HOME #
@@ -51,10 +54,15 @@ class User(db.Model):
 @app.before_request
 def before_request():
     g.user = None
-
     if 'user_id' in session:
         user = [x for x in User.query.all() if x.id == session['user_id']][0]
         g.user = user
+    
+    g.safe_mode_on = False
+    if 'safe_mode_on' in session:
+        g.safe_mode_on = session['safe_mode_on'] 
+
+    app.config['WTF_CSRF_ENABLED'] = False 
 
 @app.route('/login',  methods=['GET', 'POST'])
 def login():
@@ -100,6 +108,29 @@ def register_user():
     else:
         return render_template("register.html")
 
+######################
+# TOGGLE SECURE MODE #
+######################
+
+@app.route('/togglemode', methods=['GET', 'POST'])
+def togglemode():
+    new_mode = not session.pop('safe_mode_on', False)
+    session['safe_mode_on'] = new_mode
+    return redirect_back()
+
+def redirect_back(default='hello', **kwargs):
+    for target in request.args.get('next'), request.referrer:
+        if not target:
+            continue
+        if is_safe_url(target):
+            return redirect(target)
+    return redirect(url_for(default, **kwargs))
+ 
+def is_safe_url(target):
+    ref_url = urllib.parse.urlparse(request.host_url)
+    test_url = urllib.parse.urlparse(urllib.parse.urljoin(request.host_url, target))
+    return test_url.scheme in ('http', 'https') and ref_url.netloc == test_url.netloc
+
 
 #################
 # SQL INJECTION #
@@ -116,11 +147,18 @@ class BlogPost(db.Model):
     def __repr__(self):
         return 'Blog Post ' + str(self.id)
 
+@app.route('/sql_injection-intro', methods=['GET', "POST"])
+def sql_injection_intro():
+    return render_template('sql_injection/intro.html')
+
 @app.route('/sql_injection', methods=['GET', 'POST'])
 def posts():
         if request.method == 'POST':
             post_filter_by = request.form['auth_TAN']
-            all_posts = BlogPost.query.filter(text("auth_TAN={}".format("\'"+ post_filter_by +"\'"))).all()
+            if g.safe_mode_on:
+                all_posts = BlogPost.query.filter_by(auth_TAN=post_filter_by).all()
+            else:
+                all_posts = BlogPost.query.filter(text("auth_TAN={}".format("\'"+ post_filter_by +"\'"))).all()
             return render_template('sql_injection/posts.html', posts=all_posts)
         else:
             all_posts = BlogPost.query.order_by(BlogPost.date_posted).all()
@@ -166,6 +204,10 @@ class BlogAuth(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     username = db.Column(db.String(50), nullable=False)
     password = db.Column(db.String(20), nullable=False)
+
+@app.route('/auth-intro', methods=['GET', "POST"])
+def auth_intro():
+    return render_template('broken_auth/intro.html')
         
 @app.route('/auth', methods=['GET', 'POST'])
 def broken_auth():
@@ -174,11 +216,12 @@ def broken_auth():
         acc_username = request.form['username']
         acc_password = request.form['password']
         username = BlogAuth.query.filter_by(username=acc_username).first()
-        password = BlogAuth.query.filter_by(password=acc_password).first()
-        
+        password = False
+        if username:
+            password = username.password == acc_password
         if username and password:
             flash("Login Success!")
-            return render_template("flash.html")
+            return render_template(flash.html)
         elif username and not password:
             flash("Login Failed, Please enter a valid password!")
             return render_template("flash.html")
@@ -215,7 +258,11 @@ class SensitiveUsers(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     username = db.Column(db.String(50), nullable=False)
     password = db.Column(db.String(20), nullable=False)
-        
+
+@app.route('/sensitive_data-intro', methods=['GET', "POST"])
+def sensitive_data_intro():
+    return render_template('sensitive_data/intro.html')
+
 @app.route('/sensitive_data', methods=['GET', 'POST'])
 def sensitive_data():
     flag = 0
@@ -223,7 +270,9 @@ def sensitive_data():
         acc_username = request.form['username']
         acc_password = request.form['password']
         username = SensitiveUsers.query.filter_by(username=acc_username).first()
-        password = SensitiveUsers.query.filter_by(password=acc_password).first()
+        password = False
+        if username:
+            password = username.password == acc_password
         
         if username and password:
             flash("Login Success!")
@@ -269,6 +318,10 @@ class XXE(db.Model):
     def __repr__(self):
         return 'Comment ' + str(self.id)
     
+@app.route('/xxe-intro', methods=['GET', "POST"])
+def xxe_intro():
+    return render_template('xxe/intro.html')
+    
 @app.route('/xxe', methods=['GET', 'POST'])
 def xxe():
     path = ""
@@ -277,18 +330,25 @@ def xxe():
     if request.method == 'POST':
         user_name = request.form['author']
         user_comment = request.form['comment']
-        if "<?xml version='1.0'?>" in user_comment:
-            for elem in user_comment:
-                if elem == '"':
-                    flag += 1
-                elif flag == 1:
-                    path += elem
-                elif flag == 2:
-                    break   
-            all_files = str(os.listdir(path))
-            new_comment = XXE(author=user_name, comment=all_files)
+        if not g.safe_mode_on:
+            if "<?xml version='1.0'?>" in user_comment:
+                for elem in user_comment:
+                    if elem == '"':
+                        flag += 1
+                    elif flag == 1:
+                        path += elem
+                    elif flag == 2:
+                        break   
+                all_files = str(os.listdir(path))
+                new_comment = XXE(author=user_name, comment=all_files)
+            else:
+                new_comment = XXE(author=user_name, comment=user_comment)
         else:
-            new_comment = XXE(author=user_name, comment=user_comment)
+            if "<?xml version='1.0'?>" in user_comment:
+                error = "Malicious XML commands aren't allowed!"
+                new_comment = XXE(author=user_name, comment=error)
+            else:
+                new_comment = XXE(author=user_name, comment=user_comment)
         db.session.add(new_comment)
         db.session.commit()
         return redirect('/xxe')
@@ -315,7 +375,11 @@ class Frontend(db.Model):
     inputMax = db.Column(db.String(10), nullable=False)
     readonly = db.Column(db.String(10), nullable=False)
 
-@app.route('/client/front-end', methods=['GET', 'POST'])
+@app.route('/front-end-intro', methods=['GET', "POST"])
+def frontend_intro():
+    return render_template('frontend/intro.html')
+
+@app.route('/front-end', methods=['GET', 'POST'])
 def frontend():
     if request.method == 'POST':
         select_field = request.form['company']
@@ -326,9 +390,12 @@ def frontend():
         new_input = Frontend(company=select_field, profession=radio_button, role=checkbox, inputMax=input_5, readonly=random_input)
         db.session.add(new_input)
         db.session.commit()
-        return redirect('/client/front-end')
+        return redirect('/front-end')
     else:
-        return render_template("client_side/frontend.html")
+        if g.safe_mode_on:
+            return render_template("frontend/frontend_secure.html")
+        else:
+            return render_template("frontend/frontend.html")
 
 #######################################
 # CLIENT SIDE - CLIENT SIDE FILTERING #
@@ -340,6 +407,10 @@ class Filtering(db.Model):
     lastName = db.Column(db.String(20), nullable=False)
     SSN = db.Column(db.String(10), nullable=False)
     salary = db.Column(db.Integer, nullable=False)
+
+@app.route('/client/client-filtering-intro', methods=['GET', "POST"])
+def client_filtering_intro():
+    return render_template('client_side/intro.html')
 
 @app.route('/client/client-filtering/new', methods=['GET', 'POST'])
 def filtering():
@@ -372,11 +443,14 @@ def profile():
                 flash("Wrong! That's not his salary, try again!")
                 return render_template("flash.html")
         else:
-            post_filter_by = request.form['firstName']
-            all_posts = Filtering.query.filter(text("firstName={}".format("\'"+ post_filter_by +"\'"))).all()
+            name_filter_by = request.form['firstName']
+            all_posts = Filtering.query.filter(text("firstName={}".format("\'"+ name_filter_by +"\'"))).all()
             return render_template('client_side/filtered.html', posts=all_posts)
     else:
-       return render_template('client_side/client_filtering.html')
+        if g.safe_mode_on:
+            return render_template('client_side/client_filtering_secure.html')
+        else:
+            return render_template('client_side/client_filtering.html')
 
 @app.route('/client/client-filtering/filtered', methods=['GET', 'POST'])
 def filtered():
@@ -388,24 +462,6 @@ def delete_client(user_id):
     db.session.delete(profile)
     db.session.commit()
     return redirect('/client/client-filtering')
-
-################################
-# CLIENT SIDE - HTML TAMPERING #
-################################
-
-class Tampering(db.Model):
-    user_id = db.Column(db.Integer, primary_key=True, nullable=False)
-    firstName = db.Column(db.String(10), nullable=False)
-    lastName = db.Column(db.String(20), nullable=False)
-    SSN = db.Column(db.String(10), nullable=False)
-    salary = db.Column(db.Integer, nullable=False)
-
-@app.route('/client/html-tampering', methods=['GET', 'POST'])
-def tampering():
-    if request.method == 'POST':
-        return redirect('client/html-tampering')
-    else:
-        return render_template('client_side/html_tampering.html')
     
 #########################
 # BROKEN ACCESS CONTROL #
@@ -419,20 +475,25 @@ class DirectObj(db.Model):
     name = db.Column(db.String(50), nullable=False)
     occupation = db.Column(db.String(50), nullable=False)
 
+@app.route('/broken_access-intro', methods=['GET', "POST"])
+def broken_access_intro():
+    return render_template('broken_access/intro.html')
+
 @app.route('/broken_access', methods=['GET', 'POST'])
 def broken_access():
+    session['direct_obj'] = DirectObj.query.get_or_404(0).id
     return redirect('/broken_access/profile/0')
 
 @app.route('/broken_access/profile/<int:id>', methods=['GET', 'POST'])
 def profile_view(id):
-    if id == 0 and not len(DirectObj.query.filter_by(id=0).all()):
-        sentinel = DirectObj(id=0, username="WebGoat", password="password", name = "Chief WebGoat", occupation = "Administrator of WebGoat")
-        db.session.add(sentinel)
-        db.session.commit()
+    if g.safe_mode_on and session['direct_obj'] != id:
+        abort(403)
     return render_template("broken_access/broken_access.html", user = DirectObj.query.get_or_404(id))
 
 @app.route('/broken_access/profile/<int:id>/edit', methods=['GET', 'POST'])
 def profile_edit(id):
+    if g.safe_mode_on and session['direct_obj'] != id:
+        abort(403)
     to_edit = DirectObj.query.get_or_404(id)
     if request.method == 'POST':
         to_edit.username = request.form['username']
@@ -461,6 +522,7 @@ def create_user():
         new_acc = DirectObj(id=acc_id, username=acc_username, password=acc_password, name=acc_name, occupation=acc_occupation)
         db.session.add(new_acc)
         db.session.commit()
+        session['direct_obj'] = acc_id
         return redirect('/broken_access/profile/' + str(acc_id))
     else:
         return render_template("broken_access/new.html")
@@ -469,17 +531,19 @@ def create_user():
 # XSS #
 #######
 
+@app.route('/xss-intro', methods=['GET', "POST"])
+def xss_intro():
+    return render_template('xss/intro.html')
+
 @app.route('/xss', methods=['GET', 'POST'])
 def xss():
         if request.method == 'POST':
             user_name = request.form['user_name']
             user_occupation = Markup(request.form['user_occupation'])
             resp = make_response(redirect('/xss/name='+ user_name + '_occup=' + user_occupation))
-            resp.set_cookie('userID', "33C181DJSESSAUTH"+user_name.replace(" ", "").upper()+"221A28FE8913F1234!@#BDB94AF7F")
             return resp
         else:
             resp = make_response(render_template('xss/xss.html', my_name="", my_occupation="", random=random))
-            resp.set_cookie('userID', "33C181DJSESSAUTHJOHNDOEADMIN221A28FE8913F1234!@#BDB94AF7F")
             return resp
 
 @app.route('/xss/name=<string:name>_occup=<path:occupation>', methods=['GET', 'POST'])
@@ -487,12 +551,16 @@ def xss_dom(name, occupation):
         if request.method == 'POST':
             user_name = request.form['user_name']
             user_occupation = Markup(request.form['user_occupation'])
+            if g.safe_mode_on:
+                user_occupation = request.form(['user_occupation'])
             resp = make_response(redirect('/xss/name='+ user_name + '_occup=' + user_occupation))
             resp.set_cookie('userID', "33C181DJSESSAUTH"+user_name.replace(" ", "").upper()+"221A28FE8913F1234!@#BDB94AF7F")
             return resp
         else:
             user_name = name
             user_occupation = Markup(occupation)
+            if g.safe_mode_on:
+                user_occupation = occupation
             return render_template('xss/xss.html', my_name=user_name, my_occupation=user_occupation, random=random)
 
 ############################
@@ -511,42 +579,66 @@ class Deserialization(db.Model):
 
 log_path = os.path.join(os.getcwd(), "static", "job.log")
 
-# configure logger
+# Configure logger
 logger.add(log_path, format="{time} - {message}")
 
-# list to store deserialized_object, making it availabe to stream()
-deserialized_storage = []
+# Dictionary to store deserialized_object and safe status, making it availabe to stream()
+deserialized_storage = {}
 
-def flask_logger(deserialized_object):
+def flask_logger(deserialized_object, status):
     with open(log_path) as log_info:
         time.sleep(0.5)
         logger.info("Processing ...")
         data = log_info.read()
         yield data.encode()
         time.sleep(1)
-        logger.info("Deserialized Command: " + deserialized_object)
-        data = log_info.read()
-        time.sleep(1)
-        yield data.encode()
-        time.sleep(1.2)
-        if "cd" in deserialized_object:
-            path = deserialized_object[3 : len(deserialized_object)]
-            os.chdir(path)
-            logger.info("Current Working Directory: " + str(os.getcwd()))   
+        if status == "Not Safe":
+            logger.info("Deserialized Command: " + deserialized_object)
             data = log_info.read()
+            time.sleep(1)
             yield data.encode()
+            time.sleep(1.2)
+            if "cd" in deserialized_object:
+                path = deserialized_object[3 : len(deserialized_object)]
+                os.chdir(path)
+                logger.info("Current Working Directory: " + str(os.getcwd()))   
+                data = log_info.read()
+                yield data.encode()
+            else:
+                result = subprocess.check_output(deserialized_object, shell=True).strip().decode('utf-8')
+                logger.info(result)
+                data = log_info.read()
+                yield data.encode()
         else:
-            result = subprocess.check_output(deserialized_object, shell=True).strip().decode('utf-8')
-            logger.info(result)
-            data = log_info.read()
-            yield data.encode()
-            
+            if not (deserialized_object == "ls -l" or deserialized_object == "ls" or deserialized_object == "ls -la"):
+                logger.info("Insecure linux commands can't be deserialized!")
+                data = log_info.read()
+                yield data.encode()
+                logger.info("Please only deserialize secure linux commands!")
+                data = log_info.read()
+                yield data.encode()
+            else:
+                logger.info("Deserialized Command: " + deserialized_object)
+                data = log_info.read()
+                time.sleep(1)
+                yield data.encode()
+                time.sleep(1.2)
+                result = subprocess.check_output(deserialized_object, shell=True).strip().decode('utf-8')
+                logger.info(result)
+                data = log_info.read()
+                yield data.encode()
+                
         open(log_path, 'w').close()
+
+@app.route('/insecure-deserialization-intro', methods=['GET', "POST"])
+def insecureDeserialization_intro():
+    return render_template('insecure_deserialization/intro.html')
 
 @app.route("/insecure-deserialization/log_stream", methods=["GET"])
 def stream():
-    deserialized_object = deserialized_storage[-1]
-    return Response(flask_logger(deserialized_object), mimetype="text/plain", content_type="text/event-stream")
+    deserialized_object = list(deserialized_storage.keys())[-1]
+    status = list(deserialized_storage.values())[-1]
+    return Response(flask_logger(deserialized_object, status), mimetype="text/plain", content_type="text/event-stream")
 
 @app.route("/insecure-deserialization/log_view", methods=["GET"])
 def log_view():
@@ -568,7 +660,6 @@ def serialize_exploit():
         else:
             alr_serialized = request.form['serialized']
             deserialized_object = pickle.loads(base64.urlsafe_b64decode(alr_serialized))
-            deserialized_storage.append(deserialized_object)
             unique_serializedCommand = len(Deserialization.query.filter_by(serialized=alr_serialized).all())
             if not unique_serializedCommand:
                 new_serializedCommand = Deserialization(serialized=alr_serialized, deserialized=deserialized_object)
@@ -576,17 +667,26 @@ def serialize_exploit():
                 db.session.commit()
             all_commands = Deserialization.query.filter(text("serialized={}".format("\'"+ alr_serialized +"\'"))).all()
             print("")
-            print("Deserialized Command: " + deserialized_object)
-            if "cd" in deserialized_object:
-                path = deserialized_object[3 : len(deserialized_object)]
-                os.chdir(path)
-                print("Current Working Directory:", os.getcwd())
+            if not g.safe_mode_on:
+                deserialized_storage[deserialized_object] = "Not Safe"
+                print("Deserialized Command: " + deserialized_object)
+                if "cd" in deserialized_object:
+                    path = deserialized_object[3 : len(deserialized_object)]
+                    os.chdir(path)
+                    print("Current Working Directory:", os.getcwd())
+                else:
+                    os.system(deserialized_object)
                 print("")
             else:
-                os.system(deserialized_object)
+                deserialized_storage[deserialized_object] = "Safe"
+                if deserialized_object == "ls -l" or deserialized_object == "ls" or deserialized_object == "ls -la":
+                    print("Deserialized Command: " + deserialized_object)
+                    os.system(deserialized_object)
+                else:
+                    print("Insecure linux commands can't be deserialized!")
                 print("")
-            
-            return render_template('insecure_deserialization/deserialized.html', commands = all_commands)
+                
+            return render_template('insecure_deserialization/deserialized.html', commands = all_commands) 
     else:
         return render_template('insecure_deserialization/deserialization.html')
 
@@ -645,9 +745,15 @@ class CSRF_Comment(db.Model):
     
     def __repr__(self):
         return 'Comment ' + str(self.id)
+
+@app.route('/csrf-intro', methods=['GET', 'POST'])
+def csrf_intro():
+    return render_template("csrf/intro.html")
     
 @app.route('/csrf', methods=['GET', 'POST'])
 def csrf():
+    if g.safe_mode_on:
+        app.config['WTF_CSRF_ENABLED'] = True 
     if request.method == 'POST':
         user_name = g.user.name
         user_comment = request.form['comment']
@@ -662,6 +768,8 @@ def csrf():
 
 @app.route('/csrf/delete/<int:id>')
 def csrf_delete_comment(id):
+    if g.safe_mode_on:
+        app.config['WTF_CSRF_ENABLED'] = True 
     comment = CSRF_Comment.query.get_or_404(id)
     db.session.delete(comment)
     db.session.commit()
@@ -669,6 +777,8 @@ def csrf_delete_comment(id):
 
 @app.route('/csrf/download', methods=['GET', 'POST'])
 def csrf_download():
+    if g.safe_mode_on:
+        app.config['WTF_CSRF_ENABLED'] = True
     output_string = '''
     <!DOCTYPE html>
     <html lang = "en">
