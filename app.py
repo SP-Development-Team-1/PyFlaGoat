@@ -55,8 +55,9 @@ class User(db.Model):
 def before_request():
     g.user = None
     if 'user_id' in session:
-        user = [x for x in User.query.all() if x.id == session['user_id']][0]
-        g.user = user
+        check = [x for x in User.query.all() if x.id == session['user_id']]
+        if check:
+            g.user = check[0]
     
     g.safe_mode_on = False
     if 'safe_mode_on' in session:
