@@ -690,7 +690,7 @@ def serialize_exploit():
     else:
         return render_template('insecure_deserialization/deserialization.html')
 
-@app.route('/insecure-deserialization/result', methods=['GET', 'POST'])
+@app.route('/insecure-deserialization/result')
 def result():
     return render_template('insecure_deserialization/serialized.html')
 
