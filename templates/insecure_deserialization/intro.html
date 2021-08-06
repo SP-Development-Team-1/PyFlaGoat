@@ -21,34 +21,8 @@
       business impact depends on the protection needs of the application and
       data.
     </p>
-    <button class="coll btn btn-xxe" type="button" onclick="window.location.href='/insecure-deserialization'">View Demo</button>
+    <a class="btn btn-xxe" type="button" href="/insecure-deserialization">View Demo</a>
 	<br />
-    <div class="lab">
-      <p class="bp">
-        This Lab consists of a Page that has some content only available to for
-        the admin to see, How can we access that page as admin? How is our role
-        defined?
-      </p>
-      <p class="bp">
-        If we check the cookie we see that it is base64 encoded, on decoding we
-        realise it is pickle serialised and we can see some attributes, can you
-        change the attributes to make the page readable?
-      </p>
-      <p class="bp">
-        Hint: try to flip the bit of the admin from ...admin\x94K\x00... to
-        ...admin\x94K\x00...
-      </p>
-      <br />
-      <div align="right">
-        <button
-          class="btn btn-primary"
-          type="button"
-          onclick="window.location.href='/insec_des_lab'"
-        >
-          Access Lab
-        </button>
-      </div>
-    </div>
 	<br />
     <h4><b>Insecure Deserialization</b></h4>
     <p class="bp">
@@ -76,7 +50,7 @@
       <li>Databases, cache servers, file systems</li>
       <li>HTTP cookies, HTML form parameters, API authentication tokens</li>
     </ul>
-    <h4><b>How to Prevent</b></h4>
+    <h4><b>Mitigation</b></h4>
     <p class="bp">
       The only safe architectural pattern is not to accept serialized objects
       from untrusted sources or to use serialization mediums that only permit
