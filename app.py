@@ -63,7 +63,10 @@ def before_request():
     if 'safe_mode_on' in session:
         g.safe_mode_on = session['safe_mode_on'] 
 
-    app.config['WTF_CSRF_ENABLED'] = False 
+    if request.script_root=="/csrf" and g.safe_mode_on:
+        app.config['WTF_CSRF_ENABLED'] = True
+    else:
+        app.config['WTF_CSRF_ENABLED'] = False
 
 @app.route('/login',  methods=['GET', 'POST'])
 def login():
