@@ -1,26 +1,28 @@
 {% extends 'base.html' %}
 
-{% block head %} 
+{% block head %}
 <title>New Post</title>
 {% endblock %}
 
 {% block body %}
 <h1>New Post</h1>
 
-	<hr> 
-		<h2>Post New Sensitive Information:</h2>
-		<form action="/sql_injection/new" method="POST">
-			<label for="post">Title:</label>
-            <input class="form-control" type="text" name="title" id ="title" placeholder="Enter Title" aria-label="Enter Title">
-			<br>
-			<label for="post">Authentication TAN:</label>
-            <input class="form-control" type="text" name="auth_TAN" id ="auth_TAN" placeholder="Enter auth_TAN" aria-label="Enter auth_TAN">
-			<br>
-			<label for="post">Post:</label>
-    		<textarea class="form-control" placeholder="Compose a Post..." name="content" id="content" rows="3" aria-label="Enter Content"></textarea>
-			<br>
-			<input type="submit" class="btn btn-primary" value="Post">
-		</form>
-	<hr>
+<hr>
+<h2>Post New Sensitive Information:</h2>
+<form action="/sql_injection/new" method="POST">
+	<label for="post">Title:</label>
+	<input class="form-control" type="text" name="title" id="title" placeholder="Enter Title" aria-label="Enter Title">
+	<br>
+	<label for="post">Authentication TAN:</label>
+	<input class="form-control" type="text" name="auth_TAN" id="auth_TAN" placeholder="Enter auth_TAN"
+		aria-label="Enter auth_TAN">
+	<br>
+	<label for="post">Post:</label>
+	<textarea class="form-control" placeholder="Compose a Post..." name="content" id="content" rows="3"
+		aria-label="Enter Content"></textarea>
+	<br>
+	<input type="submit" class="btn btn-primary" value="Post">
+</form>
+<hr>
 
 {% endblock %}

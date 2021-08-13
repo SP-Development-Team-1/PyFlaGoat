@@ -2,15 +2,15 @@
 <title>Deserialized Command</title>
 <script src="https://code.jquery.com/jquery-2.1.1.min.js"></script>
 <script>
-  $(document).ready(function(){
+  $(document).ready(function () {
     var output = document.getElementById('output');
     var xhr = new XMLHttpRequest();
-      xhr.open('GET', '{{ url_for("stream") }}', true);
-      xhr.send();
-      setInterval(function() {
+    xhr.open('GET', '{{ url_for("stream") }}', true);
+    xhr.send();
+    setInterval(function () {
       output.textContent = xhr.responseText;
-      }, 500);
-    });
+    }, 500);
+  });
 </script>
 {% endblock %} {% block body %}
 <br>
@@ -27,15 +27,15 @@
 <a class="btn btn-danger" href="/insecure-deserialization/delete/{{ command.id }}">Delete</a>
 <br />
 <hr />
-{% endfor %} 
+{% endfor %}
 <a class="btn btn-dark" href="/insecure-deserialization">Go Back</a>
 <!--a class="btn btn-primary" href="http://localhost:5000/insecure-deserialization/log_view" target="_blank">See Log</a> -->
 <div style="justify-content: center;">
   <h4 style="text-align: center;"><b>Logging will appear here:</b></h4>
   <div class="br-special"></div>
-    <div class="logging_window">
-      <pre id="output"></pre>
-    </div>
+  <div class="logging_window">
+    <pre id="output"></pre>
+  </div>
 </div>
 <br />
 <br />

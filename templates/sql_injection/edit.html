@@ -1,25 +1,29 @@
 {% extends 'base.html' %}
 
-{% block head %} 
+{% block head %}
 <title>Edit Post</title>
 {% endblock %}
 
 {% block body %}
 <h1>Editing Post</h1>
 
-	<hr> 
-		<form action="/sql_injection/edit/{{post.id}}" method="POST">
-			<label for="post">Title:</label>
-            <input class="form-control" type="text" name="title" id ="title" value="{{ post.title }}" aria-label="Enter Title">
-			<br>
-			<label for="post">Authentication TAN:</label>
-            <input class="form-control" type="text" name="auth_TAN" id ="auth_TAN" value="{{ post.auth_TAN }}" aria-label="Enter auth_TAN">
-			<br>
-			<label for="post">Post:</label>
-    		<textarea class="form-control" name="content" id="content" rows="3" aria-label="Enter Content">{{ post.content }}</textarea>
-			<br>
-			<input type="submit" class="btn btn-primary" value="Save">
-		</form>
-	<hr>
+<hr>
+<form action="/sql_injection/edit/{{post.id}}" method="POST">
+	<input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
+
+	<label for="post">Title:</label>
+	<input class="form-control" type="text" name="title" id="title" value="{{ post.title }}" aria-label="Enter Title">
+	<br>
+	<label for="post">Authentication TAN:</label>
+	<input class="form-control" type="text" name="auth_TAN" id="auth_TAN" value="{{ post.auth_TAN }}"
+		aria-label="Enter auth_TAN">
+	<br>
+	<label for="post">Post:</label>
+	<textarea class="form-control" name="content" id="content" rows="3"
+		aria-label="Enter Content">{{ post.content }}</textarea>
+	<br>
+	<input type="submit" class="btn btn-primary" value="Save">
+</form>
+<hr>
 
 {% endblock %}

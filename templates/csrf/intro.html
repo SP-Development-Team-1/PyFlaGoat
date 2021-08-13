@@ -21,9 +21,14 @@
         <h4><b>Mitigation</b></h4>
         <p class="bp">
             <ul>
-                <li>Add a per-request nonce to the URL and all forms in addition to the standard session. This is also referred to as “form keys”. Many frameworks (e.g., Drupal.org 4.7.4+) either have or are starting to include this type of protection “built-in” to every form so the programmer does not need to code this protection manually.</li>
+                <li>Add a per-request nonce to the URL and all forms in addition to the standard session. This is also
+                    referred to as “form keys”. Many frameworks (e.g., Drupal.org 4.7.4+) either have or are starting to
+                    include this type of protection “built-in” to every form so the programmer does not need to code
+                    this protection manually.</li>
                 <li>Add a hash (session id, function name, server-side secret) to all forms.</li>
-                <li>Checking the referrer header in the client’s HTTP request can prevent CSRF attacks. Ensuring that the HTTP request has come from the original site means that attacks from other sites will not function.</li>
+                <li>Checking the referrer header in the client’s HTTP request can prevent CSRF attacks. Ensuring that
+                    the HTTP request has come from the original site means that attacks from other sites will not
+                    function.</li>
             </ul>
         </p>
         <span class="float-right"><a href="https://owasp.org/www-community/attacks/csrf">OWASP</a></span>

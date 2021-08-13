@@ -8,41 +8,22 @@
 <h2>Deserializing Linux Kernel Commands</h2>
 <br />
 <form action="/insecure-deserialization" method="POST">
+  <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
+
   <label for="post">Command:</label>
-  <input
-    class="form-control"
-    type="text"
-    name="command"
-    id="command"
-    placeholder="Enter Linux command to serialize"
-    aria-label="Enter Linux command to serialize"
-  />
+  <input class="form-control" type="text" name="command" id="command" placeholder="Enter Linux command to serialize"
+    aria-label="Enter Linux command to serialize" />
   <br />
-  <input
-    type="submit"
-    name="action"
-    class="btn btn-primary"
-    value="Serialize"
-  />
+  <input type="submit" name="action" class="btn btn-primary" value="Serialize" />
   <br />
   <br />
   <label for="post">Serialized Command:</label>
-  <input
-    class="form-control"
-    type="text"
-    name="serialized"
-    id="serialized"
+  <input class="form-control" type="text" name="serialized" id="serialized"
     placeholder="Enter serialized Linux command to deserialize"
-    aria-label="Enter serialized Linux command to deserialize"
-  />
+    aria-label="Enter serialized Linux command to deserialize" />
   <br />
 
-  <input
-    type="submit"
-    name="action"
-    class="btn btn-primary"
-    value="Deserialize"
-  />
+  <input type="submit" name="action" class="btn btn-primary" value="Deserialize" />
 </form>
 <hr />
 

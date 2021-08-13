@@ -1,82 +1,81 @@
 <!DOCTYPE html>
 <html>
-  <head>
-    <link
-      rel="stylesheet"
-      href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"
-      integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T"
-      crossorigin="anonymous"
-    />
-    <style>
-      .button {
-        margin-left: 20px;
-        font-size: 1.3rem;
-      }
 
-      .heading {
-        color: black;
-        padding: 20px;
-        border-radius: 6px;
-        font-size: 2.7rem;
-        font-family: Impact, Haettenschweiler, 'Arial Narrow Bold', sans-serif;
-        margin-bottom: 16px;
-      }
+<head>
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"
+    integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous" />
+  <style>
+    .button {
+      margin-left: 20px;
+      font-size: 1.3rem;
+    }
 
-      .alert-error {
-        font-family: monospace;
-        border-color: red;
-        background-color: red;
-        color: white;
-        padding: 15px;
-        border-radius: 15px;
-        font-size: 1.5rem;
-        font-weight: 800;
-        margin-bottom: 16px;
-        margin-left: 20px;
-        margin-right: 20px;
-        border-width: 6px;
-        border-style: solid;
-      }
+    .heading {
+      color: black;
+      padding: 20px;
+      border-radius: 6px;
+      font-size: 2.7rem;
+      font-family: Impact, Haettenschweiler, 'Arial Narrow Bold', sans-serif;
+      margin-bottom: 16px;
+    }
 
-      .alert-info {
-        font-family: monospace;
-        border-color: greenyellow;
-        background-color: greenyellow;
-        color: black;
-        padding: 15px;
-        border-radius: 15px;
-        font-size: 1.5rem;
-        font-weight: 800;
-        margin-bottom: 16px;
-        margin-left: 20px;
-        margin-right: 20px;
-        border-width: 6px;
-        border-style: solid;
-      }
-    </style>
-  </head>
-  <body>
-    {% for message in get_flashed_messages() %}
-      {% if "Success" in message %}
-        <div class="heading">Login Status: </div>
-        <div class="alert-info">Success: {{ message }}</div>
-      {% elif "Congratulations" in message %}
-        <div class="heading">Salary Found: </div>
-        <div class="alert-info">Correct: {{ message }}</div>
-      {% elif "not his salary" in message %}
-        <div class="heading">Salary Not Found: </div>
-        <div class="alert-error">Error: {{ message }}</div>
-      {% else %}
-        <div class="heading">Login Status: </div>
-        <div class="alert-error">Error: {{ message }}</div>
-      {% endif %}
-    {% endfor %}
-    <br> 
-    <button onclick="goBack()" class="btn btn-dark button">Go Back</button>
-    <script>
-      function goBack() {
-        window.history.back();
-      }
-    </script>
-  </body>
+    .alert-error {
+      font-family: monospace;
+      border-color: red;
+      background-color: red;
+      color: white;
+      padding: 15px;
+      border-radius: 15px;
+      font-size: 1.5rem;
+      font-weight: 800;
+      margin-bottom: 16px;
+      margin-left: 20px;
+      margin-right: 20px;
+      border-width: 6px;
+      border-style: solid;
+    }
+
+    .alert-info {
+      font-family: monospace;
+      border-color: greenyellow;
+      background-color: greenyellow;
+      color: black;
+      padding: 15px;
+      border-radius: 15px;
+      font-size: 1.5rem;
+      font-weight: 800;
+      margin-bottom: 16px;
+      margin-left: 20px;
+      margin-right: 20px;
+      border-width: 6px;
+      border-style: solid;
+    }
+  </style>
+</head>
+
+<body>
+  {% for message in get_flashed_messages() %}
+  {% if "Success" in message %}
+  <div class="heading">Login Status: </div>
+  <div class="alert-info">Success: {{ message }}</div>
+  {% elif "Congratulations" in message %}
+  <div class="heading">Salary Found: </div>
+  <div class="alert-info">Correct: {{ message }}</div>
+  {% elif "not his salary" in message %}
+  <div class="heading">Salary Not Found: </div>
+  <div class="alert-error">Error: {{ message }}</div>
+  {% else %}
+  <div class="heading">Login Status: </div>
+  <div class="alert-error">Error: {{ message }}</div>
+  {% endif %}
+  {% endfor %}
+  <br>
+  <button onclick="goBack()" class="btn btn-dark button">Go Back</button>
+  <script>
+    function goBack() {
+      window.history.back();
+    }
+  </script>
+</body>
+
 </html>

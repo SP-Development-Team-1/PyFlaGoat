@@ -15,14 +15,13 @@
       <div class="container">
         <div class="columns is-centered">
           <div class="column is-half">
-            <h1 style = 
-            "
+            <h1 style="
             text-align: center;
             font-size: 3rem;
-            "
-            ><i class="fas fa-flask"></i> PyFlaGoat</h1>
-            
+            "><i class="fas fa-flask"></i> PyFlaGoat</h1>
+
             <form method="POST">
+              <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
               <div class="field">
                 <label class="label" style="color: white">Username</label>
                 <div class="control has-icons-left has-icons-right">
@@ -46,8 +45,8 @@
                   <button type="submit" class="button is-success">
                     Login
                   </button>
-                  <button style="display: inline" class="button is-danger float-center"
-                    ><a href="/register">Register</a></button>
+                  <button style="display: inline" class="button is-danger float-center"><a
+                      href="/register">Register</a></button>
                 </p>
               </div>
             </form>

@@ -63,7 +63,10 @@ def before_request():
     if 'safe_mode_on' in session:
         g.safe_mode_on = session['safe_mode_on'] 
 
-    app.config['WTF_CSRF_ENABLED'] = False 
+    if g.safe_mode_on:
+        app.config['WTF_CSRF_ENABLED'] = True
+    else:
+        app.config['WTF_CSRF_ENABLED'] = False
 
 @app.route('/login',  methods=['GET', 'POST'])
 def login():
@@ -691,7 +694,7 @@ def serialize_exploit():
     else:
         return render_template('insecure_deserialization/deserialization.html')
 
-@app.route('/insecure-deserialization/result')
+@app.route('/insecure-deserialization/result', methods=['GET', 'POST'])
 def result():
     return render_template('insecure_deserialization/serialized.html')
 

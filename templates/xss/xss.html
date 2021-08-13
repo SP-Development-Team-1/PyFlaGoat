@@ -1,57 +1,63 @@
 {% extends 'base.html' %}
 
-{% block head %} 
+{% block head %}
 <title>XSS</title>
 {% endblock %}
 
 {% block body %}
-    <br>
-	
-    <h1>Cross-Site Scripting</h1>
-	
-    <hr> 
-	<h2> Preview your profile: </h2>
+<br>
+
+<h1>Cross-Site Scripting</h1>
+
+<hr>
+<h2> Preview your profile: </h2>
 
 
-	<form action="\xss" method="POST">
-		<label for="user_name">Name: </label>
-			<input class="form-control" type="text" 
-			name="user_name" id='user_name' 
-			placeholder="Input Name ..." aria-label="postform">
-			<br>
-		<label for="user_occupation">Occupation: </label>
-			<input class="form-control" type="text" 
-			name="user_occupation" id='user_occupation' 
-			placeholder="Input Occupation ..." aria-label="postform">
-			<br>
-		<input type="submit" class="btn btn-primary" value="Preview">
-	</form>
-	
-	<hr>
+<form action="\xss" method="POST">
+	<input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
 
-	<link rel="stylesheet" type="text/css" href="/static/css/broken_access.css">
-	<div class="container mt-5 d-flex justify-content-center">
-		<div class="card p-3">
-			<div class="d-flex align-items-center">
-				<div class="image"> <img src="/static/img/broken_access/blank_profile.png" class="rounded" width="155"> </div>
-				<div class="ml-3 w-100">
-					{% if my_name and my_occupation %}
-						<h4 class="mb-0 mt-0">{{my_name}}</h4> <span>{{ my_occupation }}</span>
-						<div class="p-2 mt-2 bg-primary d-flex justify-content-between rounded text-white stats">
-							<div class="d-flex flex-column"> <span class="articles">ID</span> <span class="number1">{{ random.randint(1,999999) }}</span> </div>
-							<div class="d-flex flex-column"> <span class="rating">Username</span> <span class="number3">{{ my_name.replace(" ", "") }}1234!@#</span> </div>
-						</div>
-					{% else %}
-						<h4 class="mb-0 mt-0">John Doe</h4> <span>WebGoat Shepherd</span>
-						<div class="p-2 mt-2 bg-primary d-flex justify-content-between rounded text-white stats">
-							<div class="d-flex flex-column"> <span class="articles">ID</span> <span class="number1">0</span> </div>
-							<div class="d-flex flex-column"> <span class="rating">Username</span> <span class="number3">johndoe1234!@#</span> </div>
-						</div>
-					{% endif %}
-					<div class="button mt-2 d-flex flex-row align-items-center"><a class="btn btn-sm btn-primary w-100 ml-2" href='#'>Edit Profile</a> </div>
+	<label for="user_name">Name: </label>
+	<input class="form-control" type="text" name="user_name" id='user_name' placeholder="Input Name ..."
+		aria-label="postform">
+	<br>
+	<label for="user_occupation">Occupation: </label>
+	<input class="form-control" type="text" name="user_occupation" id='user_occupation'
+		placeholder="Input Occupation ..." aria-label="postform">
+	<br>
+	<input type="submit" class="btn btn-primary" value="Preview">
+</form>
+
+<hr>
+
+<link rel="stylesheet" type="text/css" href="/static/css/broken_access.css">
+<div class="container mt-5 d-flex justify-content-center">
+	<div class="card p-3">
+		<div class="d-flex align-items-center">
+			<div class="image"> <img src="/static/img/broken_access/blank_profile.png" class="rounded" width="155">
+			</div>
+			<div class="ml-3 w-100">
+				{% if my_name and my_occupation %}
+				<h4 class="mb-0 mt-0">{{my_name}}</h4> <span>{{ my_occupation }}</span>
+				<div class="p-2 mt-2 bg-primary d-flex justify-content-between rounded text-white stats">
+					<div class="d-flex flex-column"> <span class="articles">ID</span> <span
+							class="number1">{{ random.randint(1,999999) }}</span> </div>
+					<div class="d-flex flex-column"> <span class="rating">Username</span> <span
+							class="number3">{{ my_name.replace(" ", "") }}1234!@#</span> </div>
 				</div>
+				{% else %}
+				<h4 class="mb-0 mt-0">John Doe</h4> <span>WebGoat Shepherd</span>
+				<div class="p-2 mt-2 bg-primary d-flex justify-content-between rounded text-white stats">
+					<div class="d-flex flex-column"> <span class="articles">ID</span> <span class="number1">0</span>
+					</div>
+					<div class="d-flex flex-column"> <span class="rating">Username</span> <span
+							class="number3">johndoe1234!@#</span> </div>
+				</div>
+				{% endif %}
+				<div class="button mt-2 d-flex flex-row align-items-center"><a class="btn btn-sm btn-primary w-100 ml-2"
+						href='#'>Edit Profile</a> </div>
 			</div>
 		</div>
 	</div>
+</div>
 
 {% endblock %}

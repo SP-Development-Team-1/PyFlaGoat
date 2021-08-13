@@ -1,29 +1,33 @@
 {% extends 'base.html' %}
 
-{% block head %} 
+{% block head %}
 <title>Create Profile</title>
 {% endblock %}
 
 {% block body %}
 <h1>Create Profile</h1>
 
-	<hr> 
-		<h2>Enter Profile Information:</h2>
-		<form action="/broken_access/new" method="POST">
-			<label for="post">Username:</label>
-            <input class="form-control" type="text" name="username" id ="username" placeholder="Enter username" aria-label="Enter username">
-			<br>
-			<label for="post">Password:</label>
-            <input class="form-control" type="text" name="password" id ="password" placeholder="Enter password" aria-label="Enter password">
-			<br>
-			<label for="post">Name:</label>
-            <input class="form-control" type="text" name="name" id ="name" placeholder="Enter name" aria-label="Enter name">
-			<br>
-            <label for="post">Occupation:</label>
-            <input class="form-control" type="text" name="occupation" id ="occupation" placeholder="Enter occupation" aria-label="Enter occupation">
-			<br>
-			<input type="submit" class="btn btn-primary" value="Post">
-		</form>
-	<hr>
+<hr>
+<h2>Enter Profile Information:</h2>
+<form action="/broken_access/new" method="POST">
+	<input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
+	<label for="post">Username:</label>
+	<input class="form-control" type="text" name="username" id="username" placeholder="Enter username"
+		aria-label="Enter username">
+	<br>
+	<label for="post">Password:</label>
+	<input class="form-control" type="text" name="password" id="password" placeholder="Enter password"
+		aria-label="Enter password">
+	<br>
+	<label for="post">Name:</label>
+	<input class="form-control" type="text" name="name" id="name" placeholder="Enter name" aria-label="Enter name">
+	<br>
+	<label for="post">Occupation:</label>
+	<input class="form-control" type="text" name="occupation" id="occupation" placeholder="Enter occupation"
+		aria-label="Enter occupation">
+	<br>
+	<input type="submit" class="btn btn-primary" value="Post">
+</form>
+<hr>
 
 {% endblock %}

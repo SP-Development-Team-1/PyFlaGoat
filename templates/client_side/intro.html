@@ -5,30 +5,39 @@
 <link rel="stylesheet" type="text/css" href="/static/css/intro.css">
 <br />
 <div class="content">
-<br />
-    <h3><b>Client-side Filtering</b></h3>
-    <div class="box">
-        <h4><b>What is Client-side Filtering?</b></h4>
-            <p class="bp">The software is composed of a server that relies on the client to implement a mechanism that is intended to protect the server.
-	    When the server relies on protection mechanisms placed on the client side, an attacker can modify the client-side behavior to bypass the protection 
-	    mechanisms resulting in potentially unexpected interactions between the client and server. The consequences will vary, depending on what the mechanisms are trying to protect.
-	    Client-side Filtering checks can be easily bypassed, allowing malformed or unexpected input to pass into the application, potentially as trusted data. 
-	    This may lead to unexpected states, behaviors and possibly a resulting crash.
-            </p>
-        <a class="btn btn-xxe" type="button" href="/client/client-filtering">View Demo</a>
 	<br />
-	<br />
-	<h4><b>Mitigation</b></h4>
+	<h3><b>Client-side Filtering</b></h3>
+	<div class="box">
+		<h4><b>What is Client-side Filtering?</b></h4>
+		<p class="bp">The software is composed of a server that relies on the client to implement a mechanism that is
+			intended to protect the server.
+			When the server relies on protection mechanisms placed on the client side, an attacker can modify the
+			client-side behavior to bypass the protection
+			mechanisms resulting in potentially unexpected interactions between the client and server. The consequences
+			will vary, depending on what the mechanisms are trying to protect.
+			Client-side Filtering checks can be easily bypassed, allowing malformed or unexpected input to pass into the
+			application, potentially as trusted data.
+			This may lead to unexpected states, behaviors and possibly a resulting crash.
+		</p>
+		<a class="btn btn-xxe" type="button" href="/client/client-filtering">View Demo</a>
+		<br />
+		<br />
+		<h4><b>Mitigation</b></h4>
 		<p class="bp">
 			<ul>
-			<li>For any security checks that are performed on the client side, ensure that these checks are duplicated on the server side.</li>
-			<li>Use dynamic tools and techniques that interact with the software using large test suites with many diverse inputs, such as fuzz testing (fuzzing), robustness testing, and fault injection.</li>
-			<li>Use tools and techniques that require manual (human) analysis, such as penetration testing, threat modeling, and interactive tools that allow the tester to record and modify an active session.</li>
-			<li>Use integrity checking and strong authentication to ensure that the inputs are coming from a trusted source.</li>
-		</ul>
+				<li>For any security checks that are performed on the client side, ensure that these checks are
+					duplicated on the server side.</li>
+				<li>Use dynamic tools and techniques that interact with the software using large test suites with many
+					diverse inputs, such as fuzz testing (fuzzing), robustness testing, and fault injection.</li>
+				<li>Use tools and techniques that require manual (human) analysis, such as penetration testing, threat
+					modeling, and interactive tools that allow the tester to record and modify an active session.</li>
+				<li>Use integrity checking and strong authentication to ensure that the inputs are coming from a trusted
+					source.</li>
+			</ul>
 		</p>
-		<span class="float-right"><a href="https://owasp.org/www-project-web-security-testing-guide/latest/4-Web_Application_Security_Testing/11-Client-side_Testing/06-Testing_for_Client-side_Resource_Manipulation">OWASP</a></span>
-    </div>
+		<span class="float-right"><a
+				href="https://owasp.org/www-project-web-security-testing-guide/latest/4-Web_Application_Security_Testing/11-Client-side_Testing/06-Testing_for_Client-side_Resource_Manipulation">OWASP</a></span>
+	</div>
 </div>
 
 
