@@ -9,31 +9,18 @@
 <br>
 
 <form action="/auth" method="POST">
+  <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
   <label for="post">Username:</label>
-  <input
-    class="form-control"
-    type="text"
-    name="username"
-    id="username"
-    placeholder="Enter Username"
-    aria-label="Enter Username"
-  />
+  <input class="form-control" type="text" name="username" id="username" placeholder="Enter Username"
+    aria-label="Enter Username" />
   <br />
   <label for="post">Password:</label>
-  <input
-    class="form-control"
-    type="text"
-    name="password"
-    id="password"
-    placeholder="Enter Password"
-    aria-label="Enter Password"
-  />
+  <input class="form-control" type="text" name="password" id="password" placeholder="Enter Password"
+    aria-label="Enter Password" />
   <br />
   <input type="submit" class="btn btn-primary" value="Login" />
 
-    <a style="display: inline" class="btn btn-success float-center" href="/auth/register"
-      >Register</a
-    >
+  <a style="display: inline" class="btn btn-success float-center" href="/auth/register">Register</a>
 
 </form>
 <hr />

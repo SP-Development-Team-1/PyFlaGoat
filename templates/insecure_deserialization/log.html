@@ -2,15 +2,15 @@
 <title>Log</title>
 <script src="https://code.jquery.com/jquery-2.1.1.min.js"></script>
 <script>
-  $(document).ready(function(){
+  $(document).ready(function () {
     var output = document.getElementById('output');
     var xhr = new XMLHttpRequest();
-      xhr.open('GET', '{{ url_for("stream") }}', true);
-      xhr.send();
-      setInterval(function() {
+    xhr.open('GET', '{{ url_for("stream") }}', true);
+    xhr.send();
+    setInterval(function () {
       output.textContent = xhr.responseText;
-      }, 500);
-    });
+    }, 500);
+  });
 </script>
 {% endblock %} {% block body %}
 
@@ -24,16 +24,16 @@
 <div style="justify-content: center;">
   <h3 style="text-align: center;"><b>Logging will appear here:</b></h3>
   <div class="br-special"></div>
-    <div class="logging_window">
-      <pre id="output"></pre>
-    </div>
+  <div class="logging_window">
+    <pre id="output"></pre>
+  </div>
 </div>
 <button onclick="goBack()" class="btn btn-dark button">Go Back</button>
-    <script>
-      function goBack() {
-        window.history.back();
-      }
-    </script>
+<script>
+  function goBack() {
+    window.history.back();
+  }
+</script>
 <br />
 <br />
 <br />

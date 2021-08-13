@@ -1,28 +1,32 @@
 {% extends 'base.html' %}
 
-{% block head %} 
+{% block head %}
 <title>Edit Profile</title>
 {% endblock %}
 
 {% block body %}
 <h1>Edit Profile:</h1>
 
-	<hr> 
-		<form action="/broken_access/profile/{{profile.id}}/edit" method="POST">
-			<label for="profile">Username:</label>
-            <input class="form-control" type="text" name="username" id ="username" value="{{ profile.username }}" aria-label="Enter Username">
-			<br>
-			<label for="profile">Name:</label>
-            <input class="form-control" type="text" name="name" id ="name" value="{{ profile.name }}" aria-label="Enter Name">
-			<br>
-			<label for="profile">Occupation:</label>
-            <input class="form-control" type="text" name="occupation" id ="occupation" value="{{ profile.occupation }}" aria-label="Enter Occupation">
-			<br>
-            <label for="profile">Password:</label>
-            <input class="form-control" type="text" name="password" id ="password" value="{{ profile.password }}" aria-label="Enter Password">
-			<br>
-			<input type="submit" class="btn btn-primary" value="Save">
-		</form>
-	<hr>
+<hr>
+<form action="/broken_access/profile/{{profile.id}}/edit" method="POST">
+	<input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
+	<label for="profile">Username:</label>
+	<input class="form-control" type="text" name="username" id="username" value="{{ profile.username }}"
+		aria-label="Enter Username">
+	<br>
+	<label for="profile">Name:</label>
+	<input class="form-control" type="text" name="name" id="name" value="{{ profile.name }}" aria-label="Enter Name">
+	<br>
+	<label for="profile">Occupation:</label>
+	<input class="form-control" type="text" name="occupation" id="occupation" value="{{ profile.occupation }}"
+		aria-label="Enter Occupation">
+	<br>
+	<label for="profile">Password:</label>
+	<input class="form-control" type="text" name="password" id="password" value="{{ profile.password }}"
+		aria-label="Enter Password">
+	<br>
+	<input type="submit" class="btn btn-primary" value="Save">
+</form>
+<hr>
 
 {% endblock %}

@@ -15,15 +15,14 @@
       <div class="container">
         <div class="columns is-centered">
           <div class="column is-half">
-            <h1 style = 
-            "
+            <h1 style="
             text-align: center;
             font-size: 3rem;
-            "
-            ><i class="fas fa-flask"></i> PyFlaGoat</h1>
-            
+            "><i class="fas fa-flask"></i> PyFlaGoat</h1>
+
             <form method="POST">
-            <div class="field">
+              <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
+              <div class="field">
                 <label class="label" style="color: white">Nickname</label>
                 <p class="control has-icons-left">
                   <input class="input" type="name" name="name" placeholder="Enter nickname ...">

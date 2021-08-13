@@ -16,19 +16,14 @@
   }
 </style>
 
-<p><img
-  src="/static/code.PNG"
-  width="70%"
-  height="70%"
-></p>
+<p><img src="/static/code.PNG" width="70%" height="70%"></p>
 
-<form
-  class="form-horizontal my-2 my-md-4 float-right"
-  action="/client/client-filtering"
-  method="POST"
-  name="name-form"
->
-  <label for="post"><h5>Choose client's first name:</h5></label>
+<form class="form-horizontal my-2 my-md-4 float-right" action="/client/client-filtering" method="POST" name="name-form">
+  <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
+
+  <label for="post">
+    <h5>Choose client's first name:</h5>
+  </label>
   <br />
   <select name="firstName" id="firstName">
     <option value="Rachel">Rachel</option>
@@ -40,12 +35,7 @@
     <option value="Junhyeok">Junhyeok</option>
   </select>
   <div class="br-special"><br /></div>
-  <input
-    type="submit"
-    name="action"
-    class="btn btn-primary"
-    value="Submit Name"
-  />
+  <input type="submit" name="action" class="btn btn-primary" value="Submit Name" />
 </form>
 
 <br />
@@ -55,12 +45,7 @@
 <h5>Click to create a new client profile:</h5>
 <div class="br-special"><br /></div>
 <center>
-  <a
-    style="display: inline"
-    class="btn btn-success float-left"
-    href="/client/client-filtering/new"
-    >New Profile</a
-  >
+  <a style="display: inline" class="btn btn-success float-left" href="/client/client-filtering/new">New Profile</a>
 </center>
 
 <br />
@@ -68,23 +53,16 @@
 <br />
 
 <form action="/client/client-filtering" method="POST" name="salary-form">
+  <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
+
   <br />
-  <label for="post"><h5>What is Kyugon Cho's salary?</h5></label>
-  <input
-    class="form-control"
-    type="text"
-    name="salary"
-    id="salary"
-    placeholder="Enter Kyugon Cho's salary"
-    aria-label="Enter Salary"
-  />
+  <label for="post">
+    <h5>What is Kyugon Cho's salary?</h5>
+  </label>
+  <input class="form-control" type="text" name="salary" id="salary" placeholder="Enter Kyugon Cho's salary"
+    aria-label="Enter Salary" />
   <br />
-  <input
-    type="submit"
-    name="action"
-    class="btn btn-primary"
-    value="Submit Salary"
-  />
+  <input type="submit" name="action" class="btn btn-primary" value="Submit Salary" />
 </form>
 <hr />
 <br />

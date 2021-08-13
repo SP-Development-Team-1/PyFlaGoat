@@ -7,8 +7,9 @@
 <div>
   <h1 style="display: inline">Cross Site Request Forgery</h1>
   <form action="/csrf/download" method="POST" style="display: inline">
+      <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
     <input type="submit" class="btn btn-warning float-right" value="Generate CSRF &amp; Download">
-  </form> 
+  </form>
 </div>
 
 <hr>
@@ -26,14 +27,14 @@
   <h3>Comments</h3><br>
   <div style="margin-left: 3%">
     {% for comment in comments %}
-      <small>{{ comment.date_posted }}</small>
-      <h5>
-        <img src="/static/img/broken_access/blank_profile.png" class="rounded" width=5%>
-        <b>{{ comment.author }}</b>
-        <a class="btn btn-danger float-right" href="/csrf/delete/{{ comment.id }}">Delete</a>
-      </h5>
-      <p>{{ comment.comment }}</p>
-      <hr>
+    <small>{{ comment.date_posted }}</small>
+    <h5>
+      <img src="/static/img/broken_access/blank_profile.png" class="rounded" width=5%>
+      <b>{{ comment.author }}</b>
+      <a class="btn btn-danger float-right" href="/csrf/delete/{{ comment.id }}">Delete</a>
+    </h5>
+    <p>{{ comment.comment }}</p>
+    <hr>
     {% endfor %}
     <div name="comment_example_2">
       <small>{{ example_date }}</small>
@@ -58,17 +59,18 @@
 <hr>
 
 <h3>Submit a comment:</h3>
-  <form action="/csrf" method="POST">
-    <textarea class="form-control" placeholder="Compose a comment ..." name="comment" id="comment" rows="3"
-      aria-label="Enter Content"></textarea>
-    <br>
-    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
-    {% if g.user %}
-      <input type="submit" class="btn btn-primary" value="Submit">
-    {% else %}
-      <p><input type="submit" class="btn btn-primary" value="Submit" disabled> &nbsp;&nbsp;### <a href="/login">Log in</a> to post a comment and enable request forgery.</p>
-    {% endif %}
-  </form>   
+<form action="/csrf" method="POST">
+  <textarea class="form-control" placeholder="Compose a comment ..." name="comment" id="comment" rows="3"
+    aria-label="Enter Content"></textarea>
+  <br>
+  <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
+  {% if g.user %}
+  <input type="submit" class="btn btn-primary" value="Submit">
+  {% else %}
+  <p><input type="submit" class="btn btn-primary" value="Submit" disabled> &nbsp;&nbsp;### <a href="/login">Log in</a>
+    to post a comment and enable request forgery.</p>
+  {% endif %}
+</form>
 <br><br><br>
 
 {% endblock %}

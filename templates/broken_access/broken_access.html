@@ -1,6 +1,6 @@
 {% extends 'base.html' %}
 
-{% block head %} 
+{% block head %}
 <title>Broken Access Control</title>
 {% endblock %}
 
@@ -8,7 +8,7 @@
 
 <br>
 <h1>Broken Access Control
-<a class="btn btn-success float-right" href="/broken_access/new">Create Profile</a>
+    <a class="btn btn-success float-right" href="/broken_access/new">Create Profile</a>
 </h1>
 <br>
 
@@ -18,14 +18,18 @@
 <div class="container mt-5 d-flex justify-content-center">
     <div class="card p-3">
         <div class="d-flex align-items-center">
-            <div class="image"> <img src="/static/img/broken_access/blank_profile.png" class="rounded" width="155"> </div>
+            <div class="image"> <img src="/static/img/broken_access/blank_profile.png" class="rounded" width="155">
+            </div>
             <div class="ml-3 w-100">
                 <h4 class="mb-0 mt-0">{{user.name}}</h4> <span>{{user.occupation}}</span>
                 <div class="p-2 mt-2 bg-primary d-flex justify-content-between rounded text-white stats">
-                    <div class="d-flex flex-column"> <span class="articles">ID</span> <span class="number1">{{user.id}}</span> </div>
-                    <div class="d-flex flex-column"> <span class="rating">Username</span> <span class="number3">{{user.username}}</span> </div>
+                    <div class="d-flex flex-column"> <span class="articles">ID</span> <span
+                            class="number1">{{user.id}}</span> </div>
+                    <div class="d-flex flex-column"> <span class="rating">Username</span> <span
+                            class="number3">{{user.username}}</span> </div>
                 </div>
-                <div class="button mt-2 d-flex flex-row align-items-center"><a class="btn btn-sm btn-primary w-100 ml-2" href="/broken_access/profile/{{user.id}}/edit">Edit Profile</a> </div>
+                <div class="button mt-2 d-flex flex-row align-items-center"><a class="btn btn-sm btn-primary w-100 ml-2"
+                        href="/broken_access/profile/{{user.id}}/edit">Edit Profile</a> </div>
             </div>
         </div>
     </div>

@@ -2,13 +2,13 @@
 <title>XXE</title>
 <script>
   function copyToClipboard(element) {
-  var $temp = $("<input>");
-  $("body").append($temp);
-  $temp.val($(element).text()).select();
-  document.execCommand("copy");
-  alert("Copied Successfully!")
-  $temp.remove();
-}
+    var $temp = $("<input>");
+    $("body").append($temp);
+    $temp.val($(element).text()).select();
+    document.execCommand("copy");
+    alert("Copied Successfully!")
+    $temp.remove();
+  }
 </script>
 {% endblock %} {% block body %}
 <br />
@@ -17,44 +17,31 @@
 <hr />
 <div>
   <h2 style="display: inline">Local File Inclusion:</h2>
-    <button onclick="copyToClipboard('#xml')" class="btn btn-success float-right">Copy XML Command</button>
-  </form> 
+  <button onclick="copyToClipboard('#xml')" class="btn btn-success float-right">Copy XML Command</button>
+  </form>
 </div>
 <br />
 
-<p style="display: none;" id="xml"><?xml version='1.0'?>{{ xml }}</p>
+<p style="display: none;" id="xml">
+  <?xml version='1.0'?>{{ xml }}</p>
 
 <!--script defer src="{{url_for('static', filename='js/xxe.js')}}"></script> -->
 
 <p><b>Youngjun</b> uploaded a photo.</p>
 <p style="text-align: left;">
-<img
-  src="/static/meme1.jpg"
-  width="35%"
-  height="35%"
-/>
+  <img src="/static/meme1.jpg" width="35%" height="35%" />
 </p>
 <form action='/xxe' method='POST'>
   <br />
   <label for="post">Author:</label>
-  <input
-    class="form-control"
-    type="text"
-    name="author"
-    id="author"
-    placeholder="Enter Author Name"
-    aria-label="Enter Author Name"
-  />
+  <input class="form-control" type="text" name="author" id="author" placeholder="Enter Author Name"
+    aria-label="Enter Author Name" />
+  <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
+
   <br />
   <label for="post">Comment:</label>
-  <input
-    class="form-control"
-    type="text"
-    name="comment"
-    id="comment"
-    placeholder="Add a comment"
-    aria-label="Add a comment"
-  />
+  <input class="form-control" type="text" name="comment" id="comment" placeholder="Add a comment"
+    aria-label="Add a comment" />
   <br />
   <input type="submit" class="btn btn-primary" value="submit" />
 </form>
