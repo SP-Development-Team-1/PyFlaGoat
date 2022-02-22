@@ -1,6 +1,6 @@
 # PyFlaGoat
-#### PyFlaGoat is a intentionally vulnerable flask-based web application for experimenting and developing features of static application security testing and enhancing public cybersecurity education. <br>
-#### The web application explains and demonstrates each vulnerability by providing a demo to the user and also the corresponding mitigation strategies as enumerated by OWASP.
+[PyFlaGoat](https://pyflagoat.herokuapp.com/) is a deliberately insecure flask-based web application for experimenting and developing features of static application security testing (SAST) solution of [Sparrow Co., Ltd](https://www.sparrowfasoo.com/en/) and enhancing public cybersecurity education. <br> <br>
+This web application explains [OWASP top 10 vulnerabilities](https://owasp.org/www-project-top-ten/) and demonstrates each vulnerability by providing a demo to the user and also the corresponding mitigation strategies as enumerated by [OWASP Foundation](https://owasp.org/).
 ## Vulnerabilites Covered
 - SQL Injection
 - Broken Authentication
@@ -13,3 +13,5 @@
 - Client-Side Filtering
 - Bypass Frontend
 ## Acknowledgements
+- [OWASP Foundation](https://owasp.org/) 
+- [WebGoat](https://github.com/WebGoat/WebGoat)
